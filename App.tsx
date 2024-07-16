@@ -24,6 +24,7 @@ import {
   LearnMoreLinks,
   ReloadInstructions,
 } from 'react-native/Libraries/NewAppScreen';
+import Tabs from './components/Tabs'
 
 type SectionProps = PropsWithChildren<{
   title: string;
@@ -69,7 +70,7 @@ function App(): React.JSX.Element {
         barStyle={isDarkMode ? 'light-content' : 'dark-content'}
         backgroundColor={backgroundStyle.backgroundColor}
       />
-      <ScrollView
+      {/* <ScrollView
         contentInsetAdjustmentBehavior="automatic"
         style={backgroundStyle}>
         <View
@@ -79,8 +80,11 @@ function App(): React.JSX.Element {
           <Section title="">
             <Text>Fucci</Text>
           </Section>  
+          
         </View>
-      </ScrollView>
+      </ScrollView> */}
+
+      <Tabs />
     </SafeAreaView>
   );
 }
