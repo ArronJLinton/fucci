@@ -3,90 +3,55 @@ import { Text, View } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import Matches from '../../screens/Matches'
+import History from '../../screens/History'
+import News from '../../screens/News'
 
-function Feed() {
+
+function Home() {
   return (
     <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-      <Text>Feed!</Text>
+      <Text>Home!</Text>
     </View>
   );
 }
 
-function Profile() {
-  return (
-    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-      <Text>Profile!</Text>
-    </View>
-  );
-}
 
-function Notifications() {
-  return (
-    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-      <Text>Notifications!</Text>
-    </View>
-  );
-}
-
-function News() {
-  return (
-    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-      <Text>News!</Text>
-    </View>
-  );
-}
-
-function Matches() {
-  return (
-    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-      <Text>Matches!</Text>
-    </View>
-  );
-}
 
 const Tab = createBottomTabNavigator();
 
 function MyTabs() {
   return (
     <Tab.Navigator
-      initialRouteName="Feed"
+      initialRouteName="Matches"
       screenOptions={{
         tabBarActiveTintColor: '#e91e63',
       }}
     >
       <Tab.Screen
-        name="Feed"
-        component={Feed}
+        name="Home"
+        component={Home}
         options={{
           tabBarLabel: 'Home',
-          tabBarIcon: ({ color, size }) => (
-            <MaterialCommunityIcons name="home" color={color} size={size} />
-          ),
-        }}
-      />
-      <Tab.Screen
-        name="Notifications"
-        component={Notifications}
-        options={{
-          tabBarLabel: 'Updates',
           tabBarIcon: ({ color, size }) => (
             <MaterialCommunityIcons name="bell" color={color} size={size} />
           ),
         }}
       />
-      {/* <Tab.Screen
-        name="Profile"
-        component={Profile}
+      <Tab.Screen
+        name="Matches"
+        component={Matches}
         options={{
-          tabBarLabel: 'Profile',
+          tabBarLabel: 'Matches',
           tabBarIcon: ({ color, size }) => (
-            <MaterialCommunityIcons name="account" color={color} size={size} />
+            <MaterialCommunityIcons name="matches" color={color} size={size} />
           ),
         }}
-      /> */}
+      />
+      
       <Tab.Screen
         name="News"
-        component={Notifications}
+        component={News}
         options={{
           tabBarLabel: 'News',
           tabBarIcon: ({ color, size }) => (
@@ -95,12 +60,12 @@ function MyTabs() {
         }}
       />
       <Tab.Screen
-        name="Following"
-        component={Profile}
+        name="History"
+        component={History}
         options={{
-          tabBarLabel: 'Following',
+          tabBarLabel: 'History',
           tabBarIcon: ({ color, size }) => (
-            <MaterialCommunityIcons name="account" color={color} size={size} />
+            <MaterialCommunityIcons name="history" color={color} size={size} />
           ),
         }}
       />
