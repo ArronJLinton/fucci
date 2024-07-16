@@ -28,6 +28,22 @@ function Notifications() {
   );
 }
 
+function News() {
+  return (
+    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+      <Text>News!</Text>
+    </View>
+  );
+}
+
+function Matches() {
+  return (
+    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+      <Text>Matches!</Text>
+    </View>
+  );
+}
+
 const Tab = createBottomTabNavigator();
 
 function MyTabs() {
@@ -58,11 +74,31 @@ function MyTabs() {
           ),
         }}
       />
-      <Tab.Screen
+      {/* <Tab.Screen
         name="Profile"
         component={Profile}
         options={{
           tabBarLabel: 'Profile',
+          tabBarIcon: ({ color, size }) => (
+            <MaterialCommunityIcons name="account" color={color} size={size} />
+          ),
+        }}
+      /> */}
+      <Tab.Screen
+        name="News"
+        component={Notifications}
+        options={{
+          tabBarLabel: 'News',
+          tabBarIcon: ({ color, size }) => (
+            <MaterialCommunityIcons name="bell" color={color} size={size} />
+          ),
+        }}
+      />
+      <Tab.Screen
+        name="Following"
+        component={Profile}
+        options={{
+          tabBarLabel: 'Following',
           tabBarIcon: ({ color, size }) => (
             <MaterialCommunityIcons name="account" color={color} size={size} />
           ),
