@@ -1,12 +1,12 @@
 import * as React from 'react';
-import { Text, View } from 'react-native';
+import { Text, View, Button, ScrollView } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import Matches from '../../screens/Matches'
 import History from '../../screens/History'
 import News from '../../screens/News'
-
+import TopNavBar from '../TopNavbar'
 
 function Home() {
   return (
@@ -16,19 +16,18 @@ function Home() {
   );
 }
 
-
-
-const Tab = createBottomTabNavigator();
+const BottomTab = createBottomTabNavigator();
 
 function MyTabs() {
+
   return (
-    <Tab.Navigator
+    <BottomTab.Navigator
       initialRouteName="Matches"
       screenOptions={{
         tabBarActiveTintColor: '#e91e63',
       }}
     >
-      <Tab.Screen
+      <BottomTab.Screen
         name="Home"
         component={Home}
         options={{
@@ -38,18 +37,21 @@ function MyTabs() {
           ),
         }}
       />
-      <Tab.Screen
+      <BottomTab.Screen
         name="Matches"
         component={Matches}
         options={{
+          header: (props) => (
+            <TopNavBar />
+          ),
           tabBarLabel: 'Matches',
           tabBarIcon: ({ color, size }) => (
-            <MaterialCommunityIcons name="matches" color={color} size={size} />
+            <MaterialCommunityIcons name="bell" color={color} size={size} />
           ),
         }}
       />
-      
-      <Tab.Screen
+
+      <BottomTab.Screen
         name="News"
         component={News}
         options={{
@@ -59,7 +61,7 @@ function MyTabs() {
           ),
         }}
       />
-      <Tab.Screen
+      <BottomTab.Screen
         name="History"
         component={History}
         options={{
@@ -69,11 +71,11 @@ function MyTabs() {
           ),
         }}
       />
-    </Tab.Navigator>
+    </BottomTab.Navigator>
   );
 }
 
-export default function Tabs() {
+export default function BottomNavBar() {
   return (
     <NavigationContainer>
       <MyTabs />
