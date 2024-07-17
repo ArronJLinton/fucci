@@ -1,3 +1,4 @@
+import { FOOTBALL_API_KEY } from "@env"
 import { useEffect, useState } from 'react';
 import { ScrollView, Text, View, Image, StyleSheet } from 'react-native';
 
@@ -7,11 +8,13 @@ const styles = StyleSheet.create({
     }
 })
 const Matches = () => {
-    const [matches, setMatches] = useState([])
+    const [matches, setMatches] = useState([]);
+    const [error, setError] = useState(false)
+
     useEffect(() => {
         const headers = {
             'Content-Type': 'application/json',
-            'x-rapidapi-key': 'eHEXcBfXlvmshTKBzDaZsMjlg3vsp1S9P4tjsnkCPsukbJlULL',
+            'x-rapidapi-key': `${FOOTBALL_API_KEY}`,
         };
         fetch('https://api-football-v1.p.rapidapi.com/v3/fixtures?date=2024-07-16', {
             method: 'GET',
@@ -21,16 +24,14 @@ const Matches = () => {
                 if (!response.ok) {
                     throw new Error('Network response was not ok');
                 }
-                return response.json(); // parses JSON response into native JavaScript objects
+                return response.json();
             })
             .then(data => {
-
-                console.log('Data received:', JSON.stringify(data.response));
                 setMatches(data.response)
             })
             .catch(error => {
                 console.error('There was a problem with the fetch operation:', error)
-                // Handle errors here
+                setError(error)
             });
     }, [])
 
