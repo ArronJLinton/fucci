@@ -16,7 +16,7 @@ const Matches = () => {
             'Content-Type': 'application/json',
             'x-rapidapi-key': `${FOOTBALL_API_KEY}`,
         };
-        fetch('https://api-football-v1.p.rapidapi.com/v3/fixtures?date=2024-07-16', {
+        fetch('https://api-football-v1.p.rapidapi.com/v3/fixtures?date=2024-07-20', {
             method: 'GET',
             headers: headers
         })
