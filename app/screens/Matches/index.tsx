@@ -1,9 +1,8 @@
 import { FOOTBALL_API_KEY } from "@env"
-import { useEffect, useState, useContext } from 'react';
-import { ScrollView, Text, View, Image, StyleSheet } from 'react-native';
+import { useEffect, useState, useContext, useRef } from 'react';
+import { Text, View, Image, StyleSheet, FlatList, ActivityIndicator } from 'react-native';
 import { MatchContext } from '../../context/context';
 import MatchCard from '../../components/MatchCard';
-import { Layout, Spinner } from '@ui-kitten/components';
 
 type Match = {
     teams: any;
@@ -19,12 +18,18 @@ export const useAppContext = () => {
 };
 
 const Matches = () => {
-    const { state, setMatchDate } = useAppContext();
-    const [matches, setMatches] = useState([]);
-    const [isLoading, setIsLoading] = useState(false);
-    const [error, setError] = useState(false);
+    const { state } = useAppContext();
+    const [matches, setMatches] = useState<Match[]>([]);
+    const [isLoading, setIsLoading] = useState<boolean>(false);
+    const [error, setError] = useState<Error>();
+    const nextPageIdentifierRef = useRef();
+    const [isFirstPageReceived, setIsFirstPageReceived] = useState(false);
 
     useEffect(() => {
+        fetchMatches()
+    }, [state.date])
+
+    const fetchMatches = () => {
         setIsLoading(true)
         const headers = {
             'Content-Type': 'application/json',
@@ -41,26 +46,52 @@ const Matches = () => {
                 return response.json();
             })
             .then(data => {
-                // 
-
-
-
                 setMatches(data.response)
-                setIsLoading(false)
+                setIsLoading(false);
+                !isFirstPageReceived && setIsFirstPageReceived(true);
             })
             .catch(error => {
                 console.error('There was a problem with the fetch operation:', error)
                 setError(error)
-                setIsLoading(false)
             });
-    }, [state.date])
+    }
+
+    const fetchNextPage = () => {
+        if (nextPageIdentifierRef.current == null) {
+            return;
+        }
+        fetchMatches();
+    };
+    const renderItem = ({ item }: any) => {
+        return <MatchCard info={item} />
+    };
+
+    const ListEndLoader = () => {
+        if (!isFirstPageReceived && isLoading) {
+            // Show loader at the end of list when fetching next page data.
+            return <ActivityIndicator size={'large'} />;
+        }
+    };
+
+    if (!isFirstPageReceived && isLoading) {
+        // Show loader when fetching first page data.
+        return <ActivityIndicator size={'small'} />;
+    }
 
     return (
-        <ScrollView contentInsetAdjustmentBehavior="automatic" style={{ flex: 1 }}>
-            <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-                {isLoading ? (<Spinner size='large' />) : matches.map((e: Match, i) => <MatchCard info={e} /> )}
-            </View>
-        </ScrollView >
+        <View style={{ flex: 1 }}>
+            { !isLoading ? 
+                <FlatList
+                data={matches}
+                renderItem={renderItem}
+                onEndReached={fetchNextPage}
+                onEndReachedThreshold={0.8}
+                ListFooterComponent={ListEndLoader}
+            /> : <ActivityIndicator size={'large'} />
+            }
+            
+
+        </View>
     );
 }
 
