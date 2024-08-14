@@ -1,7 +1,7 @@
 import { useContext, useState } from 'react';
 import { ScrollView, Dimensions, StyleSheet } from 'react-native';
 import { Tab, TabBar } from '@ui-kitten/components';
-import { MatchContext } from '../../context/context';
+import MatchContext, { MatchState, MatchContextType } from '../../context/context';
 
 const { width: screenWidth } = Dimensions.get('window');
 
@@ -12,18 +12,19 @@ const styles = StyleSheet.create({
     }
 })
 
-export const useAppContext = () => {
-    const context = useContext(MatchContext);
-    if (!context) {
-        throw new Error('useAppContext must be used within an AppProvider');
-    }
-    return context;
-};
+// export const useAppContext = () => {
+//     const context = useContext(MatchContext);
+//     if (!context) {
+//         throw new Error('useAppContext must be used within an AppProvider');
+//     }
+//     return context;
+// };
 
 const TopNavBar: React.FC = () => {
 
     const [selectedIndex, setSelectedIndex] = useState(4);
-    const { state, setMatchDate } = useAppContext();
+    // const { state, setMatchDate } = useAppContext();
+    const { state, setMatchDate } = useContext<MatchContextType>(MatchContext)
 
     return (
         <ScrollView
@@ -80,6 +81,7 @@ const TopNavBar: React.FC = () => {
                     }
                 }
             >
+            {/* TODO: Dynamically create tab title text */ }
                 <Tab style={styles.tab} title='Mon 15 Jul' />
                 <Tab style={styles.tab} title='Mon 15 Jul' />
                 <Tab style={styles.tab} title='Mon 15 Jul' />

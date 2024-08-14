@@ -1,6 +1,7 @@
 import { useEffect, useState, useContext } from 'react';
 import { Text, View, Image, StyleSheet } from 'react-native';
 
+// TODO: Clean Up styles
 const styles = StyleSheet.create({
     section: {
         flex: 2, flexDirection: 'row', justifyContent: 'flex-end', alignItems: 'center'
@@ -15,7 +16,7 @@ const styles = StyleSheet.create({
 })
 
 
-const MatchCard = ({ info }: any) => {
+const MatchCard = ({ info }: any): React.JSX.Element => {
     const { teams, score } = info;
     const { home, away } = teams;
     return (

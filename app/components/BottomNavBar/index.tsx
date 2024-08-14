@@ -7,7 +7,8 @@ import Matches from '../../screens/Matches'
 import History from '../../screens/History'
 import News from '../../screens/News'
 import TopNavBar from '../TopNavbar'
-import { MatchContext } from '../../context/context';
+import MatchContext from '../../context/context';
+import { MatchState } from '../../context/context';
 
 const BottomTab = createBottomTabNavigator();
 
