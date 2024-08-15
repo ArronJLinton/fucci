@@ -1,25 +1,10 @@
 import { FOOTBALL_API_KEY } from "@env"
 import { useEffect, useState, useContext, useRef } from 'react';
 import { Text, View, Image, StyleSheet, FlatList, ActivityIndicator } from 'react-native';
-import MatchContext, { MatchState, MatchContextType } from '../../context/context';
+import MatchContext, { MatchState, MatchContextType, Match } from '../../context/context';
 import MatchCard from '../../components/MatchCard';
 
-// TODO: Needs to be accessible globally
-type Match = {
-    teams: any;
-    score: any;
-}
-
-// export const useAppContext = () => {
-//     const context = useContext(MatchContext);
-//     if (!context) {
-//         throw new Error('useAppContext must be used within an AppProvider');
-//     }
-//     return context;
-// };
-
 const Matches = (): React.JSX.Element => {
-    // const { state } = useAppContext();
     const { state } = useContext<MatchContextType>(MatchContext)
     const [matches, setMatches] = useState<Match[]>([]);
     const [isLoading, setIsLoading] = useState<boolean>(false);
