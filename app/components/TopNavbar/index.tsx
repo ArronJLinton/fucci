@@ -12,18 +12,9 @@ const styles = StyleSheet.create({
     }
 })
 
-// export const useAppContext = () => {
-//     const context = useContext(MatchContext);
-//     if (!context) {
-//         throw new Error('useAppContext must be used within an AppProvider');
-//     }
-//     return context;
-// };
-
 const TopNavBar: React.FC = () => {
 
     const [selectedIndex, setSelectedIndex] = useState(4);
-    // const { state, setMatchDate } = useAppContext();
     const { state, setMatchDate } = useContext<MatchContextType>(MatchContext)
 
     return (
