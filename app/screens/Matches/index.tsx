@@ -1,72 +1,41 @@
 import { FOOTBALL_API_KEY } from "@env"
-import { useEffect, useState, useContext, useRef } from 'react';
-import { Text, View, Image, StyleSheet, FlatList, ActivityIndicator } from 'react-native';
-import { MatchContext } from '../../context/context';
+import { useState, useContext, useRef } from 'react';
+import { View, FlatList, ActivityIndicator } from 'react-native';
+import MatchContext, { MatchContextType } from '../../context/context';
 import MatchCard from '../../components/MatchCard';
+import { useFetchData } from "../../hooks/fetch";
+import { Fixtures } from '../../types/futbol';
+import TopNavBar from "../../components/TopNavbar";
 
-type Match = {
-    teams: any;
-    score: any;
-}
-
-export const useAppContext = () => {
-    const context = useContext(MatchContext);
-    if (!context) {
-        throw new Error('useAppContext must be used within an AppProvider');
-    }
-    return context;
-};
-
-const Matches = () => {
-    const { state } = useAppContext();
-    const [matches, setMatches] = useState<Match[]>([]);
-    const [isLoading, setIsLoading] = useState<boolean>(false);
-    const [error, setError] = useState<Error>();
+// TODO: Create props type for navigation props
+const Matches = ({ navigation }: any) => {
+    const { state } = useContext<MatchContextType>(MatchContext)
     const nextPageIdentifierRef = useRef();
-    const [isFirstPageReceived, setIsFirstPageReceived] = useState(false);
+    const [isFirstPageReceived, setIsFirstPageReceived] = useState<boolean>(false);
+    const headers = {
+        'Content-Type': 'application/json',
+        'x-rapidapi-key': `${FOOTBALL_API_KEY}`,
+    };
+    const url = `https://api-football-v1.p.rapidapi.com/v3/fixtures?date=${state.date}`;
+    const { data, isLoading, error } = useFetchData<Fixtures>(url, 'GET', headers);
 
-    useEffect(() => {
-        fetchMatches()
-    }, [state.date])
-
-    const fetchMatches = () => {
-        setIsLoading(true)
-        const headers = {
-            'Content-Type': 'application/json',
-            'x-rapidapi-key': `${FOOTBALL_API_KEY}`,
-        };
-        fetch(`https://api-football-v1.p.rapidapi.com/v3/fixtures?date=${state.date}`, {
-            method: 'GET',
-            headers: headers
-        })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                return response.json();
-            })
-            .then(data => {
-                setMatches(data.response)
-                setIsLoading(false);
-                !isFirstPageReceived && setIsFirstPageReceived(true);
-            })
-            .catch(error => {
-                console.error('There was a problem with the fetch operation:', error)
-                setError(error)
-            });
-    }
-
+    // FIXME: Might not be needed
     const fetchNextPage = () => {
+        console.log("FETCHING NEXT PAGE")
+
         if (nextPageIdentifierRef.current == null) {
             return;
         }
-        fetchMatches();
+
     };
     const renderItem = ({ item }: any) => {
-        return <MatchCard info={item} />
+        return <MatchCard info={item} navigation={navigation} />
     };
 
+    // FIXME: Might not be needed 
     const ListEndLoader = () => {
+        console.log("LISTING END LOADER")
+
         if (!isFirstPageReceived && isLoading) {
             // Show loader at the end of list when fetching next page data.
             return <ActivityIndicator size={'large'} />;
@@ -74,23 +43,31 @@ const Matches = () => {
     };
 
     if (!isFirstPageReceived && isLoading) {
+        console.log("SHOWING FIRST LOADER")
         // Show loader when fetching first page data.
         return <ActivityIndicator size={'small'} />;
     }
 
-    return (
-        <View style={{ flex: 1 }}>
-            { !isLoading ? 
-                <FlatList
-                data={matches}
-                renderItem={renderItem}
-                onEndReached={fetchNextPage}
-                onEndReachedThreshold={0.8}
-                ListFooterComponent={ListEndLoader}
-            /> : <ActivityIndicator size={'large'} />
-            }
-            
+    if (!isFirstPageReceived && !isLoading) {
+        setIsFirstPageReceived(true);
+    }
 
+    console.log("RENDERING")
+
+    return (
+        <View style={{ flex: 1, justifyContent: 'center' }}>
+            <TopNavBar />
+
+            {!isLoading ?
+                <FlatList
+                    data={data?.response}
+                    initialNumToRender={10}
+                    renderItem={renderItem}
+                    onEndReached={fetchNextPage}
+                    onEndReachedThreshold={0.5}
+                    ListFooterComponent={ListEndLoader}
+                /> : <ActivityIndicator size={'large'} />
+            }
         </View>
     );
 }

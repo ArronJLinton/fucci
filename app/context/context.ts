@@ -1,16 +1,25 @@
 import { createContext } from 'react';
 
-type MatchState = {
+export type MatchState = {
     date: string;
 };
 
-type MatchContextType = {
+export type MatchContextType = {
     state: MatchState;
     setMatchDate: (date: string) => void;
 };
 
-const MatchContext = createContext<MatchContextType | undefined>(undefined);
-
-export {
-    MatchContext
+export type Match = {
+    teams: any;
+    score: any;
 }
+
+const initialState = {
+    date: new Date().toISOString().split('T')[0]
+}
+const MatchContext = createContext<MatchContextType>({
+    state: initialState,
+    setMatchDate: () => {}
+});
+
+export default MatchContext
