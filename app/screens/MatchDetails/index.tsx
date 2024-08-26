@@ -40,8 +40,7 @@ const MatchDetails: React.FC<MatchDetailsProps> = props => {
   const s = data[0].startXI;
   const starting = sortArray(s);
   const awayTeam = sortArray1(data[1].startXI).reverse();
-  //   console.log('\n STARTING2131231231: ', data[0].startXI);
-  //   console.log('\n STARTING: ', sortArray(starting));
+
 
   let row = '1';
   let columns = '1';
@@ -50,7 +49,7 @@ const MatchDetails: React.FC<MatchDetailsProps> = props => {
   let acolumns = '1';
   return (
     <ScrollView>
-      <MatchDetailHeader />
+      <MatchDetailHeader title='...' subtitle='...'/>
 
       <View style={{position: 'relative'}}>
         <Image

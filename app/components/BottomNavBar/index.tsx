@@ -37,16 +37,7 @@ function MyTabs() {
         tabBarActiveTintColor: '#e91e63',
       }}
     >
-      <BottomTab.Screen
-        name="Home"
-        component={Home}
-        options={{
-          tabBarLabel: 'Home',
-          tabBarIcon: ({ color, size }) => (
-            <MaterialCommunityIcons name="bell" color={color} size={size} />
-          ),
-        }}
-      />
+     
       <BottomTab.Screen
         name="MatchScreen"
         component={MatchStack}
@@ -68,13 +59,23 @@ function MyTabs() {
           ),
         }}
       />
-      <BottomTab.Screen
+      {/* <BottomTab.Screen
         name="History"
         component={History}
         options={{
           tabBarLabel: 'History',
           tabBarIcon: ({ color, size }) => (
             <MaterialCommunityIcons name="history" color={color} size={size} />
+          ),
+        }}
+      /> */}
+       <BottomTab.Screen
+        name="More"
+        component={More}
+        options={{
+          tabBarLabel: 'More',
+          tabBarIcon: ({ color, size }) => (
+            <MaterialCommunityIcons name="bell" color={color} size={size} />
           ),
         }}
       />
@@ -100,10 +101,10 @@ export default function BottomNavBar() {
   );
 }
 
-function Home() {
+function More() {
   return (
     <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-      <Text>Home!</Text>
+      <Text>More!</Text>
     </View>
   );
 }
