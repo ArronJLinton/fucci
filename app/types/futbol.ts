@@ -87,7 +87,7 @@ export interface Score {
 	penalty: Penalty;
 }
 
-export interface Response {
+export interface Match {
 	fixture: Fixture;
 	league: League;
 	teams: Team;
@@ -98,5 +98,64 @@ export interface Response {
 export interface Fixtures {
 	errors: any[];
 	results: number;
+	response: Match[];
+}
+
+
+
+
+
+export interface Parameter {
+	fixture: string;
+}
+
+export interface Paging {
+	current: number;
+	total: number;
+}
+
+export interface Team {
+	id: number;
+	name: string;
+	logo: string;
+	colors?: any;
+}
+
+export interface Coach {
+	id: number;
+	name: string;
+	photo: string;
+}
+
+export interface StartXI {
+	player: Player;
+}
+
+export interface Player {
+	id: number;
+	name: string;
+	number: number;
+	pos: string;
+	grid: string;
+}
+
+export interface Substitute {
+	player: Player;
+}
+
+export interface Response {
+	team: Team;
+	coach: Coach;
+	formation: string;
+	startXI: StartXI[];
+	substitutes: Substitute[];
+}
+
+export interface GetLineupsResponse {
+	get: string;
+	parameters: Parameter;
+	errors: any[];
+	results: number;
+	paging: Paging;
 	response: Response[];
 }

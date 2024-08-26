@@ -1,5 +1,5 @@
-import React, { memo } from 'react';
-import { Text, View, Image, StyleSheet } from 'react-native';
+import React, { memo, PureComponent } from 'react';
+import { Text, View, Image, StyleSheet, TouchableOpacity } from 'react-native';
 
 // TODO: Clean Up styles
 const styles = StyleSheet.create({
@@ -15,48 +15,75 @@ const styles = StyleSheet.create({
     text: { flex: 1, textAlign: 'right' }
 })
 
+type Props = {
+    info: {
+        teams: {
+            home: {
+                name: string;
+                logo: string;
+            };
+            away: {
+                name: string;
+                logo: string;
+            };
+        };
+        score: {
+            fulltime: {
+                home: number;
+                away: number;
+            };
+        };
+    };
+    navigation: any; // replace 'any' with the appropriate type for the navigation prop
+};
+class MatchCard extends PureComponent<Props> {
 
-const MatchCard = ({ info }: any) => {
-    const { teams, score } = info;
-    const { home, away } = teams;
-
-    return (
-        <View style={{
-            marginTop: 10, padding: 15, flexDirection: 'row', backgroundColor: 'white', justifyContent: 'space-between',
-        }}>
-            <View style={styles.section}>
-                <Text style={styles.text}>{home.name}</Text>
-                <Image
+    render() {
+        const { teams, score } = this.props.info;
+        const { home, away } = teams;
+        return (
+            <>
+                <TouchableOpacity
+                    onPress={() => this.props.navigation.navigate('MatchDetails', { data: this.props.info })}
                     style={{
-                        marginLeft: 10,
-                        width: 20,
-                        height: 20,
-                    }}
-                    source={{ uri: home.logo }}
-                />
-            </View>
+                        marginTop: 10, padding: 15, flexDirection: 'row', backgroundColor: 'white', justifyContent: 'space-between',
+                    }}>
 
-            <View style={styles.middle}>
-                <Text>{score.fulltime.home} - {score.fulltime.home}</Text>
-            </View>
+                    <View style={styles.section}>
+                        <Text style={styles.text}>{home.name}</Text>
+                        <Image
+                            style={{
+                                marginLeft: 10,
+                                width: 20,
+                                height: 20,
+                            }}
+                            source={{ uri: home.logo }}
+                        />
+                    </View>
 
-            <View style={styles.section2}>
-                <Image
-                    style={{
-                        width: 20,
-                        height: 20,
-                    }}
-                    source={{ uri: away.logo }}
-                />
-                <Text style={{
-                    ...styles.text,
-                    textAlign: 'left',
-                    marginLeft: 10,
-                }}>{away.name}</Text>
+                    <View style={styles.middle}>
+                        <Text>{score.fulltime.home} - {score.fulltime.home}</Text>
+                    </View>
 
-            </View>
-        </View>
-    )
+                    <View style={styles.section2}>
+                        <Image
+                            style={{
+                                width: 20,
+                                height: 20,
+                            }}
+                            source={{ uri: away.logo }}
+                        />
+                        <Text style={{
+                            ...styles.text,
+                            textAlign: 'left',
+                            marginLeft: 10,
+                        }}>{away.name}</Text>
+
+                    </View>
+                </TouchableOpacity>
+            </>
+        )
+    }
 }
 
-export default memo(MatchCard);
+export default MatchCard;

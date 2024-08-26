@@ -5,8 +5,10 @@ import MatchContext, { MatchContextType } from '../../context/context';
 import MatchCard from '../../components/MatchCard';
 import { useFetchData } from "../../hooks/fetch";
 import { Fixtures } from '../../types/futbol';
+import TopNavBar from "../../components/TopNavbar";
 
-const Matches = () => {
+// TODO: Create props type for navigation props
+const Matches = ({ navigation }: any) => {
     const { state } = useContext<MatchContextType>(MatchContext)
     const nextPageIdentifierRef = useRef();
     const [isFirstPageReceived, setIsFirstPageReceived] = useState<boolean>(false);
@@ -17,21 +19,24 @@ const Matches = () => {
     const url = `https://api-football-v1.p.rapidapi.com/v3/fixtures?date=${state.date}`;
     const { data, isLoading, error } = useFetchData<Fixtures>(url, 'GET', headers);
 
+    // FIXME: Might not be needed
     const fetchNextPage = () => {
+        console.log("FETCHING NEXT PAGE")
+
         if (nextPageIdentifierRef.current == null) {
             return;
         }
-        console.log("FETCHING NEXT PAGE")
 
-        // fetchMatches();
     };
     const renderItem = ({ item }: any) => {
-        return <MatchCard info={item} />
+        return <MatchCard info={item} navigation={navigation} />
     };
 
+    // FIXME: Might not be needed 
     const ListEndLoader = () => {
+        console.log("LISTING END LOADER")
+
         if (!isFirstPageReceived && isLoading) {
-            console.log("LISTING END LOADER")
             // Show loader at the end of list when fetching next page data.
             return <ActivityIndicator size={'large'} />;
         }
@@ -46,16 +51,20 @@ const Matches = () => {
     if (!isFirstPageReceived && !isLoading) {
         setIsFirstPageReceived(true);
     }
-    
+
+    console.log("RENDERING")
+
     return (
         <View style={{ flex: 1, justifyContent: 'center' }}>
+            <TopNavBar />
+
             {!isLoading ?
                 <FlatList
                     data={data?.response}
                     initialNumToRender={10}
                     renderItem={renderItem}
                     onEndReached={fetchNextPage}
-                    onEndReachedThreshold={0.8}
+                    onEndReachedThreshold={0.5}
                     ListFooterComponent={ListEndLoader}
                 /> : <ActivityIndicator size={'large'} />
             }
