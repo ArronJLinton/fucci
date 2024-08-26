@@ -6,6 +6,7 @@ const useFetchData = <Payload>(url: string, method: string, headers: any) => {
   const [error, setError] = useState<Error | null>();
 
   useEffect(() => {
+    setIsLoading(true);
     fetch(url, {
       method,
       headers,
@@ -18,6 +19,7 @@ const useFetchData = <Payload>(url: string, method: string, headers: any) => {
       .catch(err => {
         err.json().then((e: any) => {
           setError(e);
+          setIsLoading(false);
         });
       });
   }, [url]);
