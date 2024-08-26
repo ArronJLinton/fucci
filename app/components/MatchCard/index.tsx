@@ -1,4 +1,4 @@
-import React, {memo, PureComponent} from 'react';
+import React, {memo} from 'react';
 import {Text, View, Image, StyleSheet, TouchableOpacity} from 'react-native';
 import {FasterImageView} from '@candlefinance/faster-image';
 
@@ -57,7 +57,7 @@ type Props = {
 };
 // memo is used to prevent unnecessary re-renders of the component. Lets you skip re-rendering a component when its props are unchanged.
 // Use for performance optimization. Wraps the component being exported and incercepts the render of the ocmponent and checks if the props are different from one render to the next. If there are no changes, the component will not re-render.
-const MatchCard = memo(({info, navigation}: Props) => {
+const MatchCard = ({info, navigation}: Props) => {
   const {teams, score} = info;
   const {home, away} = teams;
   return (
@@ -102,6 +102,6 @@ const MatchCard = memo(({info, navigation}: Props) => {
       </TouchableOpacity>
     </>
   );
-});
+};
 
-export default MatchCard;
+export default memo(MatchCard);

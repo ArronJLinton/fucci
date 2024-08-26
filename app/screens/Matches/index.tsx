@@ -6,13 +6,11 @@ import MatchCard from '../../components/MatchCard';
 import {useFetchData} from '../../hooks/fetch';
 import {Fixtures} from '../../types/futbol';
 import TopNavBar from '../../components/TopNavbar';
+import { Text } from 'react-native-svg';
 
 // TODO: Create props type for navigation props
 const Matches = ({navigation}: any) => {
   const {state} = useContext<MatchContextType>(MatchContext);
-  const nextPageIdentifierRef = useRef();
-  const [isFirstPageReceived, setIsFirstPageReceived] =
-    useState<boolean>(false);
   const headers = {
     'Content-Type': 'application/json',
     'x-rapidapi-key': `${FOOTBALL_API_KEY}`,
@@ -35,12 +33,15 @@ const Matches = ({navigation}: any) => {
   }, [isLoading, data?.response.length]);
 
   console.log('RENDERING');
+
+  if (error) return <><Text>ERROR: ${error.message}</Text></>;
+
   return (
-    <View style={{flex: 1, justifyContent: 'center'}}>
+    <View style={{ flex: 1}}>
       <TopNavBar />
 
       {!isLoading ? (
-        // https://www.linkedin.com/pulse/optimizing-flatlist-react-native-best-practices/
+      // https://www.linkedin.com/pulse/optimizing-flatlist-react-native-best-practices/
         <FlatList
           keyExtractor={(item, index) => index.toString()}
           data={data?.response}
@@ -52,9 +53,9 @@ const Matches = ({navigation}: any) => {
           updateCellsBatchingPeriod={1000}
           maxToRenderPerBatch={5}
         />
-      ) : (
-        <ActivityIndicator size={'large'} style={{flex: 1}} />
-      )}
+       ) : ( 
+        <ActivityIndicator size={'large'} style={{flexGrow: 5}} />
+       )}
     </View>
   );
 };
