@@ -1,9 +1,11 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
+import {Match, StartXI} from '../../types/futbol';
 
 interface MatchDetailHeaderProps {
     title: string;
     subtitle: string;
+    data: Match
 }
 
 const MatchDetailHeader: React.FC<MatchDetailHeaderProps> = ({ title, subtitle }) => {
@@ -19,6 +21,8 @@ const styles = StyleSheet.create({
     container: {
         padding: 16,
         backgroundColor: '#f2f2f2',
+        borderBottomColor: '#ccc',
+        borderBottomWidth: 5,
     },
     title: {
         fontSize: 24,

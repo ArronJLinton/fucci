@@ -15,8 +15,9 @@ const Matches = ({navigation}: any) => {
     'Content-Type': 'application/json',
     'x-rapidapi-key': `${FOOTBALL_API_KEY}`,
   };
-  const url = `https://api-football-v1.p.rapidapi.com/v3/fixtures?date=${state.date}`;
-  const {data, isLoading, error} = useFetchData<Fixtures>(url, 'GET', headers);
+  // Premier League ID is 39
+  const url = `https://api-football-v1.p.rapidapi.com/v3/fixtures?date=${state.date}&season=2024`;
+  const {data, isLoading, error} = useFetchData<Fixtures>(url, 'GET', headers, null);
 
   // useCallback is used to memoize the function so that it is not recreated on every render. This is useful when passing callbacks to optimized child components that rely on reference equality to prevent unnecessary renders.
   const renderItem = useCallback(({item}: any) => {
