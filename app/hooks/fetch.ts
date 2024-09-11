@@ -1,6 +1,6 @@
 import {useEffect, useState} from 'react';
 
-const useFetchData = <Payload>(url: string, method: string, headers: any) => {
+const useFetchData = <Payload>(url: string, method: string, headers: any, body: any) => {
   const [data, setData] = useState<Payload | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<Error | null>();
@@ -10,6 +10,7 @@ const useFetchData = <Payload>(url: string, method: string, headers: any) => {
     fetch(url, {
       method,
       headers,
+      body
     })
       .then(r => r.json())
       .then((d: Payload) => {
@@ -17,10 +18,8 @@ const useFetchData = <Payload>(url: string, method: string, headers: any) => {
         setIsLoading(false);
       })
       .catch(err => {
-        err.json().then((e: any) => {
-          setError(e);
+          setError(err);
           setIsLoading(false);
-        });
       });
   }, [url]);
 
