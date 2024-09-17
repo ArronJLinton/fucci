@@ -6,3 +6,8 @@
 ## Features
 - React Navigation
 - 
+
+
+
+## Debugging
+- npx react-devtools
