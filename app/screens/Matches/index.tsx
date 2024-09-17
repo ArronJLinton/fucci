@@ -44,7 +44,7 @@ const Matches = ({navigation}: any) => {
       {!isLoading ? (
       // https://www.linkedin.com/pulse/optimizing-flatlist-react-native-best-practices/
         <FlatList
-          keyExtractor={(item, index) => index.toString()}
+          keyExtractor={(_, index) => index.toString()}
           data={data?.response}
           initialNumToRender={10}
           renderItem={renderItem}
