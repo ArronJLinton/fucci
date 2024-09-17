@@ -21,7 +21,7 @@ const styles = StyleSheet.create({
     paddingVertical: 20,
   },
   container: {
-    flex: 1,
+    flexGrow: 1,
     position: 'absolute',
     top: 0,
     left: 0,
@@ -49,8 +49,8 @@ const styles = StyleSheet.create({
     justifyContent: 'space-evenly',
   },
   item: {
-    marginTop: '1%',
-    marginBottom: '1%',
+    // marginTop: '1%',
+    // marginBottom: '1%',
     // flexGrow: 1,
     // flexShrink: 1
   },
@@ -58,9 +58,10 @@ const styles = StyleSheet.create({
     color: 'white',
     textAlign: 'center',
   },
+  playerImage: { height: 30, width: 30, alignSelf: 'center', borderRadius: 50 },
 });
 
-type LineupProps = MaterialTopTabScreenProps<TopTabParamList, 'Lineup'>
+type LineupProps = MaterialTopTabScreenProps<TopTabParamList, 'Lineup'>;
 // TODO: Clean up the code. Fix dynamic positioning of players on the field
 function Lineup({ route }: LineupProps) {
   const { id } = route.params.data.fixture;
@@ -68,7 +69,12 @@ function Lineup({ route }: LineupProps) {
     'Content-Type': 'application/json',
   };
   const url = `http://localhost:8080/v1/api/futbol/lineup?match_id=${id}`;
-  const {data, isLoading, error} = useFetchData<any>(url, 'GET', headers, null);
+  const { data, isLoading, error } = useFetchData<any>(
+    url,
+    'GET',
+    headers,
+    null,
+  );
   let homeRow = '1';
   let homeColumns = '1';
   let awayRow: any;
@@ -76,11 +82,18 @@ function Lineup({ route }: LineupProps) {
 
   if (error) return <Text>ERROR: {error.message}</Text>;
   if (isLoading) return <Text>Loading....</Text>;
-  if (data === "No lineup data available" && !isLoading) return <Text>No lineup data available</Text>;
+  if (data === 'No lineup data available' && !isLoading)
+    return <Text>No lineup data available</Text>;
+
+  // let awayTeam;
+  // if (data.home.away) {
+  //   awayTeam = sortAwayArray(data.away.starters);
+  //   awayRow = data.away.starters[0].grid.split(':')[0];
+  // }
 
   return (
     <ScrollView contentContainerStyle={styles.scrollView}>
-      <View style={{position: 'relative'}}>
+      <View style={{ position: 'relative' }}>
         <Image
           source={require('./field.jpeg')}
           style={{
@@ -115,7 +128,7 @@ function Lineup({ route }: LineupProps) {
                         ? item.photo
                         : 'https://via.placeholder.com/150',
                     }}
-                    style={{height: 30, width: 30, alignSelf: 'center'}}
+                    style={styles.playerImage}
                   />
                   <Text style={styles.text}>{item.number}</Text>
                   <Text style={styles.text}>{item.name}</Text>
@@ -126,45 +139,47 @@ function Lineup({ route }: LineupProps) {
 
           {/* AWAY TEAM*/}
           <View style={styles.away}>
-            {data.away.starters.map((item: Player, index: number) => {
-              const [r, col] = item.grid.split(':');
-              if (r !== awayRow) {
-                awayRow = r;
-                awayColumns = col;
-              }
-              return (
-                <View
-                  key={index}
-                  style={[
-                    styles.item,
-                    {
-                      flexBasis: `${100 / parseInt(awayColumns)}%`, 
-                      // marginBottom: '2%',
-                      // marginTop: '2%',
-                    },
-                  ]}>
-                  <Image
-                    source={{
-                      uri: item.photo
-                        ? item.photo
-                        : 'https://via.placeholder.com/150',
-                    }}
-                    style={{height: 25, width: 25, alignSelf: 'center'}}
-                  />
-                  <Text style={styles.text}>{item.number || 'D'}</Text>
-                  <Text style={styles.text}>{item.name || 'D'}</Text>
-                </View>
-              );
-            })}
+            {sortAwayArray(data.away.starters)
+              .reverse()
+              .map((item: Player, index: number) => {
+                const [r, col] = item.grid.split(':');
+                if (r !== awayRow) {
+                  awayRow = r;
+                  awayColumns = col;
+                }
+                return (
+                  // TODO: Create clickable component for player profile
+                  <View
+                    key={index}
+                    style={[
+                      styles.item,
+                      {
+                        flexBasis: `${100 / parseInt(awayColumns)}%`,
+                        // marginBottom: '2%',
+                        // marginTop: '2%',
+                      },
+                    ]}>
+                    <Image
+                      source={{
+                        uri: item.photo
+                          ? item.photo
+                          : 'https://via.placeholder.com/150',
+                      }}
+                      style={styles.playerImage}
+                    />
+                    <Text style={styles.text}>{item.number}</Text>
+                    <Text style={styles.text}>{item.name}</Text>
+                  </View>
+                );
+              })}
           </View>
         </View>
       </View>
     </ScrollView>
   );
-};
+}
 
 export default Lineup;
-
 
 const sortArray = (arr: any): any[] =>
   arr.sort((a: any, b: any) => {
@@ -178,7 +193,7 @@ const sortArray = (arr: any): any[] =>
     }
   });
 
-const sortAwayArray = (arr: any): StartXI[] =>
+const sortAwayArray = (arr: any): any[] =>
   arr.sort((a: any, b: any) => {
     const [rowA, colA] = a.grid.split(':').map(Number);
     const [rowB, colB] = b.grid.split(':').map(Number);
