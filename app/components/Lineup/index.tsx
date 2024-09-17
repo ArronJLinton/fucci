@@ -6,6 +6,8 @@ import {
   Text,
   Image,
   ScrollView,
+  Animated,
+  ImageBackground,
 } from 'react-native';
 import { MaterialTopTabScreenProps } from '@react-navigation/material-top-tabs';
 
@@ -13,12 +15,12 @@ import { Match, StartXI, Player } from '../../types/futbol';
 import { useFetchData } from '../../hooks/fetch';
 import { TopTabParamList } from '../../types/navigation';
 import { screenHeight, screenWidth } from '../../helpers/constants';
+const HEADER_MAX_HEIGHT = 200; // Max height of the header
 
 const styles = StyleSheet.create({
-  scrollView: {
-    flexGrow: 1,
-    alignItems: 'center',
-    paddingVertical: 20,
+  scrollViewContent: {
+    // paddingTop: HEADER_MAX_HEIGHT, // Ensure content starts below header
+    // height: screenHeight,
   },
   container: {
     flexGrow: 1,
@@ -53,6 +55,7 @@ const styles = StyleSheet.create({
     // marginBottom: '1%',
     // flexGrow: 1,
     // flexShrink: 1
+    // alignSelf: 'baseline'
   },
   text: {
     color: 'white',
@@ -61,10 +64,14 @@ const styles = StyleSheet.create({
   playerImage: { height: 30, width: 30, alignSelf: 'center', borderRadius: 50 },
 });
 
-type LineupProps = MaterialTopTabScreenProps<TopTabParamList, 'Lineup'>;
+// type LineupProps = MaterialTopTabScreenProps<TopTabParamList, 'Lineup'>;
+
+interface LineupProps  {
+  data: Match;
+}
 // TODO: Clean up the code. Fix dynamic positioning of players on the field
-function Lineup({ route }: LineupProps) {
-  const { id } = route.params.data.fixture;
+const Lineup = React.forwardRef((props: LineupProps, ref) => {
+  const { id } = props.data.fixture;
   const headers = {
     'Content-Type': 'application/json',
   };
@@ -92,34 +99,86 @@ function Lineup({ route }: LineupProps) {
   // }
 
   return (
-    <ScrollView contentContainerStyle={styles.scrollView}>
-      <View style={{ position: 'relative' }}>
-        <Image
-          source={require('./field.jpeg')}
-          style={{
-            width: screenWidth,
-            height: screenHeight,
-          }}
-        />
+    <ScrollView
+        contentContainerStyle={styles.scrollViewContent}
+        onScroll={Animated.event(
+          [{ nativeEvent: { contentOffset: { y: ref } } }],
+          { useNativeDriver: false },
+        )}
+        scrollEventThrottle={16} // Event throttling for smooth animation
+      >
+      <ImageBackground
+        source={require('./field.jpeg')}
+        resizeMode='cover'
+        style={{
+          // position: 'absolute',
+          // top: 0,
+          // bottom: 0,
+          // left: 0,
+          // right: 0,
+          width: screenWidth,
+          height: screenHeight,
+        }}
+      />
 
-        <View style={styles.container}>
-          {/* HOME TEAM */}
-          <View style={styles.home}>
-            {data.home.starters.map((item: any, index: number) => {
+      <View style={styles.container}>
+        {/* HOME TEAM */}
+        <View style={styles.home}>
+          {data.home.starters.map((item: any, index: number) => {
+            const [r, col] = item.grid.split(':');
+            if (r !== homeRow) {
+              homeRow = r;
+              homeColumns = col;
+            }
+            return (
+              <View
+                key={index}
+                style={[
+                  styles.item,
+                  {
+                    flexBasis: `${100 / parseInt(homeColumns)}%`,
+                    // marginTop: '6%',
+                    // marginBottom: '6%',
+                  },
+                ]}>
+                <Image
+                  source={{
+                    uri: item.photo
+                      ? item.photo
+                      : 'https://via.placeholder.com/150',
+                  }}
+                  style={styles.playerImage}
+                />
+                {/* <View style={{ flexDirection: 'row', flexWrap: 'wrap'}}> */}
+                  <Text style={styles.text}>{item.name}</Text>
+                  <Text style={styles.text}>{item.number}</Text>
+                {/* </View> */}
+
+              </View>
+            );
+          })}
+        </View>
+
+        {/* AWAY TEAM*/}
+        <View style={styles.away}>
+          {sortAwayArray(data.away.starters)
+            .reverse()
+            .map((item: Player, index: number) => {
               const [r, col] = item.grid.split(':');
-              if (r !== homeRow) {
-                homeRow = r;
-                homeColumns = col;
+              if (r !== awayRow) {
+                awayRow = r;
+                awayColumns = col;
               }
               return (
+                // TODO: Create clickable component for player profile
                 <View
                   key={index}
                   style={[
                     styles.item,
                     {
-                      flexBasis: `${100 / parseInt(homeColumns)}%`,
-                      // marginTop: '6%',
-                      // marginBottom: '6%',
+                      flexBasis: `${100 / parseInt(awayColumns)}%`,
+                      // marginBottom: '2%',
+                      // marginTop: '2%',
                     },
                   ]}>
                   <Image
@@ -135,49 +194,12 @@ function Lineup({ route }: LineupProps) {
                 </View>
               );
             })}
-          </View>
-
-          {/* AWAY TEAM*/}
-          <View style={styles.away}>
-            {sortAwayArray(data.away.starters)
-              .reverse()
-              .map((item: Player, index: number) => {
-                const [r, col] = item.grid.split(':');
-                if (r !== awayRow) {
-                  awayRow = r;
-                  awayColumns = col;
-                }
-                return (
-                  // TODO: Create clickable component for player profile
-                  <View
-                    key={index}
-                    style={[
-                      styles.item,
-                      {
-                        flexBasis: `${100 / parseInt(awayColumns)}%`,
-                        // marginBottom: '2%',
-                        // marginTop: '2%',
-                      },
-                    ]}>
-                    <Image
-                      source={{
-                        uri: item.photo
-                          ? item.photo
-                          : 'https://via.placeholder.com/150',
-                      }}
-                      style={styles.playerImage}
-                    />
-                    <Text style={styles.text}>{item.number}</Text>
-                    <Text style={styles.text}>{item.name}</Text>
-                  </View>
-                );
-              })}
-          </View>
         </View>
       </View>
+      {/* </View> */}
     </ScrollView>
   );
-}
+})
 
 export default Lineup;
 

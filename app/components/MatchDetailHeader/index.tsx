@@ -1,5 +1,12 @@
-import React from 'react';
-import { View, Text, StyleSheet, Image, ScrollView } from 'react-native';
+import React, { useRef } from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  Image,
+  ScrollView,
+  Animated,
+} from 'react-native';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import { Match } from '../../types/futbol';
 import Lineup from '../Lineup';
@@ -9,57 +16,95 @@ import Story from '../Story';
 import { TopTabParamList } from '../../types/navigation';
 import { screenHeight, screenWidth } from '../../helpers/constants';
 
+const HEADER_MAX_HEIGHT = 150; // Max height of the header
+const HEADER_MIN_HEIGHT = 50; // Min height of the header after collapsing
+const HEADER_SCROLL_DISTANCE = HEADER_MAX_HEIGHT - HEADER_MIN_HEIGHT;
+
 interface MatchDetailHeaderProps {
   data: Match;
 }
 
 const Tab = createMaterialTopTabNavigator<TopTabParamList>();
 
-function MatchDetailHeader({ data }: MatchDetailHeaderProps) {
+const MatchDetailHeader = ({ data }: MatchDetailHeaderProps) => {
+  const scrollY = useRef(new Animated.Value(0)).current; // Track the scroll position
+  const headerHeight = scrollY.interpolate({
+    inputRange: [0, HEADER_SCROLL_DISTANCE],
+    outputRange: [HEADER_MAX_HEIGHT, HEADER_MIN_HEIGHT],
+    extrapolate: 'clamp',
+  });
+
   const { fixture, teams, score } = data;
   const { home, away } = teams;
   const { fulltime } = score;
+
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      <View style={styles.content}>
-        <View style={styles.team}>
-          <Image source={{ uri: home.logo }} style={styles.logo} />
-          <Text>{home.name}</Text>
-        </View>
-        <Text style={styles.score}>
-          {fulltime.home} - {fulltime.away}
-        </Text>
-        <View style={styles.team}>
-          <Image source={{ uri: away.logo }} style={styles.logo} />
-          <Text>{away.name}</Text>
-        </View>
-      </View>
-      <TabBar data={data} />
-    </ScrollView>
+    <View style={styles.container}>
+      <Animated.View style={[styles.header, { height: headerHeight }]}>
+        <Animated.View style={styles.content}>
+          <Animated.View style={styles.team}>
+            <Animated.Image
+              source={{ uri: home.logo }}
+              style={[styles.logo, { height: 30, width: 30 }]}
+            />
+            <Animated.Text>{home.name}</Animated.Text>
+          </Animated.View>
+          <Animated.Text style={styles.score}>
+            {fulltime.home} - {fulltime.away}
+          </Animated.Text>
+          <Animated.View style={styles.team}>
+            <Animated.Image source={{ uri: away.logo }} style={styles.logo} />
+            <Animated.Text>{away.name}</Animated.Text>
+          </Animated.View>
+        </Animated.View>
+      </Animated.View>
+      <Tab.Navigator
+        initialRouteName="Lineup"
+        screenOptions={
+          {
+            // tabBarStyle: { backgroundColor: 'yellow' },
+          }
+        }>
+        <Tab.Screen name="Facts" component={Facts} />
+        <Tab.Screen name="Lineup">
+          {() => <Lineup ref={scrollY} data={data} />}
+        </Tab.Screen>
+        <Tab.Screen name="Table" component={LeagueTable} />
+        <Tab.Screen name="Story" component={Story} />
+      </Tab.Navigator>
+    </View>
   );
 }
 
-const TabBar = (data: any) => (
-  <Tab.Navigator
-    initialRouteName="Lineup"
-    screenOptions={{
-      tabBarStyle: { backgroundColor: '#f8f9fa' },
-    }}>
-    <Tab.Screen name="Facts" component={Facts} />
-    <Tab.Screen name="Lineup" component={Lineup} initialParams={data} />
-    <Tab.Screen name="Table" component={LeagueTable} />
-    <Tab.Screen name="Story" component={Story} />
-  </Tab.Navigator>
-);
+// const TabBar = (data: any) => (
+
+// );
 
 const styles = StyleSheet.create({
   container: {
-    flexGrow: 1,
+    flex: 1,
     // backgroundColor: 'transparent',
-    justifyContent: 'center',
+    // justifyContent: 'center',
     // alignContent: 'center',
     // height: screenHeight,
     // width: screenWidth
+  },
+  header: {
+    // flex: 1,
+    // position: 'absolute',
+    // top: 0,
+    // left: 0,
+    // right: 0,
+    // backgroundColor: 'lightblue',
+    justifyContent: 'center',
+    alignItems: 'center',
+    // zIndex: 1,
+    elevation: 2, // For Android shadow effect
+  },
+  headerTitle: {
+    color: 'white',
+    fontSize: 24,
+    fontWeight: 'bold',
   },
   content: {
     flexDirection: 'row',
@@ -70,6 +115,7 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'column',
     alignItems: 'center',
+    justifyContent: 'center',
     margin: '10%',
   },
   logo: {

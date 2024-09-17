@@ -35,6 +35,7 @@ const MatchStack = () => {
           title: '',
           headerBackTitleVisible: false,
           headerBackTitleStyle: { color: 'white' },
+
         }}
       />
     </Stack.Navigator>
