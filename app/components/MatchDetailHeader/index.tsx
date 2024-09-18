@@ -63,6 +63,7 @@ const MatchDetailHeader = ({ data }: MatchDetailHeaderProps) => {
         screenOptions={
           {
             // tabBarStyle: { backgroundColor: 'yellow' },
+            // tabBarContentContainerStyle: { backgroundColor: 'yellow' }
           }
         }>
         <Tab.Screen name="Facts" component={Facts} />

@@ -10,6 +10,8 @@ import News from '../../screens/News';
 import TopNavBar from '../TopNavbar';
 import MatchContext from '../../context/context';
 import MatchDetails from '../../screens/MatchDetails';
+import { screenHeight } from '../../helpers/constants';
+import { Icon, MD3Colors } from 'react-native-paper';
 
 const BottomTab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -17,12 +19,9 @@ const Stack = createStackNavigator();
 const MatchStack = () => {
   return (
     <Stack.Navigator
-    screenOptions={{
-        // headerMode: 'float',
-        // headerTintColor: 'white',
+      screenOptions={{
         headerStyle: { backgroundColor: '#eeeeee' },
-      }}
-    >
+      }}>
       <Stack.Screen
         name="Matches"
         component={Matches}
@@ -32,10 +31,18 @@ const MatchStack = () => {
         name="MatchDetails"
         component={MatchDetails}
         options={{
-          title: '',
-          headerBackTitleVisible: false,
-          headerBackTitleStyle: { color: 'white' },
-
+          headerTitleContainerStyle: { flex: 1 },
+          headerStyle: { height: 0 },
+          headerBackImage: () => (
+            <View
+              style={{
+                position: 'absolute',
+                top: -screenHeight * 0.06,
+                left: 0,
+              }}>
+              <Icon source="arrow-left" size={30} color={MD3Colors.primary10} />
+            </View>
+          ),
         }}
       />
     </Stack.Navigator>

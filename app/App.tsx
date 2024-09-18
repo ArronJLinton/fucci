@@ -28,6 +28,7 @@ import {
 import * as eva from '@eva-design/eva';
 import { ApplicationProvider, Layout, Text } from '@ui-kitten/components';
 import { NavigationContainer } from '@react-navigation/native';
+import { PaperProvider } from 'react-native-paper';
 
 import BottomNavBar from './components/BottomNavBar';
 
@@ -41,6 +42,7 @@ function App(): React.JSX.Element {
 
   return (
     <StrictMode>
+      <PaperProvider>
       <ApplicationProvider {...eva} theme={eva.light}>
         <SafeAreaView style={backgroundStyle}>
           <StatusBar
@@ -50,6 +52,7 @@ function App(): React.JSX.Element {
           <BottomNavBar />
         </SafeAreaView>
       </ApplicationProvider>
+      </PaperProvider>
     </StrictMode>
   );
 }
