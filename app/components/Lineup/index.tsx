@@ -70,7 +70,7 @@ interface LineupProps  {
   data: Match;
 }
 // TODO: Clean up the code. Fix dynamic positioning of players on the field
-const Lineup = React.forwardRef((props: LineupProps, ref) => {
+const Lineup = React.forwardRef((props: LineupProps, ref: React.Ref<Animated.Value>) => {
   const { id } = props.data.fixture;
   const headers = {
     'Content-Type': 'application/json',
@@ -84,19 +84,13 @@ const Lineup = React.forwardRef((props: LineupProps, ref) => {
   );
   let homeRow = '1';
   let homeColumns = '1';
-  let awayRow: any;
+  let awayRow: string;
   let awayColumns = '1';
 
   if (error) return <Text>ERROR: {error.message}</Text>;
   if (isLoading) return <Text>Loading....</Text>;
   if (data === 'No lineup data available' && !isLoading)
     return <Text>No lineup data available</Text>;
-
-  // let awayTeam;
-  // if (data.home.away) {
-  //   awayTeam = sortAwayArray(data.away.starters);
-  //   awayRow = data.away.starters[0].grid.split(':')[0];
-  // }
 
   return (
     <ScrollView
