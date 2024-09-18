@@ -4,10 +4,10 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import Matches from '../../screens/Matches'
-import History from '../../screens/History'
-import News from '../../screens/News'
-import TopNavBar from '../TopNavbar'
+import Matches from '../../screens/Matches';
+import History from '../../screens/History';
+import News from '../../screens/News';
+import TopNavBar from '../TopNavbar';
 import MatchContext from '../../context/context';
 import MatchDetails from '../../screens/MatchDetails';
 
@@ -16,18 +16,31 @@ const Stack = createStackNavigator();
 
 const MatchStack = () => {
   return (
-    <Stack.Navigator>
-      <Stack.Screen name="Matches" component={Matches} options={{ headerShown: false }}
+    <Stack.Navigator
+    screenOptions={{
+        // headerMode: 'float',
+        // headerTintColor: 'white',
+        headerStyle: { backgroundColor: '#eeeeee' },
+      }}
+    >
+      <Stack.Screen
+        name="Matches"
+        component={Matches}
+        options={{ headerShown: false }}
       />
       <Stack.Screen
         name="MatchDetails"
-        // what are the props that are passed to the component?
         component={MatchDetails}
-        options={{ headerShown: false }}
+        options={{
+          title: '',
+          headerBackTitleVisible: false,
+          headerBackTitleStyle: { color: 'white' },
+
+        }}
       />
     </Stack.Navigator>
-  )
-}
+  );
+};
 
 function MyTabs() {
   return (
@@ -35,9 +48,7 @@ function MyTabs() {
       initialRouteName="MatchScreen"
       screenOptions={{
         tabBarActiveTintColor: '#e91e63',
-      }}
-    >
-     
+      }}>
       <BottomTab.Screen
         name="MatchScreen"
         component={MatchStack}
@@ -69,7 +80,7 @@ function MyTabs() {
           ),
         }}
       /> */}
-       <BottomTab.Screen
+      <BottomTab.Screen
         name="More"
         component={More}
         options={{
@@ -89,15 +100,14 @@ export default function BottomNavBar() {
   const [matchDate, setMatchDate] = useState<string>(formattedDate);
   const value = {
     state: { date: matchDate },
-    setMatchDate
-  }
+    setMatchDate,
+  };
   return (
     <MatchContext.Provider value={value}>
       <NavigationContainer>
         <MyTabs />
       </NavigationContainer>
     </MatchContext.Provider>
-
   );
 }
 

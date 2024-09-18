@@ -16,7 +16,8 @@ const Matches = ({navigation}: any) => {
     'x-rapidapi-key': `${FOOTBALL_API_KEY}`,
   };
   // Premier League ID is 39
-  const url = `https://api-football-v1.p.rapidapi.com/v3/fixtures?date=${state.date}&season=2024`;
+  // Champions League ID is 2
+  const url = `https://api-football-v1.p.rapidapi.com/v3/fixtures?date=${state.date}&season=2024&league=2`;
   const {data, isLoading, error} = useFetchData<Fixtures>(url, 'GET', headers, null);
 
   // useCallback is used to memoize the function so that it is not recreated on every render. This is useful when passing callbacks to optimized child components that rely on reference equality to prevent unnecessary renders.
@@ -44,7 +45,7 @@ const Matches = ({navigation}: any) => {
       {!isLoading ? (
       // https://www.linkedin.com/pulse/optimizing-flatlist-react-native-best-practices/
         <FlatList
-          keyExtractor={(item, index) => index.toString()}
+          keyExtractor={(_, index) => index.toString()}
           data={data?.response}
           initialNumToRender={10}
           renderItem={renderItem}

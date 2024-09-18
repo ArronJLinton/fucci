@@ -1,6 +1,6 @@
-import React, {memo} from 'react';
-import {Text, View, Image, StyleSheet, TouchableOpacity} from 'react-native';
-import {FasterImageView} from '@candlefinance/faster-image';
+import React, { memo } from 'react';
+import { Text, View, Image, StyleSheet, TouchableOpacity } from 'react-native';
+import { FasterImageView } from '@candlefinance/faster-image';
 
 // TODO: Clean Up styles
 const styles = StyleSheet.create({
@@ -22,7 +22,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  text: {flex: 1, textAlign: 'right'},
+  text: { flex: 1, textAlign: 'right' },
   homeTeamLogo: {
     marginLeft: 10,
     width: 20,
@@ -57,13 +57,13 @@ type Props = {
 };
 // memo is used to prevent unnecessary re-renders of the component. Lets you skip re-rendering a component when its props are unchanged.
 // Use for performance optimization. Wraps the component being exported and incercepts the render of the ocmponent and checks if the props are different from one render to the next. If there are no changes, the component will not re-render.
-const MatchCard = ({info, navigation}: Props) => {
-  const {teams, score} = info;
-  const {home, away} = teams;
+const MatchCard = ({ info, navigation }: Props) => {
+  const { teams, score } = info;
+  const { home, away } = teams;
   return (
     <>
       <TouchableOpacity
-        onPress={() => navigation.navigate('MatchDetails', {data: info})}
+        onPress={() => navigation.navigate('MatchDetails', { data: info })}
         style={{
           marginTop: 10,
           padding: 15,
@@ -75,7 +75,7 @@ const MatchCard = ({info, navigation}: Props) => {
           <Text style={styles.text}>{home.name}</Text>
           <FasterImageView
             style={styles.homeTeamLogo}
-            source={{url: home.logo}}
+            source={{ url: home.logo }}
           />
         </View>
 
@@ -88,7 +88,7 @@ const MatchCard = ({info, navigation}: Props) => {
         <View style={styles.section2}>
           <FasterImageView
             style={styles.awayTeamLogo}
-            source={{url: away.logo}}
+            source={{ url: away.logo }}
           />
           <Text
             style={{

@@ -137,6 +137,7 @@ export interface Player {
 	number: number;
 	pos: string;
 	grid: string;
+	photo: string;
 }
 
 export interface Substitute {

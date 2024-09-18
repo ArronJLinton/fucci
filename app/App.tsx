@@ -6,6 +6,8 @@
  */
 
 import React from 'react';
+import { StrictMode } from 'react';
+
 import type { PropsWithChildren } from 'react';
 import {
   SafeAreaView,
@@ -25,26 +27,30 @@ import {
 } from 'react-native/Libraries/NewAppScreen';
 import * as eva from '@eva-design/eva';
 import { ApplicationProvider, Layout, Text } from '@ui-kitten/components';
-import BottomNavBar from './components/BottomNavBar'
+import { NavigationContainer } from '@react-navigation/native';
+
+import BottomNavBar from './components/BottomNavBar';
 
 function App(): React.JSX.Element {
   const isDarkMode = useColorScheme() === 'dark';
 
   const backgroundStyle = {
     backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
-    flex: 1
+    flex: 1,
   };
 
   return (
-    <ApplicationProvider {...eva} theme={eva.light}>
-      <SafeAreaView style={backgroundStyle}>
-        <StatusBar
-          barStyle={isDarkMode ? 'light-content' : 'dark-content'}
-          backgroundColor={backgroundStyle.backgroundColor}
-        />
-        <BottomNavBar />
-      </SafeAreaView>
-    </ApplicationProvider>
+    <StrictMode>
+      <ApplicationProvider {...eva} theme={eva.light}>
+        <SafeAreaView style={backgroundStyle}>
+          <StatusBar
+            barStyle={isDarkMode ? 'light-content' : 'dark-content'}
+            backgroundColor={backgroundStyle.backgroundColor}
+          />
+          <BottomNavBar />
+        </SafeAreaView>
+      </ApplicationProvider>
+    </StrictMode>
   );
 }
 
