@@ -1,5 +1,6 @@
-import { View, Text, StyleSheet } from 'react-native'
-import React from 'react'
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import React from 'react';
+import { Icon, MD3Colors } from 'react-native-paper';
 
 const styles = StyleSheet.create({
   container: {
@@ -13,7 +14,10 @@ const styles = StyleSheet.create({
 export default function Story() {
   return (
     <View style={styles.container}>
-      <Text>Story</Text>
+      <TouchableOpacity onPress={() => console.log('Pressed')}>
+      <Icon source="camera" color={MD3Colors.error50} size={40} />
+
+      </TouchableOpacity>
     </View>
-  )
+  );
 }
