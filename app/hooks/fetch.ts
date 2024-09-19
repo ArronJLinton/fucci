@@ -1,6 +1,11 @@
-import {useEffect, useState} from 'react';
+import { useEffect, useState } from 'react';
 
-const useFetchData = <Payload>(url: string, method: string, headers: any, body: any) => {
+const useFetchData = <Payload>(
+  url: string,
+  method: string,
+  headers: any,
+  body: any,
+) => {
   const [data, setData] = useState<Payload | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<Error | null>();
@@ -10,7 +15,7 @@ const useFetchData = <Payload>(url: string, method: string, headers: any, body: 
     fetch(url, {
       method,
       headers,
-      body
+      body,
     })
       .then(r => r.json())
       .then((d: Payload) => {
@@ -18,8 +23,8 @@ const useFetchData = <Payload>(url: string, method: string, headers: any, body: 
         setIsLoading(false);
       })
       .catch(err => {
-          setError(err);
-          setIsLoading(false);
+        setError(err);
+        setIsLoading(false);
       });
   }, [url]);
 
@@ -31,4 +36,4 @@ const useFetchData = <Payload>(url: string, method: string, headers: any, body: 
 };
 
 // VirtualizedList: You have a large list that is slow to update - make sure your renderItem function renders components that follow React performance best practices like PureComponent, shouldComponentUpdate, etc. {"contentLength": 6652.5, "dt": 624412, "prevDt": 2127}
-export {useFetchData};
+export { useFetchData };
