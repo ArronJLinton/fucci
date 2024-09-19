@@ -10,19 +10,24 @@ import News from '../../screens/News';
 import TopNavBar from '../TopNavbar';
 import MatchContext from '../../context/context';
 import MatchDetails from '../../screens/MatchDetails';
+import { screenHeight, screenWidth } from '../../helpers/constants';
+import { Icon, MD3Colors } from 'react-native-paper';
 
 const BottomTab = createBottomTabNavigator();
 const Stack = createStackNavigator();
 
 const MatchStack = () => {
+  const [posX, setPosX] = useState(0); // X Position
+  const [posY, setPosY] = useState(15); // Y Position
+
+  // Ensure the component does not go off screen
+  const constrainedX = Math.min(Math.max(posX, 0), screenWidth - 50); // 50 is the component's width
+  const constrainedY = Math.min(Math.max(posY, 0), screenHeight - 50);
   return (
     <Stack.Navigator
-    screenOptions={{
-        // headerMode: 'float',
-        // headerTintColor: 'white',
+      screenOptions={{
         headerStyle: { backgroundColor: '#eeeeee' },
-      }}
-    >
+      }}>
       <Stack.Screen
         name="Matches"
         component={Matches}
@@ -32,10 +37,23 @@ const MatchStack = () => {
         name="MatchDetails"
         component={MatchDetails}
         options={{
-          title: '',
-          headerBackTitleVisible: false,
-          headerBackTitleStyle: { color: 'white' },
-
+          headerTitleContainerStyle: { flex: 1 },
+          headerStyle: { height: 0 },
+          headerBackImage: () => (
+            <View
+              style={{
+                position: 'absolute',
+                width: 25,
+                height: 25,
+                justifyContent: 'center',
+                alignItems: 'center',
+                borderRadius: 10,
+                left: constrainedX,
+                top: constrainedY,
+              }}>
+              <Icon source="arrow-left" size={30} color={MD3Colors.primary10} />
+            </View>
+          ),
         }}
       />
     </Stack.Navigator>
