@@ -10,7 +10,8 @@
     "test": "jest",
     "debug-android": "react-native run-android --variant=debug",
     "debug-ios": "react-native run-ios --configuration Debug",
-    "debug": "npx react-devtools"
+    "debug": "npx react-devtools",
+    "format": "prettier --write . && eslint . --fix"
   },
   "dependencies": {
     "@candlefinance/faster-image": "^1.6.2",
