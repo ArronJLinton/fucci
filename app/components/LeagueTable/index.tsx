@@ -1,5 +1,5 @@
-import { View, Text, StyleSheet } from 'react-native'
-import React from 'react'
+import { View, Text, StyleSheet } from 'react-native';
+import React from 'react';
 import { screenHeight } from '../../helpers/constants';
 
 const styles = StyleSheet.create({
@@ -17,5 +17,5 @@ export default function LeagueTable() {
     <View style={styles.container}>
       <Text>LeagueTable</Text>
     </View>
-  )
+  );
 }

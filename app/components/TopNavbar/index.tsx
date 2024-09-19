@@ -1,11 +1,9 @@
-import {useContext, useState} from 'react';
-import {ScrollView, Dimensions, StyleSheet} from 'react-native';
-import {Tab, TabBar} from '@ui-kitten/components';
-import MatchContext, {
-  MatchContextType,
-} from '../../context/context';
+import { useContext, useState } from 'react';
+import { ScrollView, Dimensions, StyleSheet } from 'react-native';
+import { Tab, TabBar } from '@ui-kitten/components';
+import MatchContext, { MatchContextType } from '../../context/context';
 
-const {width: screenWidth} = Dimensions.get('window');
+const { width: screenWidth } = Dimensions.get('window');
 
 const styles = StyleSheet.create({
   tab: {
@@ -16,15 +14,15 @@ const styles = StyleSheet.create({
 
 const TopNavBar: React.FC = () => {
   const [selectedIndex, setSelectedIndex] = useState(4);
-  const {state, setMatchDate} = useContext<MatchContextType>(MatchContext);
+  const { state, setMatchDate } = useContext<MatchContextType>(MatchContext);
 
   return (
     <ScrollView
       horizontal
       showsHorizontalScrollIndicator={false}
-      contentOffset={{x: screenWidth / 1.5, y: 0}}>
+      contentOffset={{ x: screenWidth / 1.5, y: 0 }}>
       <TabBar
-        style={{backgroundColor: 'transparent', alignContent: 'center'}}
+        style={{ backgroundColor: 'transparent', alignContent: 'center' }}
         selectedIndex={selectedIndex}
         onSelect={i => {
           const date = new Date();

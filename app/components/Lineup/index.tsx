@@ -66,7 +66,7 @@ const styles = StyleSheet.create({
 
 // type LineupProps = MaterialTopTabScreenProps<TopTabParamList, 'Lineup'>;
 
-interface LineupProps  {
+interface LineupProps {
   data: Match;
 }
 // TODO: Clean up the code. Fix dynamic positioning of players on the field
@@ -100,16 +100,16 @@ const Lineup = React.forwardRef((props: LineupProps, ref) => {
 
   return (
     <ScrollView
-        contentContainerStyle={styles.scrollViewContent}
-        onScroll={Animated.event(
-          [{ nativeEvent: { contentOffset: { y: ref } } }],
-          { useNativeDriver: false },
-        )}
-        scrollEventThrottle={16} // Event throttling for smooth animation
-      >
+      contentContainerStyle={styles.scrollViewContent}
+      onScroll={Animated.event(
+        [{ nativeEvent: { contentOffset: { y: ref } } }],
+        { useNativeDriver: false },
+      )}
+      scrollEventThrottle={16} // Event throttling for smooth animation
+    >
       <ImageBackground
         source={require('./field.jpeg')}
-        resizeMode='cover'
+        resizeMode="cover"
         style={{
           // position: 'absolute',
           // top: 0,
@@ -150,10 +150,9 @@ const Lineup = React.forwardRef((props: LineupProps, ref) => {
                   style={styles.playerImage}
                 />
                 {/* <View style={{ flexDirection: 'row', flexWrap: 'wrap'}}> */}
-                  <Text style={styles.text}>{item.name}</Text>
-                  <Text style={styles.text}>{item.number}</Text>
+                <Text style={styles.text}>{item.name}</Text>
+                <Text style={styles.text}>{item.number}</Text>
                 {/* </View> */}
-
               </View>
             );
           })}
@@ -199,7 +198,7 @@ const Lineup = React.forwardRef((props: LineupProps, ref) => {
       {/* </View> */}
     </ScrollView>
   );
-})
+});
 
 export default Lineup;
 
