@@ -15,7 +15,6 @@ interface MatchDetailsProps {
   };
 }
 
-
 const MatchDetails: React.FC<MatchDetailsProps> = props => {
   return (
     <View style={{ flex: 1 }}>

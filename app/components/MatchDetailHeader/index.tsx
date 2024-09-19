@@ -43,10 +43,7 @@ const MatchDetailHeader = ({ data }: MatchDetailHeaderProps) => {
       <Animated.View style={[styles.header, { height: headerHeight }]}>
         <Animated.View style={styles.content}>
           <Animated.View style={styles.team}>
-            <Animated.Image
-              source={{ uri: home.logo }}
-              style={[styles.logo, { height: 30, width: 30 }]}
-            />
+            <Animated.Image source={{ uri: home.logo }} style={styles.logo} />
             <Animated.Text>{home.name}</Animated.Text>
           </Animated.View>
           <Animated.Text style={styles.score}>
@@ -75,7 +72,7 @@ const MatchDetailHeader = ({ data }: MatchDetailHeaderProps) => {
       </Tab.Navigator>
     </View>
   );
-}
+};
 
 // const TabBar = (data: any) => (
 

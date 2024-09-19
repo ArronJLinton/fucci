@@ -81,7 +81,7 @@ const MatchCard = ({ info, navigation }: Props) => {
 
         <View style={styles.middle}>
           <Text>
-            {score.fulltime.home} - {score.fulltime.home}
+            {score.fulltime.home} - {score.fulltime.away}
           </Text>
         </View>
 
