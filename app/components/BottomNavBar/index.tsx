@@ -18,7 +18,7 @@ const Stack = createStackNavigator();
 
 const MatchStack = () => {
   const [posX, setPosX] = useState(0); // X Position
-  const [posY, setPosY] = useState(15); // Y Position
+  const [posY, setPosY] = useState(5); // Y Position
 
   // Ensure the component does not go off screen
   const constrainedX = Math.min(Math.max(posX, 0), screenWidth - 50); // 50 is the component's width
@@ -66,6 +66,7 @@ function MyTabs() {
       initialRouteName="MatchScreen"
       screenOptions={{
         tabBarActiveTintColor: '#e91e63',
+        tabBarStyle: { backgroundColor: 'yellow' },
       }}>
       <BottomTab.Screen
         name="MatchScreen"
@@ -73,7 +74,7 @@ function MyTabs() {
         options={{
           headerShown: false,
           tabBarIcon: ({ color, size }) => (
-            <MaterialCommunityIcons name="bell" color={color} size={size} />
+            <MaterialCommunityIcons name="soccer" color={color} size={size} />
           ),
         }}
       />
@@ -84,7 +85,7 @@ function MyTabs() {
         options={{
           tabBarLabel: 'News',
           tabBarIcon: ({ color, size }) => (
-            <MaterialCommunityIcons name="bell" color={color} size={size} />
+            <MaterialCommunityIcons name="newspaper" color={color} size={size} />
           ),
         }}
       />
@@ -104,7 +105,7 @@ function MyTabs() {
         options={{
           tabBarLabel: 'More',
           tabBarIcon: ({ color, size }) => (
-            <MaterialCommunityIcons name="bell" color={color} size={size} />
+            <MaterialCommunityIcons name="more" color={color} size={size} />
           ),
         }}
       />

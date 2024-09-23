@@ -31,8 +31,21 @@ import { NavigationContainer } from '@react-navigation/native';
 import { PaperProvider } from 'react-native-paper';
 
 import BottomNavBar from './components/BottomNavBar';
+import { Camera } from 'react-native-vision-camera';
+import {
+  runAtTargetFps,
+  useCameraDevice,
+  useCameraFormat,
+  useFrameProcessor,
+  useLocationPermission,
+  useMicrophonePermission,
+  useCameraPermission,
+} from 'react-native-vision-camera';
+import { screenHeight } from './helpers/constants';
 
 function App(): React.JSX.Element {
+  const device = useCameraDevice('back');
+
   const isDarkMode = useColorScheme() === 'dark';
 
   const backgroundStyle = {
@@ -50,6 +63,8 @@ function App(): React.JSX.Element {
             backgroundColor={backgroundStyle.backgroundColor}
           />
           <BottomNavBar />
+
+          
         </SafeAreaView>
       </ApplicationProvider>
       </PaperProvider>
