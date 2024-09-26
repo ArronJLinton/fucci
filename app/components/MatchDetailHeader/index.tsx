@@ -8,11 +8,14 @@ import {
   Animated,
 } from 'react-native';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
+import { createStackNavigator } from '@react-navigation/stack';
 import { Match } from '../../types/futbol';
 import Lineup from '../Lineup';
 import LeagueTable from '../LeagueTable';
 import Facts from '../Facts';
 import Story from '../Story';
+import Media from '../Story/Media';
+
 import { TopTabParamList } from '../../types/navigation';
 import { screenHeight, screenWidth } from '../../helpers/constants';
 
@@ -23,8 +26,53 @@ const HEADER_SCROLL_DISTANCE = HEADER_MAX_HEIGHT - HEADER_MIN_HEIGHT;
 interface MatchDetailHeaderProps {
   data: Match;
 }
+const Stack = createStackNavigator();
 
 const Tab = createMaterialTopTabNavigator<TopTabParamList>();
+
+const StoryStack = () => {
+  // const [posX, setPosX] = useState(0); // X Position
+  // const [posY, setPosY] = useState(5); // Y Position
+
+  // Ensure the component does not go off screen
+  // const constrainedX = Math.min(Math.max(posX, 0), screenWidth - 50); // 50 is the component's width
+  // const constrainedY = Math.min(Math.max(posY, 0), screenHeight - 50);
+  return (
+    <Stack.Navigator
+      screenOptions={{
+        headerStyle: { backgroundColor: '#eeeeee' },
+      }}>
+      <Stack.Screen
+        name="CameraPage"
+        component={Story}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="MediaPage"
+        component={Media}
+        options={{
+          // headerTitleContainerStyle: { flex: 1 },
+          // headerStyle: { height: 0 },
+          // headerBackImage: () => (
+          //   <View
+          //     style={{
+          //       position: 'absolute',
+          //       width: 25,
+          //       height: 25,
+          //       justifyContent: 'center',
+          //       alignItems: 'center',
+          //       borderRadius: 10,
+          //       left: constrainedX,
+          //       top: constrainedY,
+          //     }}>
+          //     <Icon source="arrow-left" size={30} color={MD3Colors.primary10} />
+          //   </View>
+          // ),
+        }}
+      />
+    </Stack.Navigator>
+  );
+};
 
 const MatchDetailHeader = ({ data }: MatchDetailHeaderProps) => {
   const scrollY = useRef(new Animated.Value(0)).current; // Track the scroll position
@@ -68,7 +116,7 @@ const MatchDetailHeader = ({ data }: MatchDetailHeaderProps) => {
           {() => <Lineup ref={scrollY} data={data} />}
         </Tab.Screen>
         <Tab.Screen name="Table" component={LeagueTable} />
-        <Tab.Screen name="Story" component={Story} />
+        <Tab.Screen name="Story" component={StoryStack} />
       </Tab.Navigator>
     </View>
   );

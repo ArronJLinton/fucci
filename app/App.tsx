@@ -7,7 +7,6 @@
 
 import React from 'react';
 import { StrictMode } from 'react';
-
 import type { PropsWithChildren } from 'react';
 import {
   SafeAreaView,
@@ -17,7 +16,6 @@ import {
   useColorScheme,
   View,
 } from 'react-native';
-
 import {
   Colors,
   DebugInstructions,
@@ -31,44 +29,31 @@ import { NavigationContainer } from '@react-navigation/native';
 import { PaperProvider } from 'react-native-paper';
 
 import BottomNavBar from './components/BottomNavBar';
-import { Camera } from 'react-native-vision-camera';
-import {
-  runAtTargetFps,
-  useCameraDevice,
-  useCameraFormat,
-  useFrameProcessor,
-  useLocationPermission,
-  useMicrophonePermission,
-  useCameraPermission,
-} from 'react-native-vision-camera';
 import { screenHeight } from './helpers/constants';
 
 function App(): React.JSX.Element {
-  const device = useCameraDevice('back');
-
   const isDarkMode = useColorScheme() === 'dark';
-
   const backgroundStyle = {
     backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
     flex: 1,
   };
 
   return (
-    <StrictMode>
+    // <StrictMode>
+    // <SafeAreaProvider>
       <PaperProvider>
-      <ApplicationProvider {...eva} theme={eva.light}>
-        <SafeAreaView style={backgroundStyle}>
+        <ApplicationProvider {...eva} theme={eva.light}>
+          {/* <SafeAreaView style={backgroundStyle}> */}
           <StatusBar
             barStyle={isDarkMode ? 'light-content' : 'dark-content'}
             backgroundColor={backgroundStyle.backgroundColor}
           />
           <BottomNavBar />
-
-          
-        </SafeAreaView>
-      </ApplicationProvider>
+          {/* </SafeAreaView> */}
+        </ApplicationProvider>
       </PaperProvider>
-    </StrictMode>
+    // </SafeAreaProvider>
+    // </StrictMode>
   );
 }
 
