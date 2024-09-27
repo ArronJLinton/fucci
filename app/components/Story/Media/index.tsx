@@ -8,7 +8,8 @@ import {
   Platform,
   Image,
 } from 'react-native';
-// import type { OnVideoErrorData, OnLoadData } from 'react-native-video';
+// import OnVideoErrorData from 'react-native-video';
+// import OnLoadData from 'react-native-video';
 import Video from 'react-native-video';
 import { SAFE_AREA_PADDING } from '../../../helpers/constants';
 import { useIsForeground } from '../../../hooks/useIsForeground';
@@ -49,9 +50,9 @@ type Props = NativeStackScreenProps<Routes, 'MediaPage'> & {
   setMediaData: (data: null) => void;
 };
 type OnLoadImage = NativeSyntheticEvent<ImageLoadEventData>;
-// const isVideoOnLoadEvent = (
-//   event: OnLoadData | OnLoadImage,
-// ): event is OnLoadData => 'duration' in event && 'naturalSize' in event;
+const isVideoOnLoadEvent = (
+  event: OnLoadData | OnLoadImage,
+): event is OnLoadData => 'duration' in event && 'naturalSize' in event;
 
 export default function MediaPage({
   data,
@@ -67,23 +68,23 @@ export default function MediaPage({
     'none',
   );
 
-  // const onMediaLoad = useCallback((event: OnLoadData | OnLoadImage) => {
-  //   if (isVideoOnLoadEvent(event)) {
-  //     console.log(
-  //       `Video loaded. Size: ${event.naturalSize.width}x${event.naturalSize.height} (${event.naturalSize.orientation}, ${event.duration} seconds)`,
-  //     );
-  //   } else {
-  //     const source = event.nativeEvent.source;
-  //     console.log(`Image loaded. Size: ${source.width}x${source.height}`);
-  //   }
-  // }, []);
+  const onMediaLoad = useCallback((event: OnLoadData | OnLoadImage) => {
+    if (isVideoOnLoadEvent(event)) {
+      console.log(
+        `Video loaded. Size: ${event.naturalSize.width}x${event.naturalSize.height} (${event.naturalSize.orientation}, ${event.duration} seconds)`,
+      );
+    } else {
+      const source = event.nativeEvent.source;
+      console.log(`Image loaded. Size: ${source.width}x${source.height}`);
+    }
+  }, []);
   const onMediaLoadEnd = useCallback(() => {
     console.log('media has loaded.');
     setHasMediaLoaded(true);
   }, []);
-  // const onMediaLoadError = useCallback((error: OnVideoErrorData) => {
-  //   console.error(`failed to load media: ${JSON.stringify(error)}`);
-  // }, []);
+  const onMediaLoadError = useCallback((error: OnVideoErrorData) => {
+    console.error(`failed to load media: ${JSON.stringify(error)}`);
+  }, []);
 
   const onSavePressed = useCallback(async () => {
     try {
@@ -133,18 +134,18 @@ export default function MediaPage({
         <Video
           source={source}
           style={StyleSheet.absoluteFill}
-          // paused={isVideoPaused}
-          // resizeMode="cover"
-          // posterResizeMode="cover"
-          // allowsExternalPlayback={false}
-          // automaticallyWaitsToMinimizeStalling={false}
-          // disableFocus={true}
-          // repeat={true}
-          // useTextureView={false}
-          // controls={false}
-          // playWhenInactive={true}
-          // ignoreSilentSwitch="ignore"
-          // onReadyForDisplay={onMediaLoadEnd}
+          paused={isVideoPaused}
+          resizeMode="cover"
+          posterResizeMode="cover"
+          allowsExternalPlayback={false}
+          automaticallyWaitsToMinimizeStalling={false}
+          disableFocus={true}
+          repeat={true}
+          useTextureView={false}
+          controls={false}
+          playWhenInactive={true}
+          ignoreSilentSwitch="ignore"
+          onReadyForDisplay={onMediaLoadEnd}
           // onLoad={onMediaLoad}
           // onError={onMediaLoadError}
         />

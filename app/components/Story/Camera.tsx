@@ -75,6 +75,8 @@ export default function CameraPage({
   const location = useLocationPermission();
   const zoom = useSharedValue(1);
   const isPressingButton = useSharedValue(false);
+  microphone.requestPermission();
+  // location.requestPermission();
 
   // check if camera page is active
   const isFocussed = useIsFocused();
@@ -147,10 +149,6 @@ export default function CameraPage({
   const onMediaCaptured = useCallback(
     (media: PhotoFile | VideoFile, type: 'photo' | 'video') => {
       console.log(`Media captured! ${JSON.stringify(media)}`);
-      // navigation.navigate('MediaPage', {
-      //   path: media.path,
-      //   type: type,
-      // });
       setMediaData({
         path: media.path,
         type: type,
@@ -243,7 +241,6 @@ export default function CameraPage({
 
   const videoHdr = format?.supportsVideoHdr && enableHdr;
   const photoHdr = format?.supportsPhotoHdr && enableHdr && !videoHdr;
-
   return (
     <View style={styles.container}>
       {device != null ? (
