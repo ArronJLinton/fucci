@@ -40,6 +40,7 @@
 		13B07FB81A68108700A75B9A /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = PrivacyInfo.xcprivacy; path = fucci/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		183ECD2C4D85D2074EC2AEE0 /* Pods-fucci-fucciTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-fucci-fucciTests.debug.xcconfig"; path = "Target Support Files/Pods-fucci-fucciTests/Pods-fucci-fucciTests.debug.xcconfig"; sourceTree = "<group>"; };
 		20F8A73F6381D1D0F368AE9F /* libPods-fucci.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-fucci.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		2BCAF2D32CA743B800898607 /* libreact-native-video.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = "libreact-native-video.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		2EA702FD0F6A5285404330D0 /* Pods-fucci.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-fucci.release.xcconfig"; path = "Target Support Files/Pods-fucci/Pods-fucci.release.xcconfig"; sourceTree = "<group>"; };
 		6A59EDDF5F39C714C7B3AEFC /* libPods-fucci-fucciTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-fucci-fucciTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		76271F324A5D1328CCE27CBC /* Pods-fucci.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-fucci.debug.xcconfig"; path = "Target Support Files/Pods-fucci/Pods-fucci.debug.xcconfig"; sourceTree = "<group>"; };
@@ -104,6 +105,7 @@
 		2D16E6871FA4F8E400B85C8A /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				2BCAF2D32CA743B800898607 /* libreact-native-video.a */,
 				ED297162215061F000B7C4FE /* JavaScriptCore.framework */,
 				20F8A73F6381D1D0F368AE9F /* libPods-fucci.a */,
 				6A59EDDF5F39C714C7B3AEFC /* libPods-fucci-fucciTests.a */,
@@ -164,8 +166,8 @@
 				00E356EA1AD99517003FC87E /* Sources */,
 				00E356EB1AD99517003FC87E /* Frameworks */,
 				00E356EC1AD99517003FC87E /* Resources */,
-				D2AE66B752A8C4DCDE34189A /* [CP] Embed Pods Frameworks */,
 				A1D33ACEFB0B4F2A91B07C77 /* [CP] Copy Pods Resources */,
+				88B196E15FADC75F776FD899 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -186,8 +188,8 @@
 				13B07F8C1A680F5B00A75B9A /* Frameworks */,
 				13B07F8E1A680F5B00A75B9A /* Resources */,
 				00DD1BFF1BD5951E006B06BC /* Bundle React Native code and images */,
-				3D31675F7983FEF630985926 /* [CP] Embed Pods Frameworks */,
 				D1C0335D31E643C23F2056C8 /* [CP] Copy Pods Resources */,
+				A305B540034050C3E7C38C0F /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -272,21 +274,21 @@
 			shellPath = /bin/sh;
 			shellScript = "set -e\n\nWITH_ENVIRONMENT=\"$REACT_NATIVE_PATH/scripts/xcode/with-environment.sh\"\nREACT_NATIVE_XCODE=\"$REACT_NATIVE_PATH/scripts/react-native-xcode.sh\"\n\n/bin/sh -c \"$WITH_ENVIRONMENT $REACT_NATIVE_XCODE\"\n";
 		};
-		3D31675F7983FEF630985926 /* [CP] Embed Pods Frameworks */ = {
+		88B196E15FADC75F776FD899 /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-fucci/Pods-fucci-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+				"${PODS_ROOT}/Target Support Files/Pods-fucci-fucciTests/Pods-fucci-fucciTests-frameworks-${CONFIGURATION}-input-files.xcfilelist",
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-fucci/Pods-fucci-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+				"${PODS_ROOT}/Target Support Files/Pods-fucci-fucciTests/Pods-fucci-fucciTests-frameworks-${CONFIGURATION}-output-files.xcfilelist",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-fucci/Pods-fucci-frameworks.sh\"\n";
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-fucci-fucciTests/Pods-fucci-fucciTests-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		A1D33ACEFB0B4F2A91B07C77 /* [CP] Copy Pods Resources */ = {
@@ -304,6 +306,23 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-fucci-fucciTests/Pods-fucci-fucciTests-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		A305B540034050C3E7C38C0F /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-fucci/Pods-fucci-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-fucci/Pods-fucci-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-fucci/Pods-fucci-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		AF6811F338CE649775F85B5B /* [CP] Check Pods Manifest.lock */ = {
@@ -343,23 +362,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-fucci/Pods-fucci-resources.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		D2AE66B752A8C4DCDE34189A /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-fucci-fucciTests/Pods-fucci-fucciTests-frameworks-${CONFIGURATION}-input-files.xcfilelist",
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-fucci-fucciTests/Pods-fucci-fucciTests-frameworks-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-fucci-fucciTests/Pods-fucci-fucciTests-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		D4C40DAFE543A7ED8B505FC7 /* [CP] Check Pods Manifest.lock */ = {
@@ -477,6 +479,7 @@
 				ENABLE_BITCODE = NO;
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				INFOPLIST_FILE = fucci/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.4;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -505,6 +508,7 @@
 				DEVELOPMENT_TEAM = WU39T2VA3M;
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				INFOPLIST_FILE = fucci/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.4;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -596,10 +600,7 @@
 					"-DFOLLY_CFG_NO_COROUTINES=1",
 					"-DFOLLY_HAVE_CLOCK_GETTIME=1",
 				);
-				OTHER_LDFLAGS = (
-					"$(inherited)",
-					" ",
-				);
+				OTHER_LDFLAGS = "$(inherited)  ";
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
 				SDKROOT = iphoneos;
 				USE_HERMES = true;
@@ -672,10 +673,7 @@
 					"-DFOLLY_CFG_NO_COROUTINES=1",
 					"-DFOLLY_HAVE_CLOCK_GETTIME=1",
 				);
-				OTHER_LDFLAGS = (
-					"$(inherited)",
-					" ",
-				);
+				OTHER_LDFLAGS = "$(inherited)  ";
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
 				SDKROOT = iphoneos;
 				USE_HERMES = true;

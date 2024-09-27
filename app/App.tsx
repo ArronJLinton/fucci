@@ -27,6 +27,7 @@ import * as eva from '@eva-design/eva';
 import { ApplicationProvider, Layout, Text } from '@ui-kitten/components';
 import { NavigationContainer } from '@react-navigation/native';
 import { PaperProvider } from 'react-native-paper';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 import BottomNavBar from './components/BottomNavBar';
 import { screenHeight } from './helpers/constants';
@@ -41,6 +42,8 @@ function App(): React.JSX.Element {
   return (
     // <StrictMode>
     // <SafeAreaProvider>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+
       <PaperProvider>
         <ApplicationProvider {...eva} theme={eva.light}>
           {/* <SafeAreaView style={backgroundStyle}> */}
@@ -52,8 +55,10 @@ function App(): React.JSX.Element {
           {/* </SafeAreaView> */}
         </ApplicationProvider>
       </PaperProvider>
-    // </SafeAreaProvider>
-    // </StrictMode>
+      </GestureHandlerRootView>
+
+    // {/* // </SafeAreaProvider> */}
+    // {/* // </StrictMode> */}
   );
 }
 
