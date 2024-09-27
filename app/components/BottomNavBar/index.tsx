@@ -4,6 +4,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import { GestureHandlerRootView } from 'react-native-gesture-handler'
 import Matches from '../../screens/Matches';
 import History from '../../screens/History';
 import News from '../../screens/News';
@@ -18,7 +19,7 @@ const Stack = createStackNavigator();
 
 const MatchStack = () => {
   const [posX, setPosX] = useState(0); // X Position
-  const [posY, setPosY] = useState(15); // Y Position
+  const [posY, setPosY] = useState(5); // Y Position
 
   // Ensure the component does not go off screen
   const constrainedX = Math.min(Math.max(posX, 0), screenWidth - 50); // 50 is the component's width
@@ -66,6 +67,7 @@ function MyTabs() {
       initialRouteName="MatchScreen"
       screenOptions={{
         tabBarActiveTintColor: '#e91e63',
+        tabBarStyle: { backgroundColor: 'yellow' },
       }}>
       <BottomTab.Screen
         name="MatchScreen"
@@ -73,7 +75,7 @@ function MyTabs() {
         options={{
           headerShown: false,
           tabBarIcon: ({ color, size }) => (
-            <MaterialCommunityIcons name="bell" color={color} size={size} />
+            <MaterialCommunityIcons name="soccer" color={color} size={size} />
           ),
         }}
       />
@@ -84,7 +86,7 @@ function MyTabs() {
         options={{
           tabBarLabel: 'News',
           tabBarIcon: ({ color, size }) => (
-            <MaterialCommunityIcons name="bell" color={color} size={size} />
+            <MaterialCommunityIcons name="newspaper" color={color} size={size} />
           ),
         }}
       />
@@ -104,7 +106,7 @@ function MyTabs() {
         options={{
           tabBarLabel: 'More',
           tabBarIcon: ({ color, size }) => (
-            <MaterialCommunityIcons name="bell" color={color} size={size} />
+            <MaterialCommunityIcons name="more" color={color} size={size} />
           ),
         }}
       />
@@ -112,7 +114,7 @@ function MyTabs() {
   );
 }
 
-export default function BottomNavBar() {
+export default function  BottomNavBar() {
   const date = new Date();
   const formattedDate = date.toISOString().split('T')[0];
   const [matchDate, setMatchDate] = useState<string>(formattedDate);
@@ -123,7 +125,11 @@ export default function BottomNavBar() {
   return (
     <MatchContext.Provider value={value}>
       <NavigationContainer>
+      <GestureHandlerRootView style={{ flex: 1}}>
+
         <MyTabs />
+        </GestureHandlerRootView>
+
       </NavigationContainer>
     </MatchContext.Provider>
   );

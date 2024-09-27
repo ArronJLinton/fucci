@@ -7,7 +7,6 @@
 
 import React from 'react';
 import { StrictMode } from 'react';
-
 import type { PropsWithChildren } from 'react';
 import {
   SafeAreaView,
@@ -17,7 +16,6 @@ import {
   useColorScheme,
   View,
 } from 'react-native';
-
 import {
   Colors,
   DebugInstructions,
@@ -28,29 +26,39 @@ import {
 import * as eva from '@eva-design/eva';
 import { ApplicationProvider, Layout, Text } from '@ui-kitten/components';
 import { NavigationContainer } from '@react-navigation/native';
+import { PaperProvider } from 'react-native-paper';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 import BottomNavBar from './components/BottomNavBar';
+import { screenHeight } from './helpers/constants';
 
 function App(): React.JSX.Element {
   const isDarkMode = useColorScheme() === 'dark';
-
   const backgroundStyle = {
     backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
     flex: 1,
   };
 
   return (
-    <StrictMode>
-      <ApplicationProvider {...eva} theme={eva.light}>
-        <SafeAreaView style={backgroundStyle}>
+    // <StrictMode>
+    // <SafeAreaProvider>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+
+      <PaperProvider>
+        <ApplicationProvider {...eva} theme={eva.light}>
+          {/* <SafeAreaView style={backgroundStyle}> */}
           <StatusBar
             barStyle={isDarkMode ? 'light-content' : 'dark-content'}
             backgroundColor={backgroundStyle.backgroundColor}
           />
           <BottomNavBar />
-        </SafeAreaView>
-      </ApplicationProvider>
-    </StrictMode>
+          {/* </SafeAreaView> */}
+        </ApplicationProvider>
+      </PaperProvider>
+      </GestureHandlerRootView>
+
+    // {/* // </SafeAreaProvider> */}
+    // {/* // </StrictMode> */}
   );
 }
 
