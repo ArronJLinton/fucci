@@ -1,7 +1,11 @@
 import React from 'react';
-import { ScrollView } from 'react-native';
-import { Match } from '../../types/futbol';
+import {
+  ScrollView,
+  View,
+} from 'react-native';
+import {Match} from '../../types/futbol';
 import MatchDetailHeader from '../../components/MatchDetailHeader';
+import { screenHeight } from '../../helpers/constants';
 
 interface MatchDetailsProps {
   route: {
@@ -13,9 +17,9 @@ interface MatchDetailsProps {
 
 const MatchDetails: React.FC<MatchDetailsProps> = props => {
   return (
-    <>
+    <View style={{ flex: 1 }}>
       <MatchDetailHeader data={props.route.params.data} />
-    </>
+    </View>
   );
 };
 

@@ -5,6 +5,7 @@
 ## Features
 
 - React Navigation
+- 
 
 ## Debugging
 
@@ -15,3 +16,4 @@
 - npx react-devtools
 
 
+npm start -- --reset-cache
