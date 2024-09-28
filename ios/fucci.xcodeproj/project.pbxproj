@@ -40,6 +40,7 @@
 		13B07FB81A68108700A75B9A /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = PrivacyInfo.xcprivacy; path = fucci/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		183ECD2C4D85D2074EC2AEE0 /* Pods-fucci-fucciTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-fucci-fucciTests.debug.xcconfig"; path = "Target Support Files/Pods-fucci-fucciTests/Pods-fucci-fucciTests.debug.xcconfig"; sourceTree = "<group>"; };
 		20F8A73F6381D1D0F368AE9F /* libPods-fucci.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-fucci.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		2B19EB202CA7B6B800B87BE8 /* libreact-native-cameraroll.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = "libreact-native-cameraroll.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		2BCAF2D32CA743B800898607 /* libreact-native-video.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = "libreact-native-video.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		2EA702FD0F6A5285404330D0 /* Pods-fucci.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-fucci.release.xcconfig"; path = "Target Support Files/Pods-fucci/Pods-fucci.release.xcconfig"; sourceTree = "<group>"; };
 		6A59EDDF5F39C714C7B3AEFC /* libPods-fucci-fucciTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-fucci-fucciTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -105,6 +106,7 @@
 		2D16E6871FA4F8E400B85C8A /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				2B19EB202CA7B6B800B87BE8 /* libreact-native-cameraroll.a */,
 				2BCAF2D32CA743B800898607 /* libreact-native-video.a */,
 				ED297162215061F000B7C4FE /* JavaScriptCore.framework */,
 				20F8A73F6381D1D0F368AE9F /* libPods-fucci.a */,
