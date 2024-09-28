@@ -19,6 +19,7 @@
   "dependencies": {
     "@candlefinance/faster-image": "^1.6.2",
     "@eva-design/eva": "^2.2.0",
+    "@react-native-camera-roll/camera-roll": "^7.8.3",
     "@react-native-community/blur": "^4.4.1",
     "@react-native-community/cli": "^13.6.9",
     "@react-navigation/bottom-tabs": "^6.6.1",

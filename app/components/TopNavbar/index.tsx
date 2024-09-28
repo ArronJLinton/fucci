@@ -38,7 +38,7 @@ const TopNavBar: React.FC = () => {
       horizontal
       showsHorizontalScrollIndicator={false}
       contentOffset={{ x: screenWidth / 1.5, y: 0 }}
-      contentContainerStyle={{ flexGrow: 1, justifyContent: 'center', paddingTop: 40 }}
+      // contentContainerStyle={{ flexGrow: 1, justifyContent: 'center' }}
       >
       <TabBar
         style={{ backgroundColor: 'transparent', alignContent: 'center' }}
