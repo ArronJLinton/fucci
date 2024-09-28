@@ -148,7 +148,6 @@ export default function CameraPage({
   }, []);
   const onMediaCaptured = useCallback(
     (media: PhotoFile | VideoFile, type: 'photo' | 'video') => {
-      console.log(`Media captured! ${JSON.stringify(media)}`);
       setMediaData({
         path: media.path,
         type: type,
