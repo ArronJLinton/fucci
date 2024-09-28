@@ -1,6 +1,7 @@
 import { FOOTBALL_API_KEY } from '@env';
 import { useState, useContext, useRef, useCallback } from 'react';
 import { View, FlatList, ActivityIndicator } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import MatchContext, { MatchContextType } from '../../context/context';
 import MatchCard from '../../components/MatchCard';
 import { useFetchData } from '../../hooks/fetch';
@@ -17,7 +18,7 @@ const Matches = ({ navigation }: any) => {
   };
   // Premier League ID is 39
   // Champions League ID is 2
-  const url = `https://api-football-v1.p.rapidapi.com/v3/fixtures?date=${state.date}&season=2024`;
+  const url = `https://api-football-v1.p.rapidapi.com/v3/fixtures?date=${state.date}&season=2024&league=39`;
   const { data, isLoading, error } = useFetchData<Fixtures>(
     url,
     'GET',
@@ -49,7 +50,7 @@ const Matches = ({ navigation }: any) => {
     );
 
   return (
-    <View style={{ flex: 1 }}>
+    <SafeAreaView style={{ flex: 1 }}>
       <TopNavBar />
 
       {!isLoading ? (
@@ -68,7 +69,7 @@ const Matches = ({ navigation }: any) => {
       ) : (
         <ActivityIndicator size={'large'} style={{ flexGrow: 5 }} />
       )}
-    </View>
+    </SafeAreaView>
   );
 };
 

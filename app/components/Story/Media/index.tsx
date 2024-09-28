@@ -16,7 +16,7 @@ import { useIsForeground } from '../../../hooks/useIsForeground';
 import { PressableOpacity } from 'react-native-pressable-opacity';
 import IonIcon from 'react-native-vector-icons/Ionicons';
 import { Alert } from 'react-native';
-// import { CameraRoll } from '@react-native-camera-roll/camera-roll'
+import { CameraRoll } from '@react-native-camera-roll/camera-roll'
 import { StatusBarBlurBackground } from '../views/StatusBarBlurBackground';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { Routes } from '../Routes';
@@ -87,6 +87,7 @@ export default function MediaPage({
   }, []);
 
   const onSavePressed = useCallback(async () => {
+    console.log("SAVE PRESSED");
     try {
       setSavingState('saving');
 
@@ -98,9 +99,9 @@ export default function MediaPage({
         );
         return;
       }
-      // await CameraRoll.save(`file://${path}`, {
-      //   type: type,
-      // })
+      await CameraRoll.save(`file://${path}`, {
+        type: type,
+      })
       setSavingState('saved');
     } catch (e) {
       const message = e instanceof Error ? e.message : JSON.stringify(e);
@@ -181,7 +182,7 @@ export default function MediaPage({
         {savingState === 'saving' && <ActivityIndicator color="white" />}
       </PressableOpacity>
 
-      <StatusBarBlurBackground />
+      {/* <StatusBarBlurBackground /> */}
     </View>
   );
 }

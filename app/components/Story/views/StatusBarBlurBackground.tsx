@@ -12,10 +12,10 @@ const StatusBarBlurBackgroundImpl = ({ style, ...props }: BlurViewProps): React.
   return (
     <View
       style={[styles.statusBarBackground, style]}
-      // blurAmount={25}
-      // blurType="light"
-      // reducedTransparencyFallbackColor={FALLBACK_COLOR}
-      // {...props}
+      blurAmount={25}
+      blurType="light"
+      reducedTransparencyFallbackColor={FALLBACK_COLOR}
+      {...props}
     />
   )
 }

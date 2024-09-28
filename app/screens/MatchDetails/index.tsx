@@ -3,6 +3,7 @@ import {
   ScrollView,
   View,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import {Match} from '../../types/futbol';
 import MatchDetailHeader from '../../components/MatchDetailHeader';
 import { screenHeight } from '../../helpers/constants';
@@ -17,9 +18,9 @@ interface MatchDetailsProps {
 
 const MatchDetails: React.FC<MatchDetailsProps> = props => {
   return (
-    <View style={{ flex: 1 }}>
+    <SafeAreaView style={{ flex: 1 }}>
       <MatchDetailHeader data={props.route.params.data} />
-    </View>
+    </SafeAreaView>
   );
 };
 

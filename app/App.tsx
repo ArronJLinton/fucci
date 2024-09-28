@@ -9,7 +9,6 @@ import React from 'react';
 import { StrictMode } from 'react';
 import type { PropsWithChildren } from 'react';
 import {
-  SafeAreaView,
   ScrollView,
   StatusBar,
   StyleSheet,
@@ -23,6 +22,7 @@ import {
   LearnMoreLinks,
   ReloadInstructions,
 } from 'react-native/Libraries/NewAppScreen';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 import * as eva from '@eva-design/eva';
 import { ApplicationProvider, Layout, Text } from '@ui-kitten/components';
 import { NavigationContainer } from '@react-navigation/native';
@@ -40,25 +40,19 @@ function App(): React.JSX.Element {
   };
 
   return (
-    // <StrictMode>
-    // <SafeAreaProvider>
-    <GestureHandlerRootView style={{ flex: 1 }}>
-
-      <PaperProvider>
-        <ApplicationProvider {...eva} theme={eva.light}>
-          {/* <SafeAreaView style={backgroundStyle}> */}
-          <StatusBar
-            barStyle={isDarkMode ? 'light-content' : 'dark-content'}
-            backgroundColor={backgroundStyle.backgroundColor}
-          />
-          <BottomNavBar />
-          {/* </SafeAreaView> */}
-        </ApplicationProvider>
-      </PaperProvider>
+    <SafeAreaProvider>
+      <GestureHandlerRootView style={{ flex: 1 }}>
+        <PaperProvider>
+          <ApplicationProvider {...eva} theme={eva.light}>
+            <StatusBar
+              barStyle={isDarkMode ? 'light-content' : 'dark-content'}
+              backgroundColor={backgroundStyle.backgroundColor}
+            />
+            <BottomNavBar />
+          </ApplicationProvider>
+        </PaperProvider>
       </GestureHandlerRootView>
-
-    // {/* // </SafeAreaProvider> */}
-    // {/* // </StrictMode> */}
+    </SafeAreaProvider>
   );
 }
 
