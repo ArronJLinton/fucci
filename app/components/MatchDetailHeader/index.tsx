@@ -13,8 +13,8 @@ import { Match } from '../../types/futbol';
 import Lineup from '../Lineup';
 import LeagueTable from '../LeagueTable';
 import Facts from '../Facts';
-import Story from '../Story';
-import Media from '../Story/Media';
+import Feed from '../Feed';
+import Media from '../Feed/Media';
 
 import { TopTabParamList } from '../../types/navigation';
 import { screenHeight, screenWidth } from '../../helpers/constants';
@@ -30,7 +30,7 @@ const Stack = createStackNavigator();
 
 const Tab = createMaterialTopTabNavigator<TopTabParamList>();
 
-const StoryStack = () => {
+const FeedStack = () => {
   // const [posX, setPosX] = useState(0); // X Position
   // const [posY, setPosY] = useState(5); // Y Position
 
@@ -44,7 +44,7 @@ const StoryStack = () => {
       }}>
       <Stack.Screen
         name="CameraPage"
-        component={Story}
+        component={Feed}
         options={{ headerShown: false }}
       />
       <Stack.Screen
@@ -116,7 +116,7 @@ const MatchDetailHeader = ({ data }: MatchDetailHeaderProps) => {
           {() => <Lineup ref={scrollY} data={data} />}
         </Tab.Screen>
         <Tab.Screen name="Table" component={LeagueTable} />
-        <Tab.Screen name="Story" component={StoryStack} />
+        <Tab.Screen name="Feed" component={FeedStack} />
       </Tab.Navigator>
     </View>
   );

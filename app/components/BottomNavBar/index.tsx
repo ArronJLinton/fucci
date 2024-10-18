@@ -67,7 +67,6 @@ function MyTabs() {
       initialRouteName="MatchScreen"
       screenOptions={{
         tabBarActiveTintColor: '#e91e63',
-        tabBarStyle: { backgroundColor: 'yellow' },
       }}>
       <BottomTab.Screen
         name="MatchScreen"
