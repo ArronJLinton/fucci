@@ -16,9 +16,9 @@ const Matches = ({ navigation }: any) => {
     'Content-Type': 'application/json',
     'x-rapidapi-key': `${FOOTBALL_API_KEY}`,
   };
-  // Premier League ID is 39
-  // Champions League ID is 2
-  const url = `https://api-football-v1.p.rapidapi.com/v3/fixtures?date=${state.date}&season=2024&league=39`;
+  // Premier League ID - 39
+  // Champions League ID - 2
+  const url = `https://api-football-v1.p.rapidapi.com/v3/fixtures?date=${state.date}&season=2024`;
   const { data, isLoading, error } = useFetchData<Fixtures>(
     url,
     'GET',
