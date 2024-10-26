@@ -50,25 +50,27 @@ const FeedStack = () => {
       <Stack.Screen
         name="MediaPage"
         component={Media}
-        options={{
-          // headerTitleContainerStyle: { flex: 1 },
-          // headerStyle: { height: 0 },
-          // headerBackImage: () => (
-          //   <View
-          //     style={{
-          //       position: 'absolute',
-          //       width: 25,
-          //       height: 25,
-          //       justifyContent: 'center',
-          //       alignItems: 'center',
-          //       borderRadius: 10,
-          //       left: constrainedX,
-          //       top: constrainedY,
-          //     }}>
-          //     <Icon source="arrow-left" size={30} color={MD3Colors.primary10} />
-          //   </View>
-          // ),
-        }}
+        options={
+          {
+            // headerTitleContainerStyle: { flex: 1 },
+            // headerStyle: { height: 0 },
+            // headerBackImage: () => (
+            //   <View
+            //     style={{
+            //       position: 'absolute',
+            //       width: 25,
+            //       height: 25,
+            //       justifyContent: 'center',
+            //       alignItems: 'center',
+            //       borderRadius: 10,
+            //       left: constrainedX,
+            //       top: constrainedY,
+            //     }}>
+            //     <Icon source="arrow-left" size={30} color={MD3Colors.primary10} />
+            //   </View>
+            // ),
+          }
+        }
       />
     </Stack.Navigator>
   );
@@ -115,7 +117,9 @@ const MatchDetailHeader = ({ data }: MatchDetailHeaderProps) => {
         <Tab.Screen name="Lineup">
           {() => <Lineup ref={scrollY} data={data} />}
         </Tab.Screen>
-        <Tab.Screen name="Table" component={LeagueTable} />
+        <Tab.Screen name="Table" component={LeagueTable}>
+          {() => <Lineup ref={scrollY} data={data} />}
+        </Tab.Screen>
         <Tab.Screen name="Feed" component={FeedStack} />
       </Tab.Navigator>
     </View>
