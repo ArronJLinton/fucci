@@ -27,7 +27,7 @@ const fetchMatches = async (date: Date) => {
     const response = await fetch(apiUrl, requestOptions);
     const data = await response.json();
     console.log('data', data);
-    return data;
+    return data.response;
   } catch (error) {
     console.error('Error fetching matches:', error);
     return null;
@@ -71,15 +71,32 @@ const DateTabScreen: React.FC<DateTabScreenProps> = ({date}) => {
     (navigation.getState() as NavigationState).index
   ].name;
   const isSelected = route.name === currentRoute;
+  const [matches, setMatches] = React.useState<any[]>([]);
+  const [isLoading, setIsLoading] = React.useState(false);
 
   React.useEffect(() => {
     if (isSelected) {
-      console.log('Fetching matches for date:', date.toISOString());
-      fetchMatches(date);
+      setIsLoading(true);
+      fetchMatches(date)
+        .then(data => {
+          if (data) {
+            setMatches(data);
+          }
+        })
+        .finally(() => {
+          setIsLoading(false);
+        });
     }
   }, [isSelected, date]);
 
-  return <DateScreen date={date} isSelected={isSelected} />;
+  return (
+    <DateScreen
+      date={date}
+      isSelected={isSelected}
+      matches={matches}
+      isLoading={isLoading}
+    />
+  );
 };
 
 const HomeScreen = () => {

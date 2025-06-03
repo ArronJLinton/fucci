@@ -1,9 +1,50 @@
 import React from 'react';
-import {Text, StyleSheet, View} from 'react-native';
+import {
+  Text,
+  StyleSheet,
+  View,
+  ScrollView,
+  Image,
+  ActivityIndicator,
+} from 'react-native';
+
+interface Match {
+  fixture: {
+    id: number;
+    date: string;
+    status: {
+      long: string;
+      short: string;
+      elapsed: number;
+    };
+  };
+  league: {
+    name: string;
+    logo: string;
+  };
+  teams: {
+    home: {
+      name: string;
+      logo: string;
+      winner: boolean | null;
+    };
+    away: {
+      name: string;
+      logo: string;
+      winner: boolean | null;
+    };
+  };
+  goals: {
+    home: number | null;
+    away: number | null;
+  };
+}
 
 interface DateScreenProps {
   date: Date;
   isSelected?: boolean;
+  matches: Match[];
+  isLoading?: boolean;
 }
 
 const formatDate = (date: Date) => {
@@ -15,6 +56,14 @@ const formatDate = (date: Date) => {
   });
 
   return formatter.format(date);
+};
+
+const formatTime = (dateString: string) => {
+  const date = new Date(dateString);
+  return date.toLocaleTimeString('en-US', {
+    hour: '2-digit',
+    minute: '2-digit',
+  });
 };
 
 const getRelativeDay = (date: Date) => {
@@ -45,40 +94,109 @@ const getRelativeDay = (date: Date) => {
   return '';
 };
 
-const DateScreen: React.FC<DateScreenProps> = ({date, isSelected = false}) => {
+const getMatchStatus = (status: Match['fixture']['status']) => {
+  if (status.elapsed > 0) {
+    return `${status.elapsed}'`;
+  }
+  if (status.short === 'PST') {
+    return 'Postponed';
+  }
+  if (status.short === 'FT') {
+    return 'Full Time';
+  }
+  return formatTime(status.long);
+};
+
+const getScoreDisplay = (goals: Match['goals']) => {
+  if (goals.home === null || goals.away === null) {
+    return 'vs';
+  }
+  return `${goals.home} - ${goals.away}`;
+};
+
+const MatchCard: React.FC<{match: Match}> = ({match}) => (
+  <View style={styles.matchCard}>
+    <Text style={styles.competitionName}>{match.league.name}</Text>
+    <View style={styles.matchInfo}>
+      <View style={styles.teamContainer}>
+        <Image
+          source={{uri: match.teams.home.logo}}
+          style={[
+            styles.teamLogo,
+            match.teams.home.winner && styles.winnerTeam,
+          ]}
+          resizeMode="contain"
+        />
+        <Text
+          style={[
+            styles.teamName,
+            match.teams.home.winner && styles.winnerText,
+          ]}>
+          {match.teams.home.name}
+        </Text>
+      </View>
+      <View style={styles.scoreContainer}>
+        <Text style={styles.scoreText}>{getScoreDisplay(match.goals)}</Text>
+        <Text style={styles.matchStatus}>
+          {getMatchStatus(match.fixture.status)}
+        </Text>
+      </View>
+      <View style={styles.teamContainer}>
+        <Image
+          source={{uri: match.teams.away.logo}}
+          style={[
+            styles.teamLogo,
+            match.teams.away.winner && styles.winnerTeam,
+          ]}
+          resizeMode="contain"
+        />
+        <Text
+          style={[
+            styles.teamName,
+            match.teams.away.winner && styles.winnerText,
+          ]}>
+          {match.teams.away.name}
+        </Text>
+      </View>
+    </View>
+  </View>
+);
+
+const DateScreen: React.FC<DateScreenProps> = ({
+  date,
+  isSelected = false,
+  matches = [],
+  isLoading = false,
+}) => {
   const formattedDate = formatDate(date);
   const relativeDay = getRelativeDay(date);
 
-  // Add debug logging
-  console.log('DateScreen rendering:', {
-    receivedDate: date.toISOString(),
-    formattedDate,
-    relativeDay,
-  });
-
-  return (
-    <View style={styles.container}>
-      <View style={[styles.card, isSelected && styles.selectedCard]}>
-        <View style={styles.content}>
-          {relativeDay ? (
-            <Text
-              style={[styles.relativeDay, isSelected && styles.selectedText]}>
-              {relativeDay}
-            </Text>
-          ) : null}
-          <Text style={[styles.dateText, isSelected && styles.selectedText]}>
-            {formattedDate}
-          </Text>
-          <View style={styles.separator} />
-          <Text style={[styles.contentText, isSelected && styles.selectedText]}>
-            Schedule for {relativeDay.toLowerCase() || formattedDate}
-          </Text>
-          {/* Add debug text */}
-          <Text style={styles.debugText}>ISO: {date.toISOString()}</Text>
+  const renderContent = () => {
+    if (isLoading) {
+      return (
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color="#1976d2" />
+          <Text style={styles.loadingText}>Loading matches...</Text>
         </View>
-      </View>
-    </View>
-  );
+      );
+    }
+
+    if (matches.length === 0) {
+      return (
+        <View style={styles.noMatchesContainer}>
+          <Text style={styles.noMatchesText}>
+            No matches scheduled for this day
+          </Text>
+        </View>
+      );
+    }
+
+    return matches.map(match => (
+      <MatchCard key={match.fixture.id} match={match} />
+    ));
+  };
+
+  return <ScrollView style={styles.container}>{renderContent()}</ScrollView>;
 };
 
 const styles = StyleSheet.create({
@@ -86,7 +204,6 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#f5f5f5',
     padding: 16,
-    justifyContent: 'flex-start',
   },
   card: {
     backgroundColor: '#fff',
@@ -100,7 +217,6 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 3,
     marginBottom: 16,
-    minHeight: 150,
   },
   selectedCard: {
     backgroundColor: '#e3f2fd',
@@ -129,31 +245,101 @@ const styles = StyleSheet.create({
     marginBottom: 12,
     textAlign: 'center',
   },
-  separator: {
-    height: 1,
-    backgroundColor: '#e0e0e0',
-    width: '100%',
-    marginVertical: 12,
-  },
-  contentText: {
-    fontSize: 16,
-    color: '#000',
-    textAlign: 'center',
-    marginTop: 12,
-  },
   selectedText: {
     color: '#1976d2',
   },
-  debugText: {
-    fontSize: 10,
+  matchCard: {
+    backgroundColor: '#fff',
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 12,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.08,
+    shadowRadius: 2,
+    elevation: 2,
+  },
+  competitionName: {
+    fontSize: 14,
     color: '#666',
-    marginTop: 8,
+    marginBottom: 12,
+    textAlign: 'center',
+  },
+  matchInfo: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  teamContainer: {
+    flex: 2,
+    alignItems: 'center',
+  },
+  scoreContainer: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  teamLogo: {
+    width: 40,
+    height: 40,
+    marginBottom: 8,
+  },
+  winnerTeam: {
+    transform: [{scale: 1.1}],
+  },
+  teamName: {
+    fontSize: 14,
+    fontWeight: '500',
+    textAlign: 'center',
+    color: '#333',
+  },
+  winnerText: {
+    color: '#2196f3',
+    fontWeight: '700',
+  },
+  scoreText: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: '#1976d2',
+    marginBottom: 4,
+  },
+  matchStatus: {
+    fontSize: 12,
+    color: '#666',
+    textAlign: 'center',
+  },
+  loadingContainer: {
+    padding: 32,
+    alignItems: 'center',
+    justifyContent: 'center',
+    minHeight: 200,
+  },
+  loadingText: {
+    fontSize: 16,
+    color: '#666',
+    marginTop: 16,
+    textAlign: 'center',
+  },
+  noMatchesContainer: {
+    padding: 32,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  noMatchesText: {
+    fontSize: 16,
+    color: '#666',
+    textAlign: 'center',
   },
 });
 
 export default React.memo(DateScreen, (prev, next) => {
   return (
     prev.date.getTime() === next.date.getTime() &&
-    prev.isSelected === next.isSelected
+    prev.isSelected === next.isSelected &&
+    prev.matches === next.matches &&
+    prev.isLoading === next.isLoading
   );
 });
