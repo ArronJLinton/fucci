@@ -11,6 +11,7 @@ import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {StatusBar, useColorScheme} from 'react-native';
 import {Colors} from 'react-native/Libraries/NewAppScreen';
 import Icon from 'react-native-vector-icons/Ionicons';
+import {SafeAreaProvider, SafeAreaView} from 'react-native-safe-area-context';
 
 // Screens
 import HomeScreen from './src/screens/HomeScreen';
@@ -23,58 +24,64 @@ function App(): React.JSX.Element {
   const isDarkMode = useColorScheme() === 'dark';
   const backgroundStyle = {
     backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
+    flex: 1,
   };
 
   return (
-    <NavigationContainer>
-      <StatusBar
-        barStyle={isDarkMode ? 'light-content' : 'dark-content'}
-        backgroundColor={backgroundStyle.backgroundColor}
-      />
-      <Tab.Navigator
-        screenOptions={{
-          tabBarActiveTintColor: '#007AFF',
-          tabBarInactiveTintColor: 'gray',
-          tabBarStyle: {
-            backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
-          },
-          headerStyle: {
-            backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
-          },
-          headerTintColor: isDarkMode ? Colors.lighter : Colors.darker,
-        }}>
-        <Tab.Screen
-          name="Home"
-          component={HomeScreen}
-          options={{
-            title: 'Home',
-            tabBarIcon: ({color, size}) => (
-              <Icon name="home-outline" size={size} color={color} />
-            ),
-          }}
-        />
-        <Tab.Screen
-          name="Profile"
-          component={ProfileScreen}
-          options={{
-            title: 'Profile',
-            tabBarIcon: ({color, size}) => (
-              <Icon name="person-outline" size={size} color={color} />
-            ),
-          }}
-        />
-        <Tab.Screen
-          name="Settings"
-          component={SettingsScreen}
-          options={{
-            title: 'Settings',
-            tabBarIcon: ({color, size}) => (
-              <Icon name="settings-outline" size={size} color={color} />
-            ),
-          }}
-        />
-      </Tab.Navigator>
-    </NavigationContainer>
+    <SafeAreaProvider>
+      <NavigationContainer>
+        <SafeAreaView style={backgroundStyle}>
+          <StatusBar
+            barStyle={isDarkMode ? 'light-content' : 'dark-content'}
+            backgroundColor={backgroundStyle.backgroundColor}
+          />
+          <Tab.Navigator
+            screenOptions={{
+              tabBarActiveTintColor: '#007AFF',
+              tabBarInactiveTintColor: 'gray',
+              tabBarStyle: {
+                backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
+              },
+              headerStyle: {
+                backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
+              },
+              headerTintColor: isDarkMode ? Colors.lighter : Colors.darker,
+            }}>
+            <Tab.Screen
+              name="Home"
+              component={HomeScreen}
+              options={{
+                headerShown: false,
+                title: 'Home',
+                tabBarIcon: ({color, size}) => (
+                  <Icon name="home-outline" size={size} color={color} />
+                ),
+              }}
+            />
+            <Tab.Screen
+              name="Profile"
+              component={ProfileScreen}
+              options={{
+                title: 'Profile',
+                tabBarIcon: ({color, size}) => (
+                  <Icon name="person-outline" size={size} color={color} />
+                ),
+              }}
+            />
+            <Tab.Screen
+              name="Settings"
+              component={SettingsScreen}
+              options={{
+                title: 'Settings',
+                tabBarIcon: ({color, size}) => (
+                  <Icon name="settings-outline" size={size} color={color} />
+                ),
+              }}
+            />
+          </Tab.Navigator>
+        </SafeAreaView>
+      </NavigationContainer>
+    </SafeAreaProvider>
   );
 }
 

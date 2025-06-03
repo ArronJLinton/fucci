@@ -1,7 +1,8 @@
-import React, {useMemo, useCallback} from 'react';
+import React, {useMemo} from 'react';
 import {useWindowDimensions} from 'react-native';
 import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
 import type {NavigationState} from '@react-navigation/native';
+import {useNavigation, useRoute} from '@react-navigation/native';
 import DateScreen from './DateScreen';
 
 type RootTabParamList = {
@@ -9,6 +10,29 @@ type RootTabParamList = {
 };
 
 const Tab = createMaterialTopTabNavigator<RootTabParamList>();
+
+const fetchMatches = async (date: Date) => {
+  try {
+    const formattedDate = `${date.getFullYear()}-${String(
+      date.getMonth() + 1,
+    ).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+
+    const apiUrl = `https://fucci-api-staging.up.railway.app/v1/api/futbol/matches?date=${formattedDate}`;
+
+    const requestOptions = {
+      method: 'GET',
+      redirect: 'follow',
+    } as RequestInit;
+
+    const response = await fetch(apiUrl, requestOptions);
+    const data = await response.json();
+    console.log('data', data);
+    return data;
+  } catch (error) {
+    console.error('Error fetching matches:', error);
+    return null;
+  }
+};
 
 const getTabLabel = (date: Date) => {
   const today = new Date();
@@ -36,23 +60,40 @@ const getTabLabel = (date: Date) => {
   return `${days[date.getDay()]} ${date.getDate()}`;
 };
 
+type DateTabScreenProps = {
+  date: Date;
+};
+
+const DateTabScreen: React.FC<DateTabScreenProps> = ({date}) => {
+  const route = useRoute();
+  const navigation = useNavigation();
+  const currentRoute = (navigation.getState() as NavigationState).routes[
+    (navigation.getState() as NavigationState).index
+  ].name;
+  const isSelected = route.name === currentRoute;
+
+  React.useEffect(() => {
+    if (isSelected) {
+      console.log('Fetching matches for date:', date.toISOString());
+      fetchMatches(date);
+    }
+  }, [isSelected, date]);
+
+  return <DateScreen date={date} isSelected={isSelected} />;
+};
+
 const HomeScreen = () => {
   const {width} = useWindowDimensions();
 
   const dates = useMemo(() => {
-    const today = new Date();
+    const now = new Date();
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
     const dateArray = [];
-
-    // Log the actual today's date for debugging
-    console.log('Today:', today.toISOString());
 
     for (let i = -3; i <= 3; i++) {
       const date = new Date(today);
       date.setDate(today.getDate() + i);
-      date.setHours(0, 0, 0, 0);
       dateArray.push(date);
-      // Log each generated date for debugging
-      console.log(`Date ${i}:`, date.toISOString());
     }
 
     return dateArray;
@@ -68,25 +109,6 @@ const HomeScreen = () => {
     const initialDate = dates[todayIndex !== -1 ? todayIndex : 0];
     return `date-${initialDate.toISOString()}`;
   }, [dates, todayIndex]);
-
-  const renderDateScreen = useCallback(({route, navigation}: any) => {
-    const currentRoute = (navigation.getState() as NavigationState).routes[
-      (navigation.getState() as NavigationState).index
-    ].name;
-    const isSelected = route.name === currentRoute;
-    const dateString = route.name.split('-')[1];
-    const date = new Date(dateString);
-
-    console.log('HomeScreen rendering DateScreen:', {
-      routeName: route.name,
-      currentRoute,
-      isSelected,
-      dateString,
-      date: date.toISOString(),
-    });
-
-    return <DateScreen key={route.name} date={date} isSelected={isSelected} />;
-  }, []);
 
   return (
     <Tab.Navigator
@@ -112,18 +134,18 @@ const HomeScreen = () => {
       {dates.map(date => {
         const dateString = date.toISOString();
         const screenKey = `date-${dateString}`;
-        console.log('TAB DATE:', dateString, screenKey);
+
         return (
           <Tab.Screen
             key={screenKey}
             name={screenKey}
-            component={renderDateScreen}
             options={{
               title: getTabLabel(date),
               tabBarLabel: getTabLabel(date),
               tabBarAccessibilityLabel: `Switch to ${getTabLabel(date)}`,
-            }}
-          />
+            }}>
+            {() => <DateTabScreen date={date} />}
+          </Tab.Screen>
         );
       })}
     </Tab.Navigator>

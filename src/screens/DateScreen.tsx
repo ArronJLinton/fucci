@@ -7,24 +7,24 @@ interface DateScreenProps {
 }
 
 const formatDate = (date: Date) => {
-  const formatter = new Intl.DateTimeFormat(undefined, {
+  const formatter = new Intl.DateTimeFormat('en-US', {
     weekday: 'long',
     year: 'numeric',
     month: 'long',
     day: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
-    timeZoneName: 'short',
   });
 
   return formatter.format(date);
 };
 
 const getRelativeDay = (date: Date) => {
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  const compareDate = new Date(date);
-  compareDate.setHours(0, 0, 0, 0);
+  const now = new Date();
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const compareDate = new Date(
+    date.getFullYear(),
+    date.getMonth(),
+    date.getDate(),
+  );
 
   if (compareDate.getTime() === today.getTime()) {
     return 'Today';
