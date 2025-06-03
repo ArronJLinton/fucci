@@ -8,73 +8,54 @@
 import React from 'react';
 import {NavigationContainer} from '@react-navigation/native';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
-import {StatusBar, useColorScheme} from 'react-native';
-import {Colors} from 'react-native/Libraries/NewAppScreen';
+import {StatusBar} from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import {SafeAreaProvider, SafeAreaView} from 'react-native-safe-area-context';
 
 // Screens
 import HomeScreen from './src/screens/HomeScreen';
-import ProfileScreen from './src/screens/ProfileScreen';
-import SettingsScreen from './src/screens/SettingsScreen';
 
 const Tab = createBottomTabNavigator();
 
 function App(): React.JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
-  const backgroundStyle = {
-    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
-    flex: 1,
-  };
-
   return (
     <SafeAreaProvider>
       <NavigationContainer>
-        <SafeAreaView style={backgroundStyle}>
-          <StatusBar
-            barStyle={isDarkMode ? 'light-content' : 'dark-content'}
-            backgroundColor={backgroundStyle.backgroundColor}
-          />
+        <SafeAreaView style={{flex: 1, backgroundColor: '#fff'}}>
+          <StatusBar barStyle="dark-content" backgroundColor="#fff" />
           <Tab.Navigator
             screenOptions={{
               tabBarActiveTintColor: '#007AFF',
-              tabBarInactiveTintColor: 'gray',
+              tabBarInactiveTintColor: '#666',
               tabBarStyle: {
-                backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
+                backgroundColor: '#fff',
+                borderTopColor: '#e0e0e0',
+                borderTopWidth: 1,
+                elevation: 0,
+                shadowOpacity: 0,
+                height: 60,
+                paddingBottom: 8,
               },
               headerStyle: {
-                backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
+                backgroundColor: '#fff',
+                elevation: 0,
+                shadowOpacity: 0,
+                borderBottomWidth: 1,
+                borderBottomColor: '#e0e0e0',
               },
-              headerTintColor: isDarkMode ? Colors.lighter : Colors.darker,
+              headerTintColor: '#000',
+              headerTitleStyle: {
+                fontWeight: '600',
+              },
             }}>
             <Tab.Screen
               name="Home"
               component={HomeScreen}
               options={{
                 headerShown: false,
-                title: 'Home',
+                title: 'Matches',
                 tabBarIcon: ({color, size}) => (
-                  <Icon name="home-outline" size={size} color={color} />
-                ),
-              }}
-            />
-            <Tab.Screen
-              name="Profile"
-              component={ProfileScreen}
-              options={{
-                title: 'Profile',
-                tabBarIcon: ({color, size}) => (
-                  <Icon name="person-outline" size={size} color={color} />
-                ),
-              }}
-            />
-            <Tab.Screen
-              name="Settings"
-              component={SettingsScreen}
-              options={{
-                title: 'Settings',
-                tabBarIcon: ({color, size}) => (
-                  <Icon name="settings-outline" size={size} color={color} />
+                  <Icon name="football-outline" size={size} color={color} />
                 ),
               }}
             />

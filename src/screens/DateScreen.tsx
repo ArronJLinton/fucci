@@ -47,51 +47,12 @@ interface DateScreenProps {
   isLoading?: boolean;
 }
 
-const formatDate = (date: Date) => {
-  const formatter = new Intl.DateTimeFormat('en-US', {
-    weekday: 'long',
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-  });
-
-  return formatter.format(date);
-};
-
 const formatTime = (dateString: string) => {
   const date = new Date(dateString);
   return date.toLocaleTimeString('en-US', {
     hour: '2-digit',
     minute: '2-digit',
   });
-};
-
-const getRelativeDay = (date: Date) => {
-  const now = new Date();
-  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-  const compareDate = new Date(
-    date.getFullYear(),
-    date.getMonth(),
-    date.getDate(),
-  );
-
-  if (compareDate.getTime() === today.getTime()) {
-    return 'Today';
-  }
-
-  const yesterday = new Date(today);
-  yesterday.setDate(today.getDate() - 1);
-  if (compareDate.getTime() === yesterday.getTime()) {
-    return 'Yesterday';
-  }
-
-  const tomorrow = new Date(today);
-  tomorrow.setDate(today.getDate() + 1);
-  if (compareDate.getTime() === tomorrow.getTime()) {
-    return 'Tomorrow';
-  }
-
-  return '';
 };
 
 const getMatchStatus = (status: Match['fixture']['status']) => {
@@ -163,14 +124,11 @@ const MatchCard: React.FC<{match: Match}> = ({match}) => (
 );
 
 const DateScreen: React.FC<DateScreenProps> = ({
-  date,
-  isSelected = false,
+  date: _date,
+  isSelected: _isSelected = false,
   matches = [],
   isLoading = false,
 }) => {
-  const formattedDate = formatDate(date);
-  const relativeDay = getRelativeDay(date);
-
   const renderContent = () => {
     if (isLoading) {
       return (
@@ -185,7 +143,12 @@ const DateScreen: React.FC<DateScreenProps> = ({
       return (
         <View style={styles.noMatchesContainer}>
           <Text style={styles.noMatchesText}>
-            No matches scheduled for this day
+            {isLoading ? 'Loading matches...' : 'No matches found'}
+          </Text>
+          <Text style={styles.noMatchesSubText}>
+            {isLoading
+              ? 'Please wait while we fetch the matches'
+              : 'Try adjusting your search or check another date'}
           </Text>
         </View>
       );
@@ -327,10 +290,18 @@ const styles = StyleSheet.create({
     padding: 32,
     alignItems: 'center',
     justifyContent: 'center',
+    minHeight: 200,
   },
   noMatchesText: {
-    fontSize: 16,
+    fontSize: 18,
+    fontWeight: '600',
     color: '#666',
+    textAlign: 'center',
+    marginBottom: 8,
+  },
+  noMatchesSubText: {
+    fontSize: 14,
+    color: '#999',
     textAlign: 'center',
   },
 });
