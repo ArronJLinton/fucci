@@ -6,39 +6,11 @@ import {
   ScrollView,
   Image,
   ActivityIndicator,
+  TouchableOpacity,
 } from 'react-native';
-
-interface Match {
-  fixture: {
-    id: number;
-    date: string;
-    status: {
-      long: string;
-      short: string;
-      elapsed: number;
-    };
-  };
-  league: {
-    name: string;
-    logo: string;
-  };
-  teams: {
-    home: {
-      name: string;
-      logo: string;
-      winner: boolean | null;
-    };
-    away: {
-      name: string;
-      logo: string;
-      winner: boolean | null;
-    };
-  };
-  goals: {
-    home: number | null;
-    away: number | null;
-  };
-}
+import {useNavigation} from '@react-navigation/native';
+import type {Match} from '../types/match';
+import type {NavigationProp} from '../types/navigation';
 
 interface DateScreenProps {
   date: Date;
@@ -75,53 +47,61 @@ const getScoreDisplay = (goals: Match['goals']) => {
   return `${goals.home} - ${goals.away}`;
 };
 
-const MatchCard: React.FC<{match: Match}> = ({match}) => (
-  <View style={styles.matchCard}>
-    <Text style={styles.competitionName}>{match.league.name}</Text>
-    <View style={styles.matchInfo}>
-      <View style={styles.teamContainer}>
-        <Image
-          source={{uri: match.teams.home.logo}}
-          style={[
-            styles.teamLogo,
-            match.teams.home.winner && styles.winnerTeam,
-          ]}
-          resizeMode="contain"
-        />
-        <Text
-          style={[
-            styles.teamName,
-            match.teams.home.winner && styles.winnerText,
-          ]}>
-          {match.teams.home.name}
-        </Text>
+const MatchCard: React.FC<{match: Match}> = ({match}) => {
+  const navigation = useNavigation<NavigationProp>();
+
+  const handlePress = () => {
+    navigation.navigate('MatchDetails', {match});
+  };
+
+  return (
+    <TouchableOpacity style={styles.matchCard} onPress={handlePress}>
+      <Text style={styles.competitionName}>{match.league.name}</Text>
+      <View style={styles.matchInfo}>
+        <View style={styles.teamContainer}>
+          <Image
+            source={{uri: match.teams.home.logo}}
+            style={[
+              styles.teamLogo,
+              match.teams.home.winner && styles.winnerTeam,
+            ]}
+            resizeMode="contain"
+          />
+          <Text
+            style={[
+              styles.teamName,
+              match.teams.home.winner && styles.winnerText,
+            ]}>
+            {match.teams.home.name}
+          </Text>
+        </View>
+        <View style={styles.scoreContainer}>
+          <Text style={styles.scoreText}>{getScoreDisplay(match.goals)}</Text>
+          <Text style={styles.matchStatus}>
+            {getMatchStatus(match.fixture.status)}
+          </Text>
+        </View>
+        <View style={styles.teamContainer}>
+          <Image
+            source={{uri: match.teams.away.logo}}
+            style={[
+              styles.teamLogo,
+              match.teams.away.winner && styles.winnerTeam,
+            ]}
+            resizeMode="contain"
+          />
+          <Text
+            style={[
+              styles.teamName,
+              match.teams.away.winner && styles.winnerText,
+            ]}>
+            {match.teams.away.name}
+          </Text>
+        </View>
       </View>
-      <View style={styles.scoreContainer}>
-        <Text style={styles.scoreText}>{getScoreDisplay(match.goals)}</Text>
-        <Text style={styles.matchStatus}>
-          {getMatchStatus(match.fixture.status)}
-        </Text>
-      </View>
-      <View style={styles.teamContainer}>
-        <Image
-          source={{uri: match.teams.away.logo}}
-          style={[
-            styles.teamLogo,
-            match.teams.away.winner && styles.winnerTeam,
-          ]}
-          resizeMode="contain"
-        />
-        <Text
-          style={[
-            styles.teamName,
-            match.teams.away.winner && styles.winnerText,
-          ]}>
-          {match.teams.away.name}
-        </Text>
-      </View>
-    </View>
-  </View>
-);
+    </TouchableOpacity>
+  );
+};
 
 const DateScreen: React.FC<DateScreenProps> = ({
   date: _date,
