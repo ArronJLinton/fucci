@@ -11,17 +11,12 @@ import {useRoute, RouteProp} from '@react-navigation/native';
 import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
 import type {Match} from '../types/match';
 import type {RootStackParamList} from '../types/navigation';
+import StoryScreen from './StoryScreen';
 
 type MatchDetailsRouteProp = RouteProp<RootStackParamList, 'MatchDetails'>;
 const Tab = createMaterialTopTabNavigator();
 
 // Tab Screen Components
-const StoryScreen = () => (
-  <View style={styles.tabContent}>
-    <Text style={styles.comingSoon}>Match Story Coming Soon</Text>
-  </View>
-);
-
 const LineupScreen = () => (
   <View style={styles.tabContent}>
     <Text style={styles.comingSoon}>Team Lineups Coming Soon</Text>
@@ -66,52 +61,32 @@ const getMatchStatus = (status: Match['fixture']['status']) => {
 
 const MatchDetailsScreen = () => {
   const route = useRoute<MatchDetailsRouteProp>();
-  const {match} = route.params;
   const {width} = useWindowDimensions();
+  const match = route.params.match;
 
   const MatchHeader = () => (
-    <View style={styles.header}>
-      <Text style={styles.leagueName}>{match.league.name}</Text>
-      <View style={styles.matchInfo}>
+    <View style={styles.headerContainer}>
+      <View style={styles.matchInfoContainer}>
         <View style={styles.teamContainer}>
           <Image
             source={{uri: match.teams.home.logo}}
-            style={[
-              styles.teamLogo,
-              match.teams.home.winner && styles.winnerTeam,
-            ]}
+            style={styles.teamLogo}
             resizeMode="contain"
           />
-          <Text
-            style={[
-              styles.teamName,
-              match.teams.home.winner && styles.winnerText,
-            ]}>
-            {match.teams.home.name}
-          </Text>
+          <Text style={styles.teamName}>{match.teams.home.name}</Text>
         </View>
         <View style={styles.scoreContainer}>
-          <Text style={styles.scoreText}>{getScoreDisplay(match.goals)}</Text>
-          <Text style={styles.matchStatus}>
-            {getMatchStatus(match.fixture.status)}
+          <Text style={styles.scoreText}>
+            {match.goals.home} - {match.goals.away}
           </Text>
         </View>
         <View style={styles.teamContainer}>
           <Image
             source={{uri: match.teams.away.logo}}
-            style={[
-              styles.teamLogo,
-              match.teams.away.winner && styles.winnerTeam,
-            ]}
+            style={styles.teamLogo}
             resizeMode="contain"
           />
-          <Text
-            style={[
-              styles.teamName,
-              match.teams.away.winner && styles.winnerText,
-            ]}>
-            {match.teams.away.name}
-          </Text>
+          <Text style={styles.teamName}>{match.teams.away.name}</Text>
         </View>
       </View>
     </View>
@@ -174,62 +149,37 @@ const MatchDetailsScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f5f5f5',
-  },
-  header: {
     backgroundColor: '#fff',
-    padding: 20,
-    borderBottomWidth: 1,
-    borderBottomColor: '#e0e0e0',
   },
-  leagueName: {
-    fontSize: 16,
-    color: '#666',
-    marginBottom: 16,
-    textAlign: 'center',
+  headerContainer: {
+    padding: 16,
+    backgroundColor: '#fff',
   },
-  matchInfo: {
+  matchInfoContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
   },
   teamContainer: {
-    flex: 2,
-    alignItems: 'center',
-  },
-  scoreContainer: {
     flex: 1,
     alignItems: 'center',
-    justifyContent: 'center',
   },
   teamLogo: {
-    width: 60,
-    height: 60,
-    marginBottom: 12,
-  },
-  winnerTeam: {
-    transform: [{scale: 1.1}],
+    width: 40,
+    height: 40,
+    marginBottom: 8,
   },
   teamName: {
-    fontSize: 16,
-    fontWeight: '500',
+    fontSize: 14,
+    fontWeight: '600',
     textAlign: 'center',
-    color: '#333',
   },
-  winnerText: {
-    color: '#2196f3',
-    fontWeight: '700',
+  scoreContainer: {
+    paddingHorizontal: 16,
   },
   scoreText: {
     fontSize: 24,
-    fontWeight: '700',
-    color: '#1976d2',
-    marginBottom: 6,
-  },
-  matchStatus: {
-    fontSize: 14,
-    color: '#666',
-    textAlign: 'center',
+    fontWeight: 'bold',
   },
   tabContent: {
     flex: 1,
