@@ -12,17 +12,12 @@ import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs
 import type {Match} from '../types/match';
 import type {RootStackParamList} from '../types/navigation';
 import StoryScreen from './StoryScreen';
+import LineupScreen from './LineupScreen';
 
 type MatchDetailsRouteProp = RouteProp<RootStackParamList, 'MatchDetails'>;
 const Tab = createMaterialTopTabNavigator();
 
 // Tab Screen Components
-const LineupScreen = () => (
-  <View style={styles.tabContent}>
-    <Text style={styles.comingSoon}>Team Lineups Coming Soon</Text>
-  </View>
-);
-
 const TableScreen = () => (
   <View style={styles.tabContent}>
     <Text style={styles.comingSoon}>League Table Coming Soon</Text>
@@ -122,11 +117,11 @@ const MatchDetailsScreen = () => {
         />
         <Tab.Screen
           name="Lineup"
-          component={LineupScreen}
           options={{
             tabBarLabel: 'Lineup',
-          }}
-        />
+          }}>
+          {() => <LineupScreen match={match} />}
+        </Tab.Screen>
         <Tab.Screen
           name="Table"
           component={TableScreen}
