@@ -33,7 +33,6 @@ const fetchMatches = async (date: Date) => {
 
     const response = await fetch(apiUrl, requestOptions);
     const data = await response.json();
-    console.log('data', data);
     return data.response;
   } catch (error) {
     console.error('Error fetching matches:', error);
