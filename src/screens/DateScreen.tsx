@@ -19,15 +19,10 @@ interface DateScreenProps {
   isLoading?: boolean;
 }
 
-const formatTime = (dateString: string) => {
-  const date = new Date(dateString);
-  return date.toLocaleTimeString('en-US', {
-    hour: '2-digit',
-    minute: '2-digit',
-  });
-};
-
-const getMatchStatus = (status: Match['fixture']['status']) => {
+const getMatchStatus = (
+  status: Match['fixture']['status'],
+  fixtureDate: string,
+) => {
   if (status.elapsed > 0) {
     return `${status.elapsed}'`;
   }
@@ -37,7 +32,11 @@ const getMatchStatus = (status: Match['fixture']['status']) => {
   if (status.short === 'FT') {
     return 'Full Time';
   }
-  return formatTime(status.long);
+  const date = new Date(fixtureDate);
+  return date.toLocaleTimeString('en-US', {
+    hour: '2-digit',
+    minute: '2-digit',
+  });
 };
 
 const getScoreDisplay = (goals: Match['goals']) => {
@@ -78,7 +77,7 @@ const MatchCard: React.FC<{match: Match}> = ({match}) => {
         <View style={styles.scoreContainer}>
           <Text style={styles.scoreText}>{getScoreDisplay(match.goals)}</Text>
           <Text style={styles.matchStatus}>
-            {getMatchStatus(match.fixture.status)}
+            {getMatchStatus(match.fixture.status, match.fixture.date)}
           </Text>
         </View>
         <View style={styles.teamContainer}>

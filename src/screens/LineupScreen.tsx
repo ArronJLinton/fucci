@@ -47,6 +47,12 @@ interface LineupData {
   };
 }
 
+// Helper function to get last name
+const getLastName = (fullName: string): string => {
+  const names = fullName.split(' ');
+  return names[names.length - 1];
+};
+
 const PlayerCard: React.FC<PlayerCardProps> = ({
   player,
   position,
@@ -77,7 +83,7 @@ const PlayerCard: React.FC<PlayerCardProps> = ({
         />
       </View>
       <Text style={[styles.playerName, isAwayTeam && styles.awayPlayerName]}>
-        {player.name}
+        {getLastName(player.name)}
       </Text>
       <Text
         style={[
@@ -108,10 +114,7 @@ const LineupScreen: React.FC<LineupScreenProps> = ({match}) => {
         }
 
         const apiUrl = `https://fucci-api-staging.up.railway.app/v1/api/futbol/lineup?match_id=${match.fixture.id}`;
-        console.log('Fetching lineup from URL:', apiUrl);
-
         const response = await fetch(apiUrl);
-        console.log('Response status:', response.status);
 
         if (!response.ok) {
           throw new Error(
@@ -120,7 +123,12 @@ const LineupScreen: React.FC<LineupScreenProps> = ({match}) => {
         }
 
         const data = await response.json();
-        console.log('Raw API response:', JSON.stringify(data, null, 2));
+
+        // Check for no lineup data message
+        if (data.message === 'No lineup data available') {
+          setLineupData(null);
+          return;
+        }
 
         // Validate the data structure
         if (!data || typeof data !== 'object') {
@@ -208,37 +216,24 @@ const LineupScreen: React.FC<LineupScreenProps> = ({match}) => {
     );
   }
 
-  if (error || !lineupData || !lineupData.home || !lineupData.away) {
+  if (!lineupData) {
     return (
       <View style={styles.centerContainer}>
-        <Text style={styles.errorText}>
-          {error || 'No lineup data available'}
-        </Text>
+        <Text style={styles.noDataText}>No lineup data available</Text>
+      </View>
+    );
+  }
+
+  if (error) {
+    return (
+      <View style={styles.centerContainer}>
+        <Text style={styles.errorText}>{error}</Text>
       </View>
     );
   }
 
   return (
     <ScrollView style={styles.container}>
-      <View style={styles.teamsHeader}>
-        <View style={styles.teamHeader}>
-          <Image
-            source={{uri: match.teams.home.logo}}
-            style={styles.teamLogo}
-            resizeMode="contain"
-          />
-          <Text style={styles.teamName}>{match.teams.home.name}</Text>
-        </View>
-        <View style={styles.teamHeader}>
-          <Image
-            source={{uri: match.teams.away.logo}}
-            style={styles.teamLogo}
-            resizeMode="contain"
-          />
-          <Text style={styles.teamName}>{match.teams.away.name}</Text>
-        </View>
-      </View>
-
       <View style={[styles.field, {width: width, height: width * 2.0}]}>
         {/* Field markings */}
         <View style={styles.halfwayLine} />
@@ -418,7 +413,9 @@ const LineupScreen: React.FC<LineupScreenProps> = ({match}) => {
                   style={styles.substitutePhoto}
                   resizeMode="cover"
                 />
-                <Text style={styles.substituteName}>{player.name}</Text>
+                <Text style={styles.substituteName}>
+                  {getLastName(player.name)}
+                </Text>
                 <Text style={styles.substitutePosition}>{player.pos}</Text>
               </View>
             ))}
@@ -441,7 +438,9 @@ const LineupScreen: React.FC<LineupScreenProps> = ({match}) => {
                   style={styles.substitutePhoto}
                   resizeMode="cover"
                 />
-                <Text style={styles.substituteName}>{player.name}</Text>
+                <Text style={styles.substituteName}>
+                  {getLastName(player.name)}
+                </Text>
                 <Text style={styles.substitutePosition}>{player.pos}</Text>
               </View>
             ))}
@@ -471,6 +470,11 @@ const styles = StyleSheet.create({
   errorText: {
     fontSize: 16,
     color: '#ff3b30',
+    textAlign: 'center',
+  },
+  noDataText: {
+    fontSize: 16,
+    color: '#666',
     textAlign: 'center',
   },
   teamsHeader: {
