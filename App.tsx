@@ -17,6 +17,7 @@ import {SafeAreaProvider, SafeAreaView} from 'react-native-safe-area-context';
 import HomeScreen from './src/screens/HomeScreen';
 import MatchDetailsScreen from './src/screens/MatchDetailsScreen';
 import CameraPreviewScreen from './src/screens/CameraPreviewScreen';
+import {TableScreen} from './src/screens/TableScreen';
 
 // Types
 import type {RootStackParamList} from './src/types/navigation';
@@ -30,13 +31,28 @@ const HomeStack = () => {
       <Stack.Screen
         name="HomeTab"
         component={HomeScreen}
-        options={{headerShown: false}}
+        options={{
+          headerShown: false,
+          title: '',
+        }}
       />
       <Stack.Screen
         name="MatchDetails"
         component={MatchDetailsScreen}
         options={{
           title: '',
+          headerStyle: {
+            backgroundColor: '#fff',
+          },
+          headerShadowVisible: false,
+          headerTintColor: '#007AFF',
+        }}
+      />
+      <Stack.Screen
+        name="Table"
+        component={TableScreen}
+        options={{
+          title: 'League Table',
           headerStyle: {
             backgroundColor: '#fff',
           },
@@ -82,10 +98,11 @@ const MainStack = () => {
           component={HomeStack}
           options={{
             headerShown: false,
-            title: 'Matches',
             tabBarIcon: ({color, size}) => (
               <Icon name="football-outline" size={size} color={color} />
             ),
+            tabBarLabel: () => null,
+            title: '',
           }}
         />
       </Tab.Navigator>

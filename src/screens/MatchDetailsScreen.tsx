@@ -9,50 +9,20 @@ import {
 } from 'react-native';
 import {useRoute, RouteProp} from '@react-navigation/native';
 import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
-import type {Match} from '../types/match';
 import type {RootStackParamList} from '../types/navigation';
 import StoryScreen from './StoryScreen';
 import LineupScreen from './LineupScreen';
+import {TableScreen} from './TableScreen';
 
 type MatchDetailsRouteProp = RouteProp<RootStackParamList, 'MatchDetails'>;
 const Tab = createMaterialTopTabNavigator();
 
 // Tab Screen Components
-const TableScreen = () => (
-  <View style={styles.tabContent}>
-    <Text style={styles.comingSoon}>League Table Coming Soon</Text>
-  </View>
-);
-
 const NewsScreen = () => (
   <View style={styles.tabContent}>
     <Text style={styles.comingSoon}>Match News Coming Soon</Text>
   </View>
 );
-
-const getScoreDisplay = (goals: Match['goals']) => {
-  if (goals.home === null || goals.away === null) {
-    return 'vs';
-  }
-  return `${goals.home} - ${goals.away}`;
-};
-
-const getMatchStatus = (status: Match['fixture']['status']) => {
-  if (status.elapsed > 0) {
-    return `${status.elapsed}'`;
-  }
-  if (status.short === 'PST') {
-    return 'Postponed';
-  }
-  if (status.short === 'FT') {
-    return 'Full Time';
-  }
-  const date = new Date(status.long);
-  return date.toLocaleTimeString('en-US', {
-    hour: '2-digit',
-    minute: '2-digit',
-  });
-};
 
 const MatchDetailsScreen = () => {
   const route = useRoute<MatchDetailsRouteProp>();
@@ -124,11 +94,11 @@ const MatchDetailsScreen = () => {
         </Tab.Screen>
         <Tab.Screen
           name="Table"
-          component={TableScreen}
           options={{
             tabBarLabel: 'Table',
-          }}
-        />
+          }}>
+          {() => <TableScreen match={match} />}
+        </Tab.Screen>
         <Tab.Screen
           name="News"
           component={NewsScreen}
@@ -154,6 +124,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+    marginBottom: 16,
   },
   teamContainer: {
     flex: 1,
@@ -186,6 +157,26 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#666',
     textAlign: 'center',
+  },
+  headerActions: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: 16,
+  },
+  headerButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    borderRadius: 8,
+    backgroundColor: '#F2F2F7',
+  },
+  headerButtonText: {
+    color: '#007AFF',
+    fontSize: 14,
+    fontWeight: '600',
   },
 });
 

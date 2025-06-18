@@ -9,8 +9,10 @@ export interface Match {
     };
   };
   league: {
+    id: number;
     name: string;
     logo: string;
+    season: number;
   };
   teams: {
     home: {
