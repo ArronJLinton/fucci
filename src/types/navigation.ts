@@ -9,6 +9,9 @@ export type RootStackParamList = {
   MatchDetails: {
     match: Match;
   };
+  Table: {
+    match: Match;
+  };
   CameraPreview: {
     onPhotoCapture: (uri: string, type: MediaType) => void;
   };
