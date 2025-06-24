@@ -168,45 +168,6 @@ const LineupScreen: React.FC<LineupScreenProps> = ({match}) => {
     fetchLineup();
   }, [match]);
 
-  useEffect(() => {
-    if (lineupData) {
-      // Log raw player data
-      console.log(
-        'Raw home players:',
-        JSON.stringify(lineupData.home.starters, null, 2),
-      );
-      console.log(
-        'Raw away players:',
-        JSON.stringify(lineupData.away.starters, null, 2),
-      );
-
-      // Log all grid positions to see what format they're in
-      console.log(
-        'Home players grid positions:',
-        lineupData.home.starters.map(p => ({
-          name: p.name,
-          grid: p.grid,
-          pos: p.pos,
-        })),
-      );
-      console.log(
-        'Away players grid positions:',
-        lineupData.away.starters.map(p => ({
-          name: p.name,
-          grid: p.grid,
-          pos: p.pos,
-        })),
-      );
-
-      // Log all goalkeepers (by position)
-      const homeGoalkeeper = lineupData.home.starters.find(p => p.pos === 'G');
-      const awayGoalkeeper = lineupData.away.starters.find(p => p.pos === 'G');
-
-      console.log('Found home goalkeeper by position:', homeGoalkeeper);
-      console.log('Found away goalkeeper by position:', awayGoalkeeper);
-    }
-  }, [lineupData]);
-
   if (isLoading) {
     return (
       <View style={styles.centerContainer}>

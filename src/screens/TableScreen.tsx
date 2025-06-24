@@ -52,7 +52,6 @@ export const TableScreen: React.FC<TableScreenProps> = ({match}) => {
         setLoading(true);
         const {id, season} = match.league;
         const data = await fetchStandings(id, season);
-        console.log('data', data);
         setStandings(data);
         setError(null);
       } catch (err) {
