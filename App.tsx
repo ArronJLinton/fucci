@@ -17,7 +17,7 @@ import {SafeAreaProvider, SafeAreaView} from 'react-native-safe-area-context';
 import HomeScreen from './src/screens/HomeScreen';
 import MatchDetailsScreen from './src/screens/MatchDetailsScreen';
 import CameraPreviewScreen from './src/screens/CameraPreviewScreen';
-import {TableScreen} from './src/screens/TableScreen';
+import NewsWebViewScreen from './src/screens/NewsWebViewScreen';
 
 // Types
 import type {RootStackParamList} from './src/types/navigation';
@@ -41,18 +41,6 @@ const HomeStack = () => {
         component={MatchDetailsScreen}
         options={{
           title: '',
-          headerStyle: {
-            backgroundColor: '#fff',
-          },
-          headerShadowVisible: false,
-          headerTintColor: '#007AFF',
-        }}
-      />
-      <Stack.Screen
-        name="Table"
-        component={TableScreen}
-        options={{
-          title: 'League Table',
           headerStyle: {
             backgroundColor: '#fff',
           },
@@ -121,6 +109,14 @@ function App(): React.JSX.Element {
               name="CameraPreview"
               component={CameraPreviewScreen}
               options={{
+                animation: 'slide_from_bottom',
+              }}
+            />
+            <Stack.Screen
+              name="NewsWebView"
+              component={NewsWebViewScreen}
+              options={{
+                headerShown: false,
                 animation: 'slide_from_bottom',
               }}
             />
