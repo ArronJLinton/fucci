@@ -12,17 +12,11 @@ import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs
 import type {RootStackParamList} from '../types/navigation';
 import StoryScreen from './StoryScreen';
 import LineupScreen from './LineupScreen';
+import NewsScreen from './NewsScreen';
 import {TableScreen} from './TableScreen';
 
 type MatchDetailsRouteProp = RouteProp<RootStackParamList, 'MatchDetails'>;
 const Tab = createMaterialTopTabNavigator();
-
-// Tab Screen Components
-const NewsScreen = () => (
-  <View style={styles.tabContent}>
-    <Text style={styles.comingSoon}>Match News Coming Soon</Text>
-  </View>
-);
 
 const MatchDetailsScreen = () => {
   const route = useRoute<MatchDetailsRouteProp>();
@@ -101,11 +95,11 @@ const MatchDetailsScreen = () => {
         </Tab.Screen>
         <Tab.Screen
           name="News"
-          component={NewsScreen}
           options={{
             tabBarLabel: 'News',
-          }}
-        />
+          }}>
+          {() => <NewsScreen match={match} />}
+        </Tab.Screen>
       </Tab.Navigator>
     </SafeAreaView>
   );
@@ -146,17 +140,6 @@ const styles = StyleSheet.create({
   scoreText: {
     fontSize: 24,
     fontWeight: 'bold',
-  },
-  tabContent: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#fff',
-  },
-  comingSoon: {
-    fontSize: 16,
-    color: '#666',
-    textAlign: 'center',
   },
   headerActions: {
     flexDirection: 'row',
