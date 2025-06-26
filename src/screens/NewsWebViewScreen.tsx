@@ -26,7 +26,11 @@ const NewsWebViewScreen: React.FC = () => {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
-        <TouchableOpacity style={styles.closeButton} onPress={handleClose}>
+        <TouchableOpacity
+          style={styles.closeButton}
+          onPress={handleClose}
+          accessibilityLabel="Close news view"
+        >
           <Icon name="close" size={24} color="#333" />
         </TouchableOpacity>
       </View>
