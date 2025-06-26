@@ -13,6 +13,7 @@ import type {RootStackParamList} from '../types/navigation';
 import StoryScreen from './StoryScreen';
 import LineupScreen from './LineupScreen';
 import NewsScreen from './NewsScreen';
+import DebateScreen from './DebateScreen';
 import {TableScreen} from './TableScreen';
 
 type MatchDetailsRouteProp = RouteProp<RootStackParamList, 'MatchDetails'>;
@@ -58,7 +59,7 @@ const MatchDetailsScreen = () => {
         screenOptions={{
           tabBarScrollEnabled: true,
           tabBarItemStyle: {
-            width: width / 4,
+            width: width / 5,
           },
           tabBarStyle: {
             backgroundColor: '#fff',
@@ -99,6 +100,13 @@ const MatchDetailsScreen = () => {
             tabBarLabel: 'News',
           }}>
           {() => <NewsScreen match={match} />}
+        </Tab.Screen>
+        <Tab.Screen
+          name="Debate"
+          options={{
+            tabBarLabel: 'Debate',
+          }}>
+          {() => <DebateScreen match={match} />}
         </Tab.Screen>
       </Tab.Navigator>
     </SafeAreaView>
