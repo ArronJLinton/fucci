@@ -12,6 +12,12 @@ export type RootStackParamList = {
   Table: {
     match: Match;
   };
+  News: {
+    match: Match;
+  };
+  NewsWebView: {
+    url: string;
+  };
   CameraPreview: {
     onPhotoCapture: (uri: string, type: MediaType) => void;
   };
