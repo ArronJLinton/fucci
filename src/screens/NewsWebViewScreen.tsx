@@ -15,7 +15,7 @@ type NewsWebViewRouteProp = RouteProp<RootStackParamList, 'NewsWebView'>;
 
 const NewsWebViewScreen: React.FC = () => {
   const route = useRoute<NewsWebViewRouteProp>();
-  const navigation = useNavigation();
+  const navigation = useNavigation<NavigationProp<RootStackParamList, 'NewsWebView'>>();
   const [isLoading, setIsLoading] = React.useState(true);
   const {url} = route.params;
 
