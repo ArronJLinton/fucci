@@ -29,7 +29,7 @@ interface NewsScreenProps {
 }
 
 const NewsScreen: React.FC<NewsScreenProps> = ({match}) => {
-  const navigation = useNavigation<NavigationProp>();
+  const navigation = useNavigation<NavigationProp<RootStackParamList, 'News'>>();
   const [newsData, setNewsData] = useState<NewsItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
