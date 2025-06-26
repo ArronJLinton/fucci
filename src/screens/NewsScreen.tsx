@@ -144,7 +144,7 @@ const NewsScreen: React.FC<NewsScreenProps> = ({match}) => {
       <View style={styles.newsContainer}>
         {newsData.map((item, index) => (
           <TouchableOpacity
-            key={index}
+            key={item.newsUrl}
             style={styles.newsItem}
             onPress={() => handleNewsItemPress(item.newsUrl)}>
             {(item.images.thumbnail || item.images.thumbnailProxied) && (
