@@ -90,8 +90,8 @@ const NewsScreen: React.FC<NewsScreenProps> = ({match}) => {
           newsItems = data.organic_results;
         } else {
           // If the structure is different, try to extract what we can
-          console.log('Unexpected data structure, attempting to parse:', data);
-          // You might need to adjust this based on the actual API response structure
+          console.error('Unexpected data structure encountered:', data);
+          // Log the error and gracefully handle the unexpected data structure
           setNewsData([]);
           return;
         }
