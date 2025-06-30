@@ -58,7 +58,7 @@ const DebateScreen: React.FC<DebateScreenProps> = ({match}) => {
     fetchDebate();
   }, [match, debateType]);
 
-  const getStanceColor = (stance: string) => {
+  const getStanceColor = (stance: DebateType) => {
     switch (stance) {
       case 'agree':
         return '#4CAF50';
