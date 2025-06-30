@@ -11,16 +11,13 @@ export interface DebateCard {
   description: string;
 }
 
-export interface DebatePrompt {
+export interface DebateContent {
   headline: string;
   description: string;
   cards: DebateCard[];
 }
 
-export interface DebateResponse {
-  headline: string;
-  description: string;
-  cards: DebateCard[];
-}
+export interface DebatePrompt extends DebateContent {}
 
+export interface DebateResponse extends DebateContent {}
 export type DebateType = 'pre_match' | 'post_match';
