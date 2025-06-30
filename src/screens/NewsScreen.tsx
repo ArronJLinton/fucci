@@ -29,7 +29,7 @@ interface NewsScreenProps {
 }
 
 const NewsScreen: React.FC<NewsScreenProps> = ({match}) => {
-  const navigation = useNavigation<NavigationProp<RootStackParamList, 'News'>>();
+  const navigation = useNavigation<NavigationProp>();
   const [newsData, setNewsData] = useState<NewsItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -45,15 +45,21 @@ const NewsScreen: React.FC<NewsScreenProps> = ({match}) => {
           throw new Error('Invalid match object: missing team names');
         }
 
+        // TEMPORARILY DISABLED: API call commented out
+        /*
         // Create search query
         const homeTeam = match.teams.home.name;
         const awayTeam = match.teams.away.name;
         const searchQuery = `${homeTeam} vs ${awayTeam}`;
-
+        
         // Encode the query for URL
         const encodedQuery = encodeURIComponent(searchQuery);
-
+        
         const apiUrl = `https://fucci-api-staging.up.railway.app/v1/api/google/search?q=${encodedQuery}&lr=en-US`;
+        
+        console.log('Fetching news for:', searchQuery);
+        console.log('API URL:', apiUrl);
+
         const response = await fetch(apiUrl);
 
         if (!response.ok) {
@@ -63,6 +69,7 @@ const NewsScreen: React.FC<NewsScreenProps> = ({match}) => {
         }
 
         const data = await response.json();
+        console.log('News API response:', data);
 
         // Check for no news data message
         if (data.message === 'No news data available') {
@@ -78,15 +85,12 @@ const NewsScreen: React.FC<NewsScreenProps> = ({match}) => {
         // Extract news items from the response
         // Assuming the API returns an array of news items or has a specific structure
         let newsItems: NewsItem[] = [];
-
+        
         if (Array.isArray(data)) {
           newsItems = data;
         } else if (data.items && Array.isArray(data.items)) {
           newsItems = data.items;
-        } else if (
-          data.organic_results &&
-          Array.isArray(data.organic_results)
-        ) {
+        } else if (data.organic_results && Array.isArray(data.organic_results)) {
           newsItems = data.organic_results;
         } else {
           // If the structure is different, try to extract what we can
@@ -97,6 +101,49 @@ const NewsScreen: React.FC<NewsScreenProps> = ({match}) => {
         }
 
         setNewsData(newsItems);
+        */
+
+        // TEMPORARY: Set mock data instead of API call
+        const mockNewsData: NewsItem[] = [
+          {
+            timestamp: '1750751956000',
+            title: 'Match Preview: Tactical Analysis',
+            snippet:
+              'Expert analysis of the upcoming match between the two teams...',
+            images: {
+              thumbnail: '',
+              thumbnailProxied: '',
+            },
+            newsUrl: 'https://example.com/news1',
+            publisher: 'Sports News',
+          },
+          {
+            timestamp: '1750742227000',
+            title: 'Team Lineup Predictions',
+            snippet:
+              'Predictions for the starting lineups and key players to watch...',
+            images: {
+              thumbnail: '',
+              thumbnailProxied: '',
+            },
+            newsUrl: 'https://example.com/news2',
+            publisher: 'Football Weekly',
+          },
+          {
+            timestamp: '1750724947000',
+            title: 'Historical Rivalry Analysis',
+            snippet:
+              'Looking back at previous encounters between these two teams...',
+            images: {
+              thumbnail: '',
+              thumbnailProxied: '',
+            },
+            newsUrl: 'https://example.com/news3',
+            publisher: 'Match Analysis',
+          },
+        ];
+
+        setNewsData(mockNewsData);
       } catch (err) {
         const errorMessage =
           err instanceof Error ? err.message : 'Failed to load news data';
@@ -142,12 +189,12 @@ const NewsScreen: React.FC<NewsScreenProps> = ({match}) => {
   return (
     <ScrollView style={styles.container}>
       <View style={styles.newsContainer}>
-        {newsData.map((item, index) => (
+        {newsData.map((item, _index) => (
           <TouchableOpacity
             key={item.newsUrl}
             style={styles.newsItem}
             onPress={() => handleNewsItemPress(item.newsUrl)}>
-            {(item.images.thumbnail || item.images.thumbnailProxied) && (
+            {item.images.thumbnail || item.images.thumbnailProxied ? (
               <Image
                 source={{
                   uri: item.images.thumbnail || item.images.thumbnailProxied,
@@ -155,6 +202,8 @@ const NewsScreen: React.FC<NewsScreenProps> = ({match}) => {
                 style={styles.newsImage}
                 resizeMode="cover"
               />
+            ) : (
+              <View style={[styles.newsImage, styles.placeholderImage]} />
             )}
             <View style={styles.newsContent}>
               <Text style={styles.newsTitle} numberOfLines={3}>
@@ -257,6 +306,11 @@ const styles = StyleSheet.create({
   newsPublisher: {
     fontSize: 12,
     color: '#666',
+  },
+  placeholderImage: {
+    backgroundColor: '#e0e0e0',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });
 
