@@ -166,7 +166,7 @@ const DebateScreen: React.FC<DebateScreenProps> = ({match}) => {
         {debateData && Array.isArray(debateData.cards)
           ? debateData.cards.map((card, index) => (
               <TouchableOpacity
-                key={index}
+                key={card.stance}
                 style={styles.debateCard}
                 onPress={() => handleStancePress(card.stance)}>
                 <View style={styles.cardHeader}>
