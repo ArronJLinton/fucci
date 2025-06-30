@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {
   View,
   Text,
@@ -23,16 +23,23 @@ const MatchDetailsScreen = () => {
   const route = useRoute<MatchDetailsRouteProp>();
   const {width} = useWindowDimensions();
   const match = route.params.match;
+  const [homeLogoError, setHomeLogoError] = useState(false);
+  const [awayLogoError, setAwayLogoError] = useState(false);
 
   const MatchHeader = () => (
     <View style={styles.headerContainer}>
       <View style={styles.matchInfoContainer}>
         <View style={styles.teamContainer}>
-          <Image
-            source={{uri: match.teams.home.logo}}
-            style={styles.teamLogo}
-            resizeMode="contain"
-          />
+          {!homeLogoError && match.teams.home.logo ? (
+            <Image
+              source={{uri: match.teams.home.logo}}
+              style={styles.teamLogo}
+              resizeMode="contain"
+              onError={() => setHomeLogoError(true)}
+            />
+          ) : (
+            <View style={[styles.teamLogo, styles.placeholderLogo]} />
+          )}
           <Text style={styles.teamName}>{match.teams.home.name}</Text>
         </View>
         <View style={styles.scoreContainer}>
@@ -41,11 +48,16 @@ const MatchDetailsScreen = () => {
           </Text>
         </View>
         <View style={styles.teamContainer}>
-          <Image
-            source={{uri: match.teams.away.logo}}
-            style={styles.teamLogo}
-            resizeMode="contain"
-          />
+          {!awayLogoError && match.teams.away.logo ? (
+            <Image
+              source={{uri: match.teams.away.logo}}
+              style={styles.teamLogo}
+              resizeMode="contain"
+              onError={() => setAwayLogoError(true)}
+            />
+          ) : (
+            <View style={[styles.teamLogo, styles.placeholderLogo]} />
+          )}
           <Text style={styles.teamName}>{match.teams.away.name}</Text>
         </View>
       </View>
@@ -168,6 +180,11 @@ const styles = StyleSheet.create({
     color: '#007AFF',
     fontSize: 14,
     fontWeight: '600',
+  },
+  placeholderLogo: {
+    backgroundColor: '#E0E0E0',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });
 

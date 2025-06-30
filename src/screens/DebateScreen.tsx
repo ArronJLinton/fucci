@@ -33,9 +33,6 @@ const DebateScreen: React.FC<DebateScreenProps> = ({match}) => {
 
         const apiUrl = `https://fucci-api-staging.up.railway.app/v1/api/debates/generate?match_id=${match.fixture.id}&type=${debateType}`;
 
-        console.log('Fetching debate for:', debateType);
-        console.log('API URL:', apiUrl);
-
         const response = await fetch(apiUrl);
 
         if (!response.ok) {
@@ -166,32 +163,39 @@ const DebateScreen: React.FC<DebateScreenProps> = ({match}) => {
         </View>
 
         {/* Debate Cards */}
-        {debateData.cards.map((card, index) => (
-          <TouchableOpacity
-            key={index}
-            style={styles.debateCard}
-            onPress={() => handleStancePress(card.stance)}>
-            <View style={styles.cardHeader}>
-              <Text style={styles.stanceIcon}>
-                {getStanceIcon(card.stance)}
+        {debateData && Array.isArray(debateData.cards)
+          ? debateData.cards.map((card, index) => (
+              <TouchableOpacity
+                key={index}
+                style={styles.debateCard}
+                onPress={() => handleStancePress(card.stance)}>
+                <View style={styles.cardHeader}>
+                  <Text style={styles.stanceIcon}>
+                    {getStanceIcon(card.stance)}
+                  </Text>
+                  <View
+                    style={[
+                      styles.stanceBadge,
+                      {backgroundColor: getStanceColor(card.stance)},
+                    ]}>
+                    <Text style={styles.stanceText}>
+                      {card.stance.charAt(0).toUpperCase() +
+                        card.stance.slice(1)}
+                    </Text>
+                  </View>
+                </View>
+                <Text style={styles.cardTitle}>{card.title}</Text>
+                <Text style={styles.cardDescription}>{card.description}</Text>
+                <View style={styles.cardFooter}>
+                  <Text style={styles.voteText}>Tap to vote</Text>
+                </View>
+              </TouchableOpacity>
+            ))
+          : !isLoading && (
+              <Text style={styles.noDebateText}>
+                No debate cards available.
               </Text>
-              <View
-                style={[
-                  styles.stanceBadge,
-                  {backgroundColor: getStanceColor(card.stance)},
-                ]}>
-                <Text style={styles.stanceText}>
-                  {card.stance.charAt(0).toUpperCase() + card.stance.slice(1)}
-                </Text>
-              </View>
-            </View>
-            <Text style={styles.cardTitle}>{card.title}</Text>
-            <Text style={styles.cardDescription}>{card.description}</Text>
-            <View style={styles.cardFooter}>
-              <Text style={styles.voteText}>Tap to vote</Text>
-            </View>
-          </TouchableOpacity>
-        ))}
+            )}
       </View>
     </ScrollView>
   );
@@ -353,6 +357,12 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: '#007AFF',
     fontWeight: '500',
+  },
+  noDebateText: {
+    fontSize: 16,
+    color: '#666',
+    textAlign: 'center',
+    paddingHorizontal: 20,
   },
 });
 
