@@ -71,7 +71,7 @@ const MatchDetailsScreen = () => {
         screenOptions={{
           tabBarScrollEnabled: true,
           tabBarItemStyle: {
-            width: width / numberOfTabs,
+            width: width / 5,
           },
           tabBarStyle: {
             backgroundColor: '#fff',
