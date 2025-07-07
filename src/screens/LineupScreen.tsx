@@ -58,6 +58,8 @@ const PlayerCard: React.FC<PlayerCardProps> = ({
   position,
   isAwayTeam,
 }) => {
+  const [imageError, setImageError] = useState(false);
+
   return (
     <View
       style={[
@@ -72,15 +74,22 @@ const PlayerCard: React.FC<PlayerCardProps> = ({
           styles.playerPhotoContainer,
           isAwayTeam && styles.awayPlayerPhoto,
         ]}>
-        <Image
-          source={{
-            uri:
-              player.photo ||
-              'https://media.api-sports.io/football/players/default.png',
-          }}
-          style={styles.playerPhoto}
-          resizeMode="cover"
-        />
+        {!imageError &&
+        (player.photo ||
+          'https://media.api-sports.io/football/players/default.png') ? (
+          <Image
+            source={{
+              uri:
+                player.photo ||
+                'https://media.api-sports.io/football/players/default.png',
+            }}
+            style={styles.playerPhoto}
+            resizeMode="cover"
+            onError={() => setImageError(true)}
+          />
+        ) : (
+          <View style={[styles.playerPhoto, styles.placeholderPhoto]} />
+        )}
       </View>
       <Text style={[styles.playerName, isAwayTeam && styles.awayPlayerName]}>
         {getLastName(player.name)}
@@ -92,6 +101,33 @@ const PlayerCard: React.FC<PlayerCardProps> = ({
         ]}>
         {player.pos}
       </Text>
+    </View>
+  );
+};
+
+const SubstituteCard: React.FC<{player: Player}> = ({player}) => {
+  const [imageError, setImageError] = useState(false);
+
+  return (
+    <View style={styles.substituteCard}>
+      {!imageError &&
+      (player.photo ||
+        'https://media.api-sports.io/football/players/default.png') ? (
+        <Image
+          source={{
+            uri:
+              player.photo ||
+              'https://media.api-sports.io/football/players/default.png',
+          }}
+          style={styles.substitutePhoto}
+          resizeMode="cover"
+          onError={() => setImageError(true)}
+        />
+      ) : (
+        <View style={[styles.substitutePhoto, styles.placeholderPhoto]} />
+      )}
+      <Text style={styles.substituteName}>{getLastName(player.name)}</Text>
+      <Text style={styles.substitutePosition}>{player.pos}</Text>
     </View>
   );
 };
@@ -364,21 +400,7 @@ const LineupScreen: React.FC<LineupScreenProps> = ({match}) => {
           </Text>
           <View style={styles.substitutesGrid}>
             {lineupData.home.substitutes.map(player => (
-              <View key={`home-sub-${player.id}`} style={styles.substituteCard}>
-                <Image
-                  source={{
-                    uri:
-                      player.photo ||
-                      'https://media.api-sports.io/football/players/default.png',
-                  }}
-                  style={styles.substitutePhoto}
-                  resizeMode="cover"
-                />
-                <Text style={styles.substituteName}>
-                  {getLastName(player.name)}
-                </Text>
-                <Text style={styles.substitutePosition}>{player.pos}</Text>
-              </View>
+              <SubstituteCard key={`home-sub-${player.id}`} player={player} />
             ))}
           </View>
         </View>
@@ -389,21 +411,7 @@ const LineupScreen: React.FC<LineupScreenProps> = ({match}) => {
           </Text>
           <View style={styles.substitutesGrid}>
             {lineupData.away.substitutes.map(player => (
-              <View key={`away-sub-${player.id}`} style={styles.substituteCard}>
-                <Image
-                  source={{
-                    uri:
-                      player.photo ||
-                      'https://media.api-sports.io/football/players/default.png',
-                  }}
-                  style={styles.substitutePhoto}
-                  resizeMode="cover"
-                />
-                <Text style={styles.substituteName}>
-                  {getLastName(player.name)}
-                </Text>
-                <Text style={styles.substitutePosition}>{player.pos}</Text>
-              </View>
+              <SubstituteCard key={`away-sub-${player.id}`} player={player} />
             ))}
           </View>
         </View>
@@ -617,6 +625,11 @@ const styles = StyleSheet.create({
     fontSize: 10,
     color: '#666',
     marginTop: 2,
+  },
+  placeholderPhoto: {
+    backgroundColor: '#e0e0e0',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });
 
