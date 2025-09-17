@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "FucciExpo",
-    "slug": "FucciExpo",
+    "name": "Fucci",
+    "slug": "fucci",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -13,7 +13,8 @@
       "backgroundColor": "#ffffff"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.magistridev.fucci"
     },
     "android": {
       "adaptiveIcon": {
@@ -21,10 +22,19 @@
         "backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": true,
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "package": "com.magistridev.fucci"
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "plugins": [
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "Allow $(PRODUCT_NAME) to access your camera to take photos and record videos."
+        }
+      ]
+    ]
   }
 }
