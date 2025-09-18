@@ -1,8 +1,6 @@
-// API Configuration
-const API_BASE_URL = process.env.API_BASE_URL;
-
 // Import types
 import { DebateResponse } from '../types/debate';
+import { apiConfig } from '../config/environment';
 
 // Types
 interface Standing {
@@ -68,7 +66,7 @@ const makeApiRequest = async (
   method: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH' = 'GET',
   options: RequestInit = {}
 ) => {
-  const url = `${API_BASE_URL}${endpoint}`;
+  const url = `${apiConfig.baseURL}${endpoint}`;
   console.log('API URL:', url, 'Method:', method);
 
   try {
@@ -76,7 +74,7 @@ const makeApiRequest = async (
       method,
       redirect: 'follow',
       headers: {
-        'Content-Type': 'application/json',
+        ...apiConfig.headers,
         ...options.headers,
       },
       ...options,
