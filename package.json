@@ -1,0 +1,35 @@
+{
+  "name": "fucci-monorepo",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Fucci monorepo containing mobile app and shared packages",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e",
+  "scripts": {
+    "build": "yarn workspaces run build",
+    "test": "yarn workspaces run test",
+    "lint": "yarn workspaces run lint",
+    "clean": "yarn workspaces run clean",
+    "dev": "concurrently --kill-others-on-fail --prefix-colors \"cyan,magenta,yellow,green\" --names \"API,MOBILE,WORKERS,ADMIN\" \"yarn dev:api\" \"yarn dev:mobile\"",
+    "dev:api": "cd services/api && go run main.go",
+    "dev:mobile": "cd apps/mobile && yarn start",
+    "dev:workers": "cd services/workers && go run main.go",
+    "dev:admin": "yarn workspace fucci-admin dev",
+    "dev:api-mobile": "concurrently --kill-others-on-fail --prefix-colors \"cyan,magenta\" --names \"API,MOBILE\" \"yarn dev:api\" \"yarn dev:mobile\"",
+    "mobile:android": "yarn workspace Fucci android",
+    "mobile:ios": "yarn workspace Fucci ios",
+    "mobile:start": "yarn workspace Fucci start"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "concurrently": "^8.2.2",
+    "typescript": "^5.0.0"
+  },
+  "engines": {
+    "node": ">=18",
+    "yarn": ">=1.22.0"
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "name": "@fucci/api-client",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Generated TypeScript client for Fucci API",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "clean": "rm -rf dist",
+    "generate": "yarn workspace @fucci/api-schema generate-client"
+  },
+  "dependencies": {
+    "axios": "^1.6.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.0.0"
+  }
+}

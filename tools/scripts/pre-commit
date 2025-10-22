@@ -1,0 +1,124 @@
+#!/bin/bash
+
+# Pre-commit hook for Fucci project
+# This script runs before each commit to ensure code quality
+
+set -e
+
+echo "Running pre-commit checks..."
+
+# Check if we're in a git repository
+if ! git rev-parse --git-dir > /dev/null 2>&1; then
+    echo "Error: Not in a git repository"
+    exit 1
+fi
+
+# Get list of staged files
+STAGED_FILES=$(git diff --cached --name-only --diff-filter=ACM)
+
+# Check for staged files
+if [ -z "$STAGED_FILES" ]; then
+    echo "No staged files to check"
+    exit 0
+fi
+
+# Function to check if file is in a specific directory
+is_in_dir() {
+    local file=$1
+    local dir=$2
+    [[ $file == $dir/* ]]
+}
+
+# Check TypeScript/JavaScript files
+TS_JS_FILES=$(echo "$STAGED_FILES" | grep -E '\.(ts|tsx|js|jsx)$' || true)
+if [ -n "$TS_JS_FILES" ]; then
+    echo "Running TypeScript/JavaScript checks..."
+    
+    # Check for apps/mobile files
+    MOBILE_FILES=$(echo "$TS_JS_FILES" | grep '^apps/mobile/' || true)
+    if [ -n "$MOBILE_FILES" ]; then
+        echo "Checking mobile app files..."
+        cd apps/mobile
+        yarn lint --fix
+        cd ../..
+    fi
+    
+    # Check for apps/admin files
+    ADMIN_FILES=$(echo "$TS_JS_FILES" | grep '^apps/admin/' || true)
+    if [ -n "$ADMIN_FILES" ]; then
+        echo "Checking admin app files..."
+        cd apps/admin
+        yarn lint --fix
+        cd ../..
+    fi
+    
+    # Check for packages files
+    PACKAGE_FILES=$(echo "$TS_JS_FILES" | grep '^packages/' || true)
+    if [ -n "$PACKAGE_FILES" ]; then
+        echo "Checking package files..."
+        for file in $PACKAGE_FILES; do
+            if [[ $file == packages/*/src/* ]]; then
+                package_dir=$(echo "$file" | cut -d'/' -f1-2)
+                cd "$package_dir"
+                if [ -f "package.json" ] && grep -q '"lint"' package.json; then
+                    yarn lint --fix
+                fi
+                cd ../..
+            fi
+        done
+    fi
+fi
+
+# Check Go files
+GO_FILES=$(echo "$STAGED_FILES" | grep -E '\.go$' || true)
+if [ -n "$GO_FILES" ]; then
+    echo "Running Go checks..."
+    
+    # Check for services/api files
+    API_FILES=$(echo "$GO_FILES" | grep '^services/api/' || true)
+    if [ -n "$API_FILES" ]; then
+        echo "Checking API files..."
+        cd services/api
+        go fmt ./...
+        go vet ./...
+        if command -v golangci-lint >/dev/null 2>&1; then
+            golangci-lint run
+        fi
+        cd ../..
+    fi
+    
+    # Check for services/workers files
+    WORKERS_FILES=$(echo "$GO_FILES" | grep '^services/workers/' || true)
+    if [ -n "$WORKERS_FILES" ]; then
+        echo "Checking workers files..."
+        cd services/workers
+        go fmt ./...
+        go vet ./...
+        if command -v golangci-lint >/dev/null 2>&1; then
+            golangci-lint run
+        fi
+        cd ../..
+    fi
+fi
+
+# Check YAML files
+YAML_FILES=$(echo "$STAGED_FILES" | grep -E '\.(yaml|yml)$' || true)
+if [ -n "$YAML_FILES" ]; then
+    echo "Checking YAML files..."
+    for file in $YAML_FILES; do
+        if command -v yamllint >/dev/null 2>&1; then
+            yamllint "$file"
+        fi
+    done
+fi
+
+# Check for large files
+LARGE_FILES=$(echo "$STAGED_FILES" | xargs -I {} sh -c 'if [ -f "{}" ] && [ $(stat -f%z "{}" 2>/dev/null || stat -c%s "{}" 2>/dev/null || echo 0) -gt 10485760 ]; then echo "{}"; fi' || true)
+if [ -n "$LARGE_FILES" ]; then
+    echo "Warning: Large files detected (>10MB):"
+    echo "$LARGE_FILES"
+    echo "Consider using Git LFS for large files"
+fi
+
+echo "Pre-commit checks completed successfully!"
+exit 0
