@@ -1,0 +1,281 @@
+openapi: 3.0.3
+info:
+  title: Fucci API
+  description: API for the Fucci football application
+  version: 1.0.0
+  contact:
+    name: Fucci Team
+    email: team@fucci.com
+
+servers:
+  - url: https://api.fucci.com/v1
+    description: Production server
+  - url: https://staging-api.fucci.com/v1
+    description: Staging server
+  - url: http://localhost:8080/v1
+    description: Development server
+
+paths:
+  /health:
+    get:
+      summary: Health check
+      description: Check if the API is running
+      operationId: getHealth
+      responses:
+        '200':
+          description: API is healthy
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: 'ok'
+                  timestamp:
+                    type: string
+                    format: date-time
+
+  /teams:
+    get:
+      summary: List teams
+      description: Get a list of all teams
+      operationId: listTeams
+      parameters:
+        - name: league_id
+          in: query
+          description: Filter by league ID
+          required: false
+          schema:
+            type: integer
+        - name: limit
+          in: query
+          description: Number of teams to return
+          required: false
+          schema:
+            type: integer
+            default: 20
+            maximum: 100
+        - name: offset
+          in: query
+          description: Number of teams to skip
+          required: false
+          schema:
+            type: integer
+            default: 0
+      responses:
+        '200':
+          description: List of teams
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  teams:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Team'
+                  total:
+                    type: integer
+                  limit:
+                    type: integer
+                  offset:
+                    type: integer
+
+  /teams/{team_id}:
+    get:
+      summary: Get team details
+      description: Get detailed information about a specific team
+      operationId: getTeam
+      parameters:
+        - name: team_id
+          in: path
+          required: true
+          description: Team ID
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Team details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Team'
+        '404':
+          description: Team not found
+
+  /matches:
+    get:
+      summary: List matches
+      description: Get a list of matches
+      operationId: listMatches
+      parameters:
+        - name: team_id
+          in: query
+          description: Filter by team ID
+          required: false
+          schema:
+            type: integer
+        - name: date_from
+          in: query
+          description: Filter matches from this date
+          required: false
+          schema:
+            type: string
+            format: date
+        - name: date_to
+          in: query
+          description: Filter matches until this date
+          required: false
+          schema:
+            type: string
+            format: date
+      responses:
+        '200':
+          description: List of matches
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  matches:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Match'
+
+  /debates:
+    get:
+      summary: List debates
+      description: Get a list of debates
+      operationId: listDebates
+      parameters:
+        - name: match_id
+          in: query
+          description: Filter by match ID
+          required: false
+          schema:
+            type: integer
+        - name: status
+          in: query
+          description: Filter by debate status
+          required: false
+          schema:
+            type: string
+            enum: [active, closed, pending]
+      responses:
+        '200':
+          description: List of debates
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  debates:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Debate'
+
+components:
+  schemas:
+    Team:
+      type: object
+      required:
+        - id
+        - name
+        - league_id
+      properties:
+        id:
+          type: integer
+          description: Unique team identifier
+        name:
+          type: string
+          description: Team name
+        league_id:
+          type: integer
+          description: ID of the league this team belongs to
+        logo_url:
+          type: string
+          format: uri
+          description: URL to team logo
+        founded_year:
+          type: integer
+          description: Year the team was founded
+        stadium:
+          type: string
+          description: Team stadium name
+
+    Match:
+      type: object
+      required:
+        - id
+        - home_team_id
+        - away_team_id
+        - match_date
+      properties:
+        id:
+          type: integer
+          description: Unique match identifier
+        home_team_id:
+          type: integer
+          description: ID of the home team
+        away_team_id:
+          type: integer
+          description: ID of the away team
+        match_date:
+          type: string
+          format: date-time
+          description: Date and time of the match
+        home_score:
+          type: integer
+          nullable: true
+          description: Home team score
+        away_score:
+          type: integer
+          nullable: true
+          description: Away team score
+        status:
+          type: string
+          enum: [scheduled, live, finished, cancelled]
+          description: Match status
+
+    Debate:
+      type: object
+      required:
+        - id
+        - title
+        - match_id
+        - status
+      properties:
+        id:
+          type: integer
+          description: Unique debate identifier
+        title:
+          type: string
+          description: Debate title
+        description:
+          type: string
+          description: Debate description
+        match_id:
+          type: integer
+          description: ID of the match this debate is about
+        status:
+          type: string
+          enum: [active, closed, pending]
+          description: Debate status
+        created_at:
+          type: string
+          format: date-time
+          description: When the debate was created
+        updated_at:
+          type: string
+          format: date-time
+          description: When the debate was last updated
+
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+security:
+  - BearerAuth: []
