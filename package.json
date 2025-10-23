@@ -15,13 +15,14 @@
     "clean": "yarn workspaces run clean",
     "dev": "concurrently --kill-others-on-fail --prefix-colors \"cyan,magenta,yellow,green\" --names \"API,MOBILE,WORKERS,ADMIN\" \"yarn dev:api\" \"yarn dev:mobile\"",
     "dev:api": "cd services/api && go run main.go",
-    "dev:mobile": "cd apps/mobile && yarn start",
+    "dev:mobile": "yarn workspace fucci-mobile start",
     "dev:workers": "cd services/workers && go run main.go",
     "dev:admin": "yarn workspace fucci-admin dev",
-    "dev:api-mobile": "concurrently --kill-others-on-fail --prefix-colors \"cyan,magenta\" --names \"API,MOBILE\" \"yarn dev:api\" \"yarn dev:mobile\"",
-    "mobile:android": "yarn workspace Fucci android",
-    "mobile:ios": "yarn workspace Fucci ios",
-    "mobile:start": "yarn workspace Fucci start"
+    "dev:api-mobile": "concurrently --kill-others-on-fail --prefix-colors \"cyan,magenta\" --names \"API,MOBILE\" --raw \"cd services/api && go run main.go\" \"cd apps/mobile && npx expo start\"",
+    "mobile:android": "yarn workspace fucci-mobile android",
+    "mobile:ios": "yarn workspace fucci-mobile ios",
+    "mobile:web": "yarn workspace fucci-mobile web",
+    "mobile:start": "yarn workspace fucci-mobile start"
   },
   "devDependencies": {
     "@types/node": "^20.0.0",
