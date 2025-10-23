@@ -1,4 +1,4 @@
-import React, {useState, useRef, useEffect, useCallback} from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import {
   View,
   Text,
@@ -12,10 +12,10 @@ import {
   StatusBar,
   Platform,
 } from 'react-native';
-import {FAB} from 'react-native-paper';
-import {useNavigation} from '@react-navigation/native';
-import Video, {VideoRef} from 'react-native-video';
-import type {NavigationProp} from '../types/navigation';
+import { FAB } from 'react-native-paper';
+import { useNavigation } from '@react-navigation/native';
+import { Video, ResizeMode } from 'expo-av';
+import type { NavigationProp } from '../types/navigation';
 
 interface StoryPost {
   id: string;
@@ -29,7 +29,7 @@ const windowDimensions = Dimensions.get('window');
 const screenDimensions = Dimensions.get('screen');
 
 // Use the larger of the two to ensure full coverage
-const {width: screenWidth} = Dimensions.get('window');
+const { width: screenWidth } = Dimensions.get('window');
 const fullHeight = Math.max(windowDimensions.height, screenDimensions.height);
 const mediaSize = screenWidth * 0.7;
 
@@ -46,7 +46,7 @@ const StoryScreen = () => {
   const progress = useRef(new Animated.Value(0)).current;
   const progressAnim = useRef<Animated.CompositeAnimation | null>(null);
 
-  const videoRef = useRef<VideoRef>(null);
+  const videoRef = useRef<Video>(null);
   const [isPlaying, setIsPlaying] = useState(true);
 
   // Force screen to stay mounted properly
@@ -59,7 +59,7 @@ const StoryScreen = () => {
 
   // Preload images silently in the background
   const preloadImage = useCallback((uri: string): Promise<void> => {
-    return Image.prefetch(uri).catch(error => {
+    return Image.prefetch(uri).catch((error) => {
       console.warn('Failed to preload image:', error);
     }) as Promise<void>;
   }, []);
@@ -116,7 +116,7 @@ const StoryScreen = () => {
           useNativeDriver: true,
         }),
       ]).start(() => {
-        setCurrentIndex(prev => prev + 1);
+        setCurrentIndex((prev) => prev + 1);
         position.setValue(0);
         opacity.setValue(1);
         startProgressAnimation();
@@ -125,7 +125,7 @@ const StoryScreen = () => {
   }, [currentIndex, posts.length, position, opacity, startProgressAnimation]);
 
   useEffect(() => {
-    const progressListener = progress.addListener(({value}) => {
+    const progressListener = progress.addListener(({ value }) => {
       if (value === 1) {
         handleNext();
       }
@@ -151,7 +151,7 @@ const StoryScreen = () => {
           useNativeDriver: true,
         }),
       ]).start(() => {
-        setCurrentIndex(prev => prev - 1);
+        setCurrentIndex((prev) => prev - 1);
         position.setValue(0);
         opacity.setValue(1);
         startProgressAnimation();
@@ -162,10 +162,10 @@ const StoryScreen = () => {
   const panResponder = useRef(
     PanResponder.create({
       onStartShouldSetPanResponder: () => true,
-      onPanResponderMove: (_, {dx}) => {
+      onPanResponderMove: (_, { dx }) => {
         position.setValue(dx);
       },
-      onPanResponderRelease: (_, {dx}) => {
+      onPanResponderRelease: (_, { dx }) => {
         if (Math.abs(dx) > screenWidth * 0.4) {
           if (dx > 0 && currentIndex > 0) {
             handlePrevious();
@@ -184,7 +184,7 @@ const StoryScreen = () => {
           }).start();
         }
       },
-    }),
+    })
   ).current;
 
   const handleVideoLoad = () => {
@@ -206,13 +206,11 @@ const StoryScreen = () => {
   };
 
   // Handle video progress updates
-  const handleVideoProgress = (data: {
-    currentTime: number;
-    playableDuration: number;
-  }) => {
+  const handleVideoProgress = (status: any) => {
     const currentPost = posts[currentIndex];
-    if (currentPost?.type === 'video' && data.playableDuration > 0) {
-      const progressValue = data.currentTime / data.playableDuration;
+    if (currentPost?.type === 'video' && status?.durationMillis > 0) {
+      const progressValue =
+        (status.positionMillis || 0) / status.durationMillis;
       progress.setValue(progressValue);
     }
   };
@@ -225,24 +223,20 @@ const StoryScreen = () => {
       return (
         <Video
           ref={videoRef}
-          source={{uri: currentPost.uri}}
+          source={{ uri: currentPost.uri }}
           style={styles.media}
-          resizeMode="cover"
-          repeat={false}
-          paused={!isPlaying}
+          resizeMode={ResizeMode.COVER}
+          isLooping={false}
+          shouldPlay={isPlaying}
           onLoad={handleVideoLoad}
-          onEnd={handleVideoEnd}
-          onError={handleVideoError}
-          onProgress={handleVideoProgress}
-          playInBackground={false}
-          playWhenInactive={false}
+          onPlaybackStatusUpdate={handleVideoProgress}
         />
       );
     }
 
     return (
       <Image
-        source={{uri: currentPost.uri}}
+        source={{ uri: currentPost.uri }}
         style={styles.media}
         resizeMode="cover"
       />
@@ -322,11 +316,12 @@ const StoryScreen = () => {
               style={[
                 styles.imageContainer,
                 {
-                  transform: [{translateX: position}],
+                  transform: [{ translateX: position }],
                   opacity: opacity,
                 },
               ]}
-              {...panResponder.panHandlers}>
+              {...panResponder.panHandlers}
+            >
               {renderMedia()}
               <View style={styles.timestamp}>
                 <Text style={styles.timestampText}>
@@ -345,9 +340,9 @@ const StoryScreen = () => {
           navigation.navigate('CameraPreview', {
             onPhotoCapture: (
               uri: string,
-              type: 'photo' | 'video' = 'photo',
+              type: 'photo' | 'video' = 'photo'
             ) => {
-              setPosts(prev => [
+              setPosts((prev) => [
                 {
                   id: Date.now().toString(),
                   type,

@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -8,7 +8,8 @@ import {
   Image,
   ActivityIndicator,
 } from 'react-native';
-import type {Match} from '../types/match';
+import type { Match } from '../types/match';
+import { fetchLineup } from '../services/api';
 
 interface PlayerCardProps {
   player: {
@@ -19,7 +20,7 @@ interface PlayerCardProps {
     grid: string;
     photo: string;
   };
-  position: {x: number; y: number};
+  position: { x: number; y: number };
   isAwayTeam: boolean;
 }
 
@@ -68,12 +69,14 @@ const PlayerCard: React.FC<PlayerCardProps> = ({
           left: `${position.x}%`,
           top: `${position.y}%`,
         },
-      ]}>
+      ]}
+    >
       <View
         style={[
           styles.playerPhotoContainer,
           isAwayTeam && styles.awayPlayerPhoto,
-        ]}>
+        ]}
+      >
         {!imageError &&
         (player.photo ||
           'https://media.api-sports.io/football/players/default.png') ? (
@@ -95,17 +98,15 @@ const PlayerCard: React.FC<PlayerCardProps> = ({
         {getLastName(player.name)}
       </Text>
       <Text
-        style={[
-          styles.playerPosition,
-          isAwayTeam && styles.awayPlayerPosition,
-        ]}>
+        style={[styles.playerPosition, isAwayTeam && styles.awayPlayerPosition]}
+      >
         {player.pos}
       </Text>
     </View>
   );
 };
 
-const SubstituteCard: React.FC<{player: Player}> = ({player}) => {
+const SubstituteCard: React.FC<{ player: Player }> = ({ player }) => {
   const [imageError, setImageError] = useState(false);
 
   return (
@@ -132,14 +133,14 @@ const SubstituteCard: React.FC<{player: Player}> = ({player}) => {
   );
 };
 
-const LineupScreen: React.FC<LineupScreenProps> = ({match}) => {
-  const {width} = useWindowDimensions();
+const LineupScreen: React.FC<LineupScreenProps> = ({ match }) => {
+  const { width } = useWindowDimensions();
   const [lineupData, setLineupData] = useState<LineupData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchLineup = async () => {
+    const loadLineup = async () => {
       try {
         setIsLoading(true);
         setError(null);
@@ -149,45 +150,11 @@ const LineupScreen: React.FC<LineupScreenProps> = ({match}) => {
           throw new Error('Invalid match object: missing fixture ID');
         }
 
-        const apiUrl = `https://fucci-api-staging.up.railway.app/v1/api/futbol/lineup?match_id=${match.fixture.id}`;
-        const response = await fetch(apiUrl);
+        const data = await fetchLineup(match.fixture.id);
 
-        if (!response.ok) {
-          throw new Error(
-            `Failed to fetch lineup data: ${response.status} ${response.statusText}`,
-          );
-        }
-
-        const data = await response.json();
-
-        // Check for no lineup data message
-        if (data.message === 'No lineup data available') {
+        if (data === null) {
           setLineupData(null);
           return;
-        }
-
-        // Validate the data structure
-        if (!data || typeof data !== 'object') {
-          throw new Error('Invalid response format');
-        }
-
-        if (!data.home || !data.away) {
-          throw new Error(
-            'Invalid lineup data format: missing home or away team data',
-          );
-        }
-
-        if (!data.home.starters || !data.away.starters) {
-          throw new Error('Invalid lineup data format: missing starters');
-        }
-
-        if (
-          !Array.isArray(data.home.starters) ||
-          !Array.isArray(data.away.starters)
-        ) {
-          throw new Error(
-            'Invalid lineup data format: starters is not an array',
-          );
         }
 
         setLineupData(data);
@@ -201,7 +168,7 @@ const LineupScreen: React.FC<LineupScreenProps> = ({match}) => {
       }
     };
 
-    fetchLineup();
+    loadLineup();
   }, [match]);
 
   if (isLoading) {
@@ -231,7 +198,7 @@ const LineupScreen: React.FC<LineupScreenProps> = ({match}) => {
 
   return (
     <ScrollView style={styles.container}>
-      <View style={[styles.field, {width: width, height: width * 2.0}]}>
+      <View style={[styles.field, { width: width, height: width * 2.0 }]}>
         {/* Field markings */}
         <View style={styles.halfwayLine} />
         <View style={styles.centerCircle} />
@@ -243,19 +210,19 @@ const LineupScreen: React.FC<LineupScreenProps> = ({match}) => {
 
         {/* Home team goalkeeper */}
         {lineupData.home.starters
-          .filter(player => player.pos === 'G')
-          .map(player => (
+          .filter((player) => player.pos === 'G')
+          .map((player) => (
             <PlayerCard
               key={`home-${player.id}`}
               player={player}
-              position={{x: 50, y: 2}}
+              position={{ x: 50, y: 2 }}
               isAwayTeam={false}
             />
           ))}
 
         {/* Home team defenders */}
         {lineupData.home.starters
-          .filter(player => player.pos === 'D')
+          .filter((player) => player.pos === 'D')
           .map((player, index, array) => {
             const totalPlayers = array.length;
             const safeMargin = 15;
@@ -268,7 +235,7 @@ const LineupScreen: React.FC<LineupScreenProps> = ({match}) => {
               <PlayerCard
                 key={`home-${player.id}`}
                 player={player}
-                position={{x, y: 12}}
+                position={{ x, y: 12 }}
                 isAwayTeam={false}
               />
             );
@@ -276,7 +243,7 @@ const LineupScreen: React.FC<LineupScreenProps> = ({match}) => {
 
         {/* Home team midfielders */}
         {lineupData.home.starters
-          .filter(player => player.pos === 'M')
+          .filter((player) => player.pos === 'M')
           .map((player, index, array) => {
             const totalPlayers = array.length;
             const safeMargin = 15;
@@ -289,7 +256,7 @@ const LineupScreen: React.FC<LineupScreenProps> = ({match}) => {
               <PlayerCard
                 key={`home-${player.id}`}
                 player={player}
-                position={{x, y: 25}}
+                position={{ x, y: 25 }}
                 isAwayTeam={false}
               />
             );
@@ -297,7 +264,7 @@ const LineupScreen: React.FC<LineupScreenProps> = ({match}) => {
 
         {/* Home team forwards */}
         {lineupData.home.starters
-          .filter(player => player.pos === 'F')
+          .filter((player) => player.pos === 'F')
           .map((player, index, array) => {
             const totalPlayers = array.length;
             const safeMargin = 15;
@@ -310,7 +277,7 @@ const LineupScreen: React.FC<LineupScreenProps> = ({match}) => {
               <PlayerCard
                 key={`home-${player.id}`}
                 player={player}
-                position={{x, y: 37}}
+                position={{ x, y: 37 }}
                 isAwayTeam={false}
               />
             );
@@ -318,19 +285,19 @@ const LineupScreen: React.FC<LineupScreenProps> = ({match}) => {
 
         {/* Away team goalkeeper */}
         {lineupData.away.starters
-          .filter(player => player.pos === 'G')
-          .map(player => (
+          .filter((player) => player.pos === 'G')
+          .map((player) => (
             <PlayerCard
               key={`away-${player.id}`}
               player={player}
-              position={{x: 50, y: 90}}
+              position={{ x: 50, y: 90 }}
               isAwayTeam={true}
             />
           ))}
 
         {/* Away team defenders */}
         {lineupData.away.starters
-          .filter(player => player.pos === 'D')
+          .filter((player) => player.pos === 'D')
           .map((player, index, array) => {
             const totalPlayers = array.length;
             const safeMargin = 15;
@@ -343,7 +310,7 @@ const LineupScreen: React.FC<LineupScreenProps> = ({match}) => {
               <PlayerCard
                 key={`away-${player.id}`}
                 player={player}
-                position={{x, y: 80}}
+                position={{ x, y: 80 }}
                 isAwayTeam={true}
               />
             );
@@ -351,7 +318,7 @@ const LineupScreen: React.FC<LineupScreenProps> = ({match}) => {
 
         {/* Away team midfielders */}
         {lineupData.away.starters
-          .filter(player => player.pos === 'M')
+          .filter((player) => player.pos === 'M')
           .map((player, index, array) => {
             const totalPlayers = array.length;
             const safeMargin = 15;
@@ -364,7 +331,7 @@ const LineupScreen: React.FC<LineupScreenProps> = ({match}) => {
               <PlayerCard
                 key={`away-${player.id}`}
                 player={player}
-                position={{x, y: 68}}
+                position={{ x, y: 68 }}
                 isAwayTeam={true}
               />
             );
@@ -372,7 +339,7 @@ const LineupScreen: React.FC<LineupScreenProps> = ({match}) => {
 
         {/* Away team forwards */}
         {lineupData.away.starters
-          .filter(player => player.pos === 'F')
+          .filter((player) => player.pos === 'F')
           .map((player, index, array) => {
             const totalPlayers = array.length;
             const safeMargin = 15;
@@ -385,7 +352,7 @@ const LineupScreen: React.FC<LineupScreenProps> = ({match}) => {
               <PlayerCard
                 key={`away-${player.id}`}
                 player={player}
-                position={{x, y: 56}}
+                position={{ x, y: 56 }}
                 isAwayTeam={true}
               />
             );
@@ -399,7 +366,7 @@ const LineupScreen: React.FC<LineupScreenProps> = ({match}) => {
             {match.teams.home.name} Substitutes
           </Text>
           <View style={styles.substitutesGrid}>
-            {lineupData.home.substitutes.map(player => (
+            {lineupData.home.substitutes.map((player) => (
               <SubstituteCard key={`home-sub-${player.id}`} player={player} />
             ))}
           </View>
@@ -410,7 +377,7 @@ const LineupScreen: React.FC<LineupScreenProps> = ({match}) => {
             {match.teams.away.name} Substitutes
           </Text>
           <View style={styles.substitutesGrid}>
-            {lineupData.away.substitutes.map(player => (
+            {lineupData.away.substitutes.map((player) => (
               <SubstituteCard key={`away-sub-${player.id}`} player={player} />
             ))}
           </View>
@@ -490,7 +457,7 @@ const styles = StyleSheet.create({
     borderRadius: 30,
     borderWidth: 2,
     borderColor: 'rgba(255, 255, 255, 0.7)',
-    transform: [{translateX: -30}, {translateY: -30}],
+    transform: [{ translateX: -30 }, { translateY: -30 }],
   },
   homeBox: {
     position: 'absolute',
@@ -556,7 +523,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: '#fff',
     textShadowColor: 'rgba(0, 0, 0, 0.75)',
-    textShadowOffset: {width: -1, height: 1},
+    textShadowOffset: { width: -1, height: 1 },
     textShadowRadius: 10,
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
     paddingHorizontal: 4,

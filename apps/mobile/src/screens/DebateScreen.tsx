@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -7,21 +7,22 @@ import {
   ActivityIndicator,
   TouchableOpacity,
 } from 'react-native';
-import type {Match} from '../types/match';
-import type {DebateResponse, DebateType} from '../types/debate';
+import type { Match } from '../types/match';
+import type { DebateResponse, DebateType } from '../types/debate';
+import { fetchDebate } from '../services/api';
 
 interface DebateScreenProps {
   match: Match;
 }
 
-const DebateScreen: React.FC<DebateScreenProps> = ({match}) => {
+const DebateScreen: React.FC<DebateScreenProps> = ({ match }) => {
   const [debateData, setDebateData] = useState<DebateResponse | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [debateType, setDebateType] = useState<DebateType>('pre_match');
 
   useEffect(() => {
-    const fetchDebate = async () => {
+    const loadDebate = async () => {
       try {
         setIsLoading(true);
         setError(null);
@@ -31,18 +32,7 @@ const DebateScreen: React.FC<DebateScreenProps> = ({match}) => {
           throw new Error('Invalid match object: missing fixture ID');
         }
 
-        const apiUrl = `https://fucci-api-staging.up.railway.app/v1/api/debates/generate?match_id=${match.fixture.id}&type=${debateType}`;
-
-        const response = await fetch(apiUrl);
-
-        if (!response.ok) {
-          throw new Error(
-            `Failed to fetch debate data: ${response.status} ${response.statusText}`,
-          );
-        }
-
-        const data = await response.json();
-        console.log('Debate API response:', data);
+        const data = await fetchDebate(match.fixture.id, debateType);
 
         setDebateData(data);
       } catch (err) {
@@ -55,10 +45,12 @@ const DebateScreen: React.FC<DebateScreenProps> = ({match}) => {
       }
     };
 
-    fetchDebate();
+    loadDebate();
   }, [match, debateType]);
 
-  const getStanceColor = (stance: DebateType) => {
+  const getStanceColor = (
+    stance: 'agree' | 'disagree' | 'wildcard' | DebateType
+  ) => {
     switch (stance) {
       case 'agree':
         return '#4CAF50';
@@ -129,12 +121,14 @@ const DebateScreen: React.FC<DebateScreenProps> = ({match}) => {
               styles.toggleButton,
               debateType === 'pre_match' && styles.toggleButtonActive,
             ]}
-            onPress={() => setDebateType('pre_match')}>
+            onPress={() => setDebateType('pre_match')}
+          >
             <Text
               style={[
                 styles.toggleButtonText,
                 debateType === 'pre_match' && styles.toggleButtonTextActive,
-              ]}>
+              ]}
+            >
               Pre-Match
             </Text>
           </TouchableOpacity>
@@ -143,12 +137,14 @@ const DebateScreen: React.FC<DebateScreenProps> = ({match}) => {
               styles.toggleButton,
               debateType === 'post_match' && styles.toggleButtonActive,
             ]}
-            onPress={() => setDebateType('post_match')}>
+            onPress={() => setDebateType('post_match')}
+          >
             <Text
               style={[
                 styles.toggleButtonText,
                 debateType === 'post_match' && styles.toggleButtonTextActive,
-              ]}>
+              ]}
+            >
               Post-Match
             </Text>
           </TouchableOpacity>
@@ -168,7 +164,8 @@ const DebateScreen: React.FC<DebateScreenProps> = ({match}) => {
               <TouchableOpacity
                 key={card.stance}
                 style={styles.debateCard}
-                onPress={() => handleStancePress(card.stance)}>
+                onPress={() => handleStancePress(card.stance)}
+              >
                 <View style={styles.cardHeader}>
                   <Text style={styles.stanceIcon}>
                     {getStanceIcon(card.stance)}
@@ -176,8 +173,9 @@ const DebateScreen: React.FC<DebateScreenProps> = ({match}) => {
                   <View
                     style={[
                       styles.stanceBadge,
-                      {backgroundColor: getStanceColor(card.stance)},
-                    ]}>
+                      { backgroundColor: getStanceColor(card.stance) },
+                    ]}
+                  >
                     <Text style={styles.stanceText}>
                       {card.stance.charAt(0).toUpperCase() +
                         card.stance.slice(1)}
