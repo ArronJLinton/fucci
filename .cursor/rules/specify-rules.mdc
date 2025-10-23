@@ -1,0 +1,29 @@
+# Fucci Development Guidelines
+
+Auto-generated from all feature plans. Last updated: 2025-10-23
+
+## Active Technologies
+
+- TypeScript (React Native), Go 1.22+, SQL + React Native with Expo, Gin framework, PostgreSQL, Redis, OpenAI API, Socket.io (001-football-community)
+
+## Project Structure
+
+```text
+src/
+tests/
+```
+
+## Commands
+
+npm test && npm run lint
+
+## Code Style
+
+TypeScript (React Native), Go 1.22+, SQL: Follow standard conventions
+
+## Recent Changes
+
+- 001-football-community: Added TypeScript (React Native), Go 1.22+, SQL + React Native with Expo, Gin framework, PostgreSQL, Redis, OpenAI API, Socket.io
+
+<!-- MANUAL ADDITIONS START -->
+<!-- MANUAL ADDITIONS END -->

@@ -1,0 +1,1275 @@
+openapi: 3.0.3
+info:
+  title: Football Community Platform API
+  description: API for the Football Community Platform - a mobile application for football fans and community teams
+  version: 1.0.0
+  contact:
+    name: Fucci Development Team
+    email: dev@fucci.app
+servers:
+  - url: https://api.fucci.app/v1
+    description: Production server
+  - url: https://staging-api.fucci.app/v1
+    description: Staging server
+  - url: http://localhost:8080/v1
+    description: Development server
+
+security:
+  - BearerAuth: []
+  - ApiKeyAuth: []
+
+paths:
+  # Authentication
+  /auth/register:
+    post:
+      summary: Register new user
+      tags: [Authentication]
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password, display_name]
+              properties:
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+                  minLength: 8
+                display_name:
+                  type: string
+                  minLength: 1
+                  maxLength: 100
+      responses:
+        '201':
+          description: User registered successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '409':
+          $ref: '#/components/responses/Conflict'
+
+  /auth/login:
+    post:
+      summary: Login user
+      tags: [Authentication]
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password]
+              properties:
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+      responses:
+        '200':
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  user:
+                    $ref: '#/components/schemas/User'
+                  token:
+                    type: string
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  # Users
+  /users/me:
+    get:
+      summary: Get current user profile
+      tags: [Users]
+      responses:
+        '200':
+          description: User profile retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+    put:
+      summary: Update user profile
+      tags: [Users]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                display_name:
+                  type: string
+                  minLength: 1
+                  maxLength: 100
+                avatar_url:
+                  type: string
+                  format: uri
+      responses:
+        '200':
+          description: Profile updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+
+  /users/{userId}/follow:
+    post:
+      summary: Follow a team, player, or match
+      tags: [Users]
+      parameters:
+        - $ref: '#/components/parameters/UserId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [followable_type, followable_id]
+              properties:
+                followable_type:
+                  type: string
+                  enum: [team, player, match]
+                followable_id:
+                  type: string
+                  format: uuid
+      responses:
+        '201':
+          description: Successfully followed
+        '400':
+          $ref: '#/components/responses/BadRequest'
+
+  /users/{userId}/unfollow:
+    delete:
+      summary: Unfollow a team, player, or match
+      tags: [Users]
+      parameters:
+        - $ref: '#/components/parameters/UserId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [followable_type, followable_id]
+              properties:
+                followable_type:
+                  type: string
+                  enum: [team, player, match]
+                followable_id:
+                  type: string
+                  format: uuid
+      responses:
+        '204':
+          description: Successfully unfollowed
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  # Teams
+  /teams:
+    get:
+      summary: List teams
+      tags: [Teams]
+      parameters:
+        - name: type
+          in: query
+          schema:
+            type: string
+            enum: [professional, community]
+        - name: league_id
+          in: query
+          schema:
+            type: string
+            format: uuid
+        - name: search
+          in: query
+          schema:
+            type: string
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 20
+            maximum: 100
+        - name: offset
+          in: query
+          schema:
+            type: integer
+            default: 0
+      responses:
+        '200':
+          description: List of teams
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  teams:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Team'
+                  total:
+                    type: integer
+                  limit:
+                    type: integer
+                  offset:
+                    type: integer
+
+    post:
+      summary: Create new team (Team Manager only)
+      tags: [Teams]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name, team_type]
+              properties:
+                name:
+                  type: string
+                  minLength: 1
+                  maxLength: 200
+                short_name:
+                  type: string
+                  maxLength: 10
+                team_type:
+                  type: string
+                  enum: [professional, community]
+                league_id:
+                  type: string
+                  format: uuid
+                founded_year:
+                  type: integer
+                  minimum: 1800
+                  maximum: 2025
+                home_venue:
+                  type: string
+                  maxLength: 200
+                description:
+                  type: string
+      responses:
+        '201':
+          description: Team created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Team'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /teams/{teamId}:
+    get:
+      summary: Get team details
+      tags: [Teams]
+      parameters:
+        - $ref: '#/components/parameters/TeamId'
+      responses:
+        '200':
+          description: Team details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Team'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    put:
+      summary: Update team (Team Manager only)
+      tags: [Teams]
+      parameters:
+        - $ref: '#/components/parameters/TeamId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  minLength: 1
+                  maxLength: 200
+                short_name:
+                  type: string
+                  maxLength: 10
+                founded_year:
+                  type: integer
+                  minimum: 1800
+                  maximum: 2025
+                home_venue:
+                  type: string
+                  maxLength: 200
+                description:
+                  type: string
+      responses:
+        '200':
+          description: Team updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Team'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /teams/{teamId}/players:
+    get:
+      summary: Get team players
+      tags: [Teams]
+      parameters:
+        - $ref: '#/components/parameters/TeamId'
+      responses:
+        '200':
+          description: List of team players
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Player'
+
+    post:
+      summary: Add player to team (Team Manager only)
+      tags: [Teams]
+      parameters:
+        - $ref: '#/components/parameters/TeamId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [first_name, last_name]
+              properties:
+                first_name:
+                  type: string
+                  minLength: 1
+                  maxLength: 100
+                last_name:
+                  type: string
+                  minLength: 1
+                  maxLength: 100
+                position:
+                  type: string
+                  maxLength: 50
+                jersey_number:
+                  type: integer
+                  minimum: 1
+                  maximum: 99
+                date_of_birth:
+                  type: string
+                  format: date
+                nationality:
+                  type: string
+                  maxLength: 100
+                height_cm:
+                  type: integer
+                  minimum: 150
+                  maximum: 220
+                weight_kg:
+                  type: integer
+                  minimum: 50
+                  maximum: 150
+                photo_url:
+                  type: string
+                  format: uri
+      responses:
+        '201':
+          description: Player added
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Player'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  # Matches
+  /matches:
+    get:
+      summary: List matches
+      tags: [Matches]
+      parameters:
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [scheduled, live, finished, postponed, cancelled]
+        - name: team_id
+          in: query
+          schema:
+            type: string
+            format: uuid
+        - name: date_from
+          in: query
+          schema:
+            type: string
+            format: date
+        - name: date_to
+          in: query
+          schema:
+            type: string
+            format: date
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 20
+            maximum: 100
+        - name: offset
+          in: query
+          schema:
+            type: integer
+            default: 0
+      responses:
+        '200':
+          description: List of matches
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  matches:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Match'
+                  total:
+                    type: integer
+                  limit:
+                    type: integer
+                  offset:
+                    type: integer
+
+  /matches/{matchId}:
+    get:
+      summary: Get match details
+      tags: [Matches]
+      parameters:
+        - $ref: '#/components/parameters/MatchId'
+      responses:
+        '200':
+          description: Match details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Match'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /matches/{matchId}/events:
+    get:
+      summary: Get match events
+      tags: [Matches]
+      parameters:
+        - $ref: '#/components/parameters/MatchId'
+      responses:
+        '200':
+          description: List of match events
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/MatchEvent'
+
+  /matches/{matchId}/debates:
+    get:
+      summary: Get match debates
+      tags: [Matches]
+      parameters:
+        - $ref: '#/components/parameters/MatchId'
+      responses:
+        '200':
+          description: List of match debates
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Debate'
+
+  # Debates
+  /debates/{debateId}:
+    get:
+      summary: Get debate details
+      tags: [Debates]
+      parameters:
+        - $ref: '#/components/parameters/DebateId'
+      responses:
+        '200':
+          description: Debate details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Debate'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /debates/{debateId}/responses:
+    get:
+      summary: Get debate responses
+      tags: [Debates]
+      parameters:
+        - $ref: '#/components/parameters/DebateId'
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 20
+            maximum: 100
+        - name: offset
+          in: query
+          schema:
+            type: integer
+            default: 0
+      responses:
+        '200':
+          description: List of debate responses
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  responses:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/DebateResponse'
+                  total:
+                    type: integer
+                  limit:
+                    type: integer
+                  offset:
+                    type: integer
+
+    post:
+      summary: Add response to debate
+      tags: [Debates]
+      parameters:
+        - $ref: '#/components/parameters/DebateId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [content]
+              properties:
+                content:
+                  type: string
+                  minLength: 1
+                  maxLength: 2000
+                side_chosen:
+                  type: string
+                  enum: [side_a, side_b]
+      responses:
+        '201':
+          description: Response added
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DebateResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+
+  /debates/{debateId}/responses/{responseId}/vote:
+    post:
+      summary: Vote on debate response
+      tags: [Debates]
+      parameters:
+        - $ref: '#/components/parameters/DebateId'
+        - name: responseId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [vote_type]
+              properties:
+                vote_type:
+                  type: string
+                  enum: [upvote, downvote]
+      responses:
+        '201':
+          description: Vote recorded
+        '400':
+          $ref: '#/components/responses/BadRequest'
+
+  # Stories
+  /stories:
+    get:
+      summary: List stories
+      tags: [Stories]
+      parameters:
+        - name: match_id
+          in: query
+          schema:
+            type: string
+            format: uuid
+        - name: team_id
+          in: query
+          schema:
+            type: string
+            format: uuid
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 20
+            maximum: 100
+        - name: offset
+          in: query
+          schema:
+            type: integer
+            default: 0
+      responses:
+        '200':
+          description: List of stories
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  stories:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Story'
+                  total:
+                    type: integer
+                  limit:
+                    type: integer
+                  offset:
+                    type: integer
+
+    post:
+      summary: Create new story
+      tags: [Stories]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [content_type, media_url]
+              properties:
+                match_id:
+                  type: string
+                  format: uuid
+                team_id:
+                  type: string
+                  format: uuid
+                content_type:
+                  type: string
+                  enum: [photo, video, text]
+                media_url:
+                  type: string
+                  format: uri
+                caption:
+                  type: string
+                  maxLength: 500
+      responses:
+        '201':
+          description: Story created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Story'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+
+  /stories/{storyId}:
+    get:
+      summary: Get story details
+      tags: [Stories]
+      parameters:
+        - name: storyId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Story details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Story'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /stories/{storyId}/view:
+    post:
+      summary: Record story view
+      tags: [Stories]
+      parameters:
+        - name: storyId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: View recorded
+
+  # Reports
+  /reports:
+    post:
+      summary: Report content
+      tags: [Reports]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [reportable_type, reportable_id, reason]
+              properties:
+                reportable_type:
+                  type: string
+                  enum: [debate, debate_response, story, user]
+                reportable_id:
+                  type: string
+                  format: uuid
+                reason:
+                  type: string
+                  enum:
+                    [spam, harassment, inappropriate_content, fake_team, other]
+                description:
+                  type: string
+                  maxLength: 1000
+      responses:
+        '201':
+          description: Report submitted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Report'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+
+  # Admin endpoints
+  /admin/team-managers/verify:
+    post:
+      summary: Verify team manager (Admin only)
+      tags: [Admin]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [user_id, team_id, approved]
+              properties:
+                user_id:
+                  type: string
+                  format: uuid
+                team_id:
+                  type: string
+                  format: uuid
+                approved:
+                  type: boolean
+                notes:
+                  type: string
+      responses:
+        '200':
+          description: Team manager verification updated
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /admin/reports:
+    get:
+      summary: List reports (Admin only)
+      tags: [Admin]
+      parameters:
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [pending, reviewed, resolved, dismissed]
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 20
+            maximum: 100
+        - name: offset
+          in: query
+          schema:
+            type: integer
+            default: 0
+      responses:
+        '200':
+          description: List of reports
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  reports:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Report'
+                  total:
+                    type: integer
+                  limit:
+                    type: integer
+                  offset:
+                    type: integer
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-API-Key
+
+  parameters:
+    UserId:
+      name: userId
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+    TeamId:
+      name: teamId
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+    MatchId:
+      name: matchId
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+    DebateId:
+      name: debateId
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        email:
+          type: string
+          format: email
+        role:
+          type: string
+          enum: [fan, team_manager, admin]
+        display_name:
+          type: string
+        avatar_url:
+          type: string
+          format: uri
+        is_verified:
+          type: boolean
+        is_active:
+          type: boolean
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        last_login_at:
+          type: string
+          format: date-time
+
+    Team:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        short_name:
+          type: string
+        logo_url:
+          type: string
+          format: uri
+        banner_url:
+          type: string
+          format: uri
+        team_type:
+          type: string
+          enum: [professional, community]
+        league_id:
+          type: string
+          format: uuid
+        founded_year:
+          type: integer
+        home_venue:
+          type: string
+        description:
+          type: string
+        is_verified:
+          type: boolean
+        is_active:
+          type: boolean
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    Player:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        team_id:
+          type: string
+          format: uuid
+        first_name:
+          type: string
+        last_name:
+          type: string
+        position:
+          type: string
+        jersey_number:
+          type: integer
+        date_of_birth:
+          type: string
+          format: date
+        nationality:
+          type: string
+        height_cm:
+          type: integer
+        weight_kg:
+          type: integer
+        photo_url:
+          type: string
+          format: uri
+        is_active:
+          type: boolean
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    Match:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        home_team_id:
+          type: string
+          format: uuid
+        away_team_id:
+          type: string
+          format: uuid
+        league_id:
+          type: string
+          format: uuid
+        match_date:
+          type: string
+          format: date-time
+        venue:
+          type: string
+        status:
+          type: string
+          enum: [scheduled, live, finished, postponed, cancelled]
+        home_score:
+          type: integer
+        away_score:
+          type: integer
+        match_minute:
+          type: integer
+        referee:
+          type: string
+        attendance:
+          type: integer
+        weather_conditions:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    MatchEvent:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        match_id:
+          type: string
+          format: uuid
+        event_type:
+          type: string
+          enum: [goal, yellow_card, red_card, substitution, penalty]
+        minute:
+          type: integer
+        player_id:
+          type: string
+          format: uuid
+        team_id:
+          type: string
+          format: uuid
+        description:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+
+    Debate:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        match_id:
+          type: string
+          format: uuid
+        title:
+          type: string
+        description:
+          type: string
+        side_a_title:
+          type: string
+        side_b_title:
+          type: string
+        side_a_description:
+          type: string
+        side_b_description:
+          type: string
+        ai_generated:
+          type: boolean
+        generation_prompt:
+          type: string
+        bias_score:
+          type: number
+          format: float
+          minimum: 0.0
+          maximum: 1.0
+        quality_score:
+          type: number
+          format: float
+          minimum: 0.0
+          maximum: 1.0
+        is_active:
+          type: boolean
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    DebateResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        debate_id:
+          type: string
+          format: uuid
+        user_id:
+          type: string
+          format: uuid
+        content:
+          type: string
+        side_chosen:
+          type: string
+          enum: [side_a, side_b]
+        upvotes:
+          type: integer
+        downvotes:
+          type: integer
+        is_approved:
+          type: boolean
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    Story:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        user_id:
+          type: string
+          format: uuid
+        match_id:
+          type: string
+          format: uuid
+        team_id:
+          type: string
+          format: uuid
+        content_type:
+          type: string
+          enum: [photo, video, text]
+        media_url:
+          type: string
+          format: uri
+        caption:
+          type: string
+        expires_at:
+          type: string
+          format: date-time
+        view_count:
+          type: integer
+        is_active:
+          type: boolean
+        created_at:
+          type: string
+          format: date-time
+
+    Report:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        reporter_id:
+          type: string
+          format: uuid
+        reportable_type:
+          type: string
+          enum: [debate, debate_response, story, user]
+        reportable_id:
+          type: string
+          format: uuid
+        reason:
+          type: string
+          enum: [spam, harassment, inappropriate_content, fake_team, other]
+        description:
+          type: string
+        status:
+          type: string
+          enum: [pending, reviewed, resolved, dismissed]
+        admin_notes:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+        message:
+          type: string
+        details:
+          type: object
+
+  responses:
+    BadRequest:
+      description: Bad request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+    Unauthorized:
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+    Forbidden:
+      description: Forbidden
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+    NotFound:
+      description: Not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+    Conflict:
+      description: Conflict
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+    InternalServerError:
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+tags:
+  - name: Authentication
+    description: User authentication and registration
+  - name: Users
+    description: User management and profiles
+  - name: Teams
+    description: Team management and information
+  - name: Matches
+    description: Match data and events
+  - name: Debates
+    description: AI-generated debates and user responses
+  - name: Stories
+    description: Ephemeral content and media
+  - name: Reports
+    description: Content reporting and moderation
+  - name: Admin
+    description: Administrative functions
