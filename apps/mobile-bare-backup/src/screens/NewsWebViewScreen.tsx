@@ -7,22 +7,15 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import {WebView} from 'react-native-webview';
-import {
-  useRoute,
-  useNavigation,
-  RouteProp,
-  NavigationProp,
-} from '@react-navigation/native';
+import {useRoute, useNavigation, RouteProp} from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/Ionicons';
-const IconComponent = Icon as any;
 import type {RootStackParamList} from '../types/navigation';
 
 type NewsWebViewRouteProp = RouteProp<RootStackParamList, 'NewsWebView'>;
 
 const NewsWebViewScreen: React.FC = () => {
   const route = useRoute<NewsWebViewRouteProp>();
-  const navigation =
-    useNavigation<NavigationProp<RootStackParamList, 'NewsWebView'>>();
+  const navigation = useNavigation<NavigationProp<RootStackParamList, 'NewsWebView'>>();
   const [isLoading, setIsLoading] = React.useState(true);
   const {url} = route.params;
 
@@ -36,8 +29,9 @@ const NewsWebViewScreen: React.FC = () => {
         <TouchableOpacity
           style={styles.closeButton}
           onPress={handleClose}
-          accessibilityLabel="Close news view">
-          <IconComponent name="close" size={24} color="#333" />
+          accessibilityLabel="Close news view"
+        >
+          <Icon name="close" size={24} color="#333" />
         </TouchableOpacity>
       </View>
 

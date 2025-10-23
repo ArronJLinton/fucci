@@ -15,11 +15,15 @@ import {
   GestureResponderEvent,
   LayoutChangeEvent,
 } from 'react-native';
-import {useVideoPlayer, VideoView} from 'expo-video';
-import {Camera, CameraView} from 'expo-camera';
+import Video, {VideoRef} from 'react-native-video';
+import {
+  Camera,
+  useCameraDevice,
+  useCameraPermission,
+  CameraPosition,
+} from 'react-native-vision-camera';
 import {useNavigation, useRoute, RouteProp} from '@react-navigation/native';
-import IconComponent from 'react-native-vector-icons/Ionicons';
-const IconComponentComponent = IconComponent as any;
+import Icon from 'react-native-vector-icons/Ionicons';
 import type {
   NavigationProp,
   RootStackParamList,
@@ -46,13 +50,14 @@ const CameraPreviewScreen = () => {
 
   // Camera states
   const [hasPermission, setHasPermission] = useState(false);
-  const [cameraPosition, setCameraPosition] = useState<'back' | 'front'>(
-    'back',
-  );
+  const [cameraPosition, setCameraPosition] = useState<CameraPosition>('back');
   const [flash, setFlash] = useState<FlashMode>('off');
   const [isGridVisible, setIsGridVisible] = useState(false);
   const [zoom, setZoom] = useState(1);
-  const camera = useRef<CameraView>(null);
+  const device = useCameraDevice(cameraPosition);
+  const {hasPermission: cameraPermission, requestPermission} =
+    useCameraPermission();
+  const camera = useRef<Camera>(null);
   const [isFocusing, setIsFocusing] = useState(false);
   const [focusCoordinates, setFocusCoordinates] = useState<{
     x: number;
@@ -60,8 +65,8 @@ const CameraPreviewScreen = () => {
   } | null>(null);
   const [isRecording, setIsRecording] = useState(false);
   const [recordingDuration, setRecordingDuration] = useState(0);
-  const recordingTimer = useRef<ReturnType<typeof setInterval> | null>(null);
-  const longPressTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const recordingTimer = useRef<NodeJS.Timer | null>(null);
+  const longPressTimeout = useRef<NodeJS.Timeout | null>(null);
   const isLongPressing = useRef(false);
 
   // Preview states
@@ -70,9 +75,7 @@ const CameraPreviewScreen = () => {
   const [isPlaying, setIsPlaying] = useState(true);
   const [videoDuration, setVideoDuration] = useState(0);
   const [currentTime, setCurrentTime] = useState(0);
-  const videoPlayer = useVideoPlayer(previewUri || '', player => {
-    player.loop = true;
-  });
+  const videoRef = useRef<VideoRef>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [progressBarWidth, setProgressBarWidth] = useState(300);
@@ -92,17 +95,15 @@ const CameraPreviewScreen = () => {
 
   useEffect(() => {
     const checkPermission = async () => {
-      const {status} = await Camera.getCameraPermissionsAsync();
-      if (status !== 'granted') {
-        const {status: newStatus} =
-          await Camera.requestCameraPermissionsAsync();
-        setHasPermission(newStatus === 'granted');
+      if (!cameraPermission) {
+        const granted = await requestPermission();
+        setHasPermission(granted);
       } else {
         setHasPermission(true);
       }
     };
     checkPermission();
-  }, []);
+  }, [cameraPermission, requestPermission]);
 
   useEffect(() => {
     StatusBar.setHidden(true);
@@ -111,22 +112,33 @@ const CameraPreviewScreen = () => {
     };
   }, []);
 
-  const handleFocus = useCallback(async (event: any) => {
-    const {pageX, pageY} = event.nativeEvent;
-    const focusPoint = {
-      x: pageX,
-      y: pageY,
-    };
+  const handleFocus = useCallback(
+    async (event: any) => {
+      if (!device?.supportsFocus) return;
 
-    setFocusCoordinates(focusPoint);
-    setIsFocusing(true);
+      const {pageX, pageY} = event.nativeEvent;
+      const focusPoint = {
+        x: pageX,
+        y: pageY,
+      };
 
-    // Hide focus indicator after 1 second
-    setTimeout(() => {
-      setIsFocusing(false);
-      setFocusCoordinates(null);
-    }, 1000);
-  }, []);
+      setFocusCoordinates(focusPoint);
+      setIsFocusing(true);
+
+      try {
+        await camera.current?.focus(focusPoint);
+      } catch (error) {
+        console.error('Focus error:', error);
+      }
+
+      // Hide focus indicator after 1 second
+      setTimeout(() => {
+        setIsFocusing(false);
+        setFocusCoordinates(null);
+      }, 1000);
+    },
+    [device?.supportsFocus],
+  );
 
   const startRecordingTimer = useCallback(() => {
     setRecordingDuration(0);
@@ -162,9 +174,12 @@ const CameraPreviewScreen = () => {
     Vibration.vibrate(50);
   }, []);
 
-  const handleZoom = useCallback((value: number) => {
-    setZoom(Math.max(1, Math.min(value, 10)));
-  }, []);
+  const handleZoom = useCallback(
+    (value: number) => {
+      setZoom(Math.max(1, Math.min(value, device?.maxZoom || 1)));
+    },
+    [device?.maxZoom],
+  );
 
   const startRecording = useCallback(async () => {
     try {
@@ -173,10 +188,33 @@ const CameraPreviewScreen = () => {
         setIsRecording(true);
         startRecordingTimer();
         Vibration.vibrate([0, 100, 50, 100]);
-        await camera.current.recordAsync();
+        await camera.current.startRecording({
+          flash: 'off',
+          fileType: 'mp4',
+          videoCodec: 'h264',
+          onRecordingFinished: video => {
+            console.log('Video recorded:', video);
+            setIsRecording(false);
+            stopRecordingTimer();
+            Vibration.vibrate(200);
+            // Set video preview
+            const uri = video.path.startsWith('file://')
+              ? video.path
+              : `file://${video.path}`;
+            console.log('Setting video preview URI:', uri);
+            setPreviewUri(uri);
+            setMediaType('video');
+          },
+          onRecordingError: error => {
+            console.error('Recording error:', error);
+            Alert.alert('Error', 'Failed to record video');
+            setIsRecording(false);
+            stopRecordingTimer();
+          },
+        });
       }
-    } catch (recordingError) {
-      console.error('Start recording error:', recordingError);
+    } catch (error) {
+      console.error('Start recording error:', error);
       Alert.alert('Error', 'Failed to start recording');
       setIsRecording(false);
       stopRecordingTimer();
@@ -187,16 +225,10 @@ const CameraPreviewScreen = () => {
     try {
       console.log('Stopping recording...');
       if (camera.current && isRecording) {
-        camera.current.stopRecording();
-        console.log('Recording stopped');
-        setIsRecording(false);
-        stopRecordingTimer();
-        Vibration.vibrate(200);
-        // Note: In expo-camera, we need to handle video recording differently
-        // For now, we'll just stop recording without preview
+        await camera.current.stopRecording();
       }
-    } catch (recordingError) {
-      console.error('Stop recording error:', recordingError);
+    } catch (error) {
+      console.error('Stop recording error:', error);
     } finally {
       setIsRecording(false);
       stopRecordingTimer();
@@ -208,8 +240,8 @@ const CameraPreviewScreen = () => {
     setIsLoading(false);
   };
 
-  const handleImageError = (imageError: any) => {
-    console.error('Image loading error:', imageError.nativeEvent.error);
+  const handleImageError = (error: any) => {
+    console.error('Image loading error:', error.nativeEvent.error);
     setError('Failed to load image');
     setIsLoading(false);
   };
@@ -218,22 +250,25 @@ const CameraPreviewScreen = () => {
     try {
       setIsLoading(true);
       Vibration.vibrate(100);
-      if (camera.current) {
-        const photo = await camera.current.takePictureAsync({
-          quality: 0.8,
+      if (device && camera.current) {
+        const photo = await camera.current.takePhoto({
+          flash: flash === 'on' ? 'on' : flash === 'auto' ? 'auto' : 'off',
         });
-        if (photo?.uri) {
-          console.log('Camera captured photo URI:', photo.uri);
-          setPreviewUri(photo.uri);
+        if (photo?.path) {
+          const uri = photo.path.startsWith('file://')
+            ? photo.path
+            : `file://${photo.path}`;
+          console.log('Camera captured photo URI:', uri);
+          setPreviewUri(uri);
           setMediaType('photo');
         }
       }
-    } catch (captureError) {
-      console.error('Camera capture error:', captureError);
+    } catch (error) {
+      console.error('Camera capture error:', error);
       Alert.alert('Error', 'Failed to take photo');
       setIsLoading(false);
     }
-  }, []);
+  }, [device, flash]);
 
   const handleCapturePress = useCallback(() => {
     console.log('Capture press started');
@@ -288,38 +323,29 @@ const CameraPreviewScreen = () => {
     }
   };
 
-  const handleVideoProgress = () => {
-    if (videoPlayer) {
-      setCurrentTime(videoPlayer.currentTime);
-      setVideoDuration(videoPlayer.duration);
-    }
+  const handleVideoProgress = (data: {currentTime: number}) => {
+    setCurrentTime(data.currentTime);
   };
 
-  const handleVideoLoad = () => {
-    console.log('Video loaded');
+  const handleVideoLoad = (data: {duration: number}) => {
+    console.log('Video loaded:', data);
+    setVideoDuration(data.duration);
     setIsLoading(false);
   };
 
-  const handleVideoError = (videoError: any) => {
-    console.error('Video loading error:', videoError);
+  const handleVideoError = (error: any) => {
+    console.error('Video loading error:', error);
     setError('Failed to load video');
     setIsLoading(false);
   };
 
   const togglePlayPause = () => {
-    if (videoPlayer) {
-      if (isPlaying) {
-        videoPlayer.pause();
-      } else {
-        videoPlayer.play();
-      }
-      setIsPlaying(!isPlaying);
-    }
+    setIsPlaying(!isPlaying);
   };
 
   const handleSeek = (time: number) => {
-    if (videoPlayer) {
-      videoPlayer.currentTime = time;
+    if (videoRef.current) {
+      videoRef.current.seek(time);
     }
   };
 
@@ -328,7 +354,7 @@ const CameraPreviewScreen = () => {
     navigation.goBack();
   };
 
-  if (!hasPermission) {
+  if (!hasPermission || !device) {
     return null;
   }
 
@@ -338,7 +364,7 @@ const CameraPreviewScreen = () => {
       <View style={styles.container}>
         <StatusBar hidden />
         <TouchableOpacity style={styles.closeButton} onPress={handleRetake}>
-          <IconComponent name="close" size={28} color="#fff" />
+          <Icon name="close" size={28} color="#fff" />
         </TouchableOpacity>
 
         <View style={styles.imageContainer}>
@@ -359,16 +385,30 @@ const CameraPreviewScreen = () => {
             </>
           ) : (
             <Pressable style={styles.videoContainer} onPress={togglePlayPause}>
-              <VideoView
-                player={videoPlayer}
+              <Video
+                ref={videoRef}
+                source={{uri: previewUri}}
                 style={styles.previewVideo}
-                nativeControls={false}
-                allowsFullscreen={false}
-                allowsPictureInPicture={false}
+                resizeMode="contain"
+                onLoad={handleVideoLoad}
+                onProgress={handleVideoProgress}
+                onError={handleVideoError}
+                repeat={true}
+                paused={!isPlaying}
+                controls={false}
+                ignoreSilentSwitch="ignore"
+                playInBackground={false}
+                playWhenInactive={false}
+                bufferConfig={{
+                  minBufferMs: 1000,
+                  maxBufferMs: 5000,
+                  bufferForPlaybackMs: 1000,
+                  bufferForPlaybackAfterRebufferMs: 2000,
+                }}
               />
               {!isPlaying && (
                 <View style={styles.playButtonOverlay}>
-                  <IconComponent name="play" size={50} color="#fff" />
+                  <Icon name="play" size={50} color="#fff" />
                 </View>
               )}
             </Pressable>
@@ -387,7 +427,7 @@ const CameraPreviewScreen = () => {
           onPress={handleRetake}
           hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}>
           <View style={styles.retakeButtonInner}>
-            <IconComponent name="close" size={24} color="#fff" />
+            <Icon name="close" size={24} color="#fff" />
           </View>
         </TouchableOpacity>
 
@@ -447,11 +487,14 @@ const CameraPreviewScreen = () => {
         style={styles.cameraContainer}
         onPress={handleFocus}
         {...panResponder.panHandlers}>
-        <CameraView
+        <Camera
           ref={camera}
           style={StyleSheet.absoluteFill}
-          facing={cameraPosition}
-          flash={flash}
+          device={device}
+          isActive={true}
+          photo={true}
+          video={true}
+          audio={true}
           zoom={zoom}
         />
         {isGridVisible && (
@@ -478,12 +521,12 @@ const CameraPreviewScreen = () => {
       {/* Top Controls */}
       <View style={styles.topControls}>
         <TouchableOpacity style={styles.closeButton} onPress={handleClose}>
-          <IconComponent name="close" size={28} color="#fff" />
+          <Icon name="close" size={28} color="#fff" />
         </TouchableOpacity>
 
         <View style={styles.topRightControls}>
           <TouchableOpacity style={styles.controlButton} onPress={toggleFlash}>
-            <IconComponent
+            <Icon
               name={
                 flash === 'off'
                   ? 'flash-off'
@@ -497,7 +540,7 @@ const CameraPreviewScreen = () => {
           </TouchableOpacity>
 
           <TouchableOpacity style={styles.controlButton} onPress={toggleGrid}>
-            <IconComponent
+            <Icon
               name={isGridVisible ? 'grid' : 'grid-outline'}
               size={24}
               color="#fff"
@@ -507,7 +550,7 @@ const CameraPreviewScreen = () => {
           <TouchableOpacity
             style={styles.controlButton}
             onPress={toggleCameraPosition}>
-            <IconComponent name="camera-reverse" size={24} color="#fff" />
+            <Icon name="camera-reverse" size={24} color="#fff" />
           </TouchableOpacity>
         </View>
       </View>

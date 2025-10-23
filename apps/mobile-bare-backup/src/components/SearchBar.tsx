@@ -8,8 +8,7 @@ import {
   Animated,
   Dimensions,
 } from 'react-native';
-import IconComponent from 'react-native-vector-icons/Ionicons';
-const IconComponentComponent = IconComponent as any;
+import Icon from 'react-native-vector-icons/Ionicons';
 
 interface SearchBarProps {
   value: string;
@@ -65,7 +64,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
         },
       ]}>
       <View style={styles.searchContainer}>
-        <IconComponent
+        <Icon
           name="search-outline"
           size={20}
           color="#666"
@@ -87,11 +86,11 @@ const SearchBar: React.FC<SearchBarProps> = ({
           <TouchableOpacity
             onPress={() => onChangeText('')}
             style={styles.clearButton}>
-            <IconComponent name="close-circle" size={20} color="#666" />
+            <Icon name="close-circle" size={20} color="#666" />
           </TouchableOpacity>
         ) : (
           <TouchableOpacity onPress={onClose} style={styles.clearButton}>
-            <IconComponent name="close" size={20} color="#666" />
+            <Icon name="close" size={20} color="#666" />
           </TouchableOpacity>
         )}
       </View>

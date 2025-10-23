@@ -7,14 +7,11 @@
 
 import React from 'react';
 import {NavigationContainer} from '@react-navigation/native';
-const NavigationContainerComponent = NavigationContainer as any;
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {StatusBar} from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
-const IconComponent = Icon as any;
 import {SafeAreaProvider, SafeAreaView} from 'react-native-safe-area-context';
-const SafeAreaViewComponent = SafeAreaView as any;
 
 // Screens
 import HomeScreen from './src/screens/HomeScreen';
@@ -28,17 +25,10 @@ import type {RootStackParamList} from './src/types/navigation';
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
-// Type assertions to fix React version compatibility
-const TabNavigator = Tab.Navigator as any;
-const TabScreen = Tab.Screen as any;
-const StackNavigator = Stack.Navigator as any;
-const StackScreen = Stack.Screen as any;
-const StackGroup = Stack.Group as any;
-
 const HomeStack = () => {
   return (
-    <StackNavigator>
-      <StackScreen
+    <Stack.Navigator>
+      <Stack.Screen
         name="HomeTab"
         component={HomeScreen}
         options={{
@@ -46,7 +36,7 @@ const HomeStack = () => {
           title: '',
         }}
       />
-      <StackScreen
+      <Stack.Screen
         name="MatchDetails"
         component={MatchDetailsScreen}
         options={{
@@ -58,15 +48,15 @@ const HomeStack = () => {
           headerTintColor: '#007AFF',
         }}
       />
-    </StackNavigator>
+    </Stack.Navigator>
   );
 };
 
 const MainStack = () => {
   return (
-    <SafeAreaViewComponent style={{flex: 1, backgroundColor: '#fff'}}>
+    <SafeAreaView style={{flex: 1, backgroundColor: '#fff'}}>
       <StatusBar barStyle="dark-content" backgroundColor="#fff" />
-      <TabNavigator
+      <Tab.Navigator
         screenOptions={{
           tabBarActiveTintColor: '#007AFF',
           tabBarInactiveTintColor: '#666',
@@ -91,42 +81,38 @@ const MainStack = () => {
             fontWeight: '600',
           },
         }}>
-        <TabScreen
+        <Tab.Screen
           name="Home"
           component={HomeStack}
           options={{
             headerShown: false,
             tabBarIcon: ({color, size}) => (
-              <IconComponent
-                name="football-outline"
-                size={size}
-                color={color}
-              />
+              <Icon name="football-outline" size={size} color={color} />
             ),
             tabBarLabel: () => null,
             title: '',
           }}
         />
-      </TabNavigator>
-    </SafeAreaViewComponent>
+      </Tab.Navigator>
+    </SafeAreaView>
   );
 };
 
 function App(): React.JSX.Element {
   return (
     <SafeAreaProvider>
-      <NavigationContainerComponent>
-        <StackNavigator screenOptions={{headerShown: false}}>
-          <StackScreen name="Main" component={MainStack} />
-          <StackGroup screenOptions={{presentation: 'fullScreenModal'}}>
-            <StackScreen
+      <NavigationContainer>
+        <Stack.Navigator screenOptions={{headerShown: false}}>
+          <Stack.Screen name="Main" component={MainStack} />
+          <Stack.Group screenOptions={{presentation: 'fullScreenModal'}}>
+            <Stack.Screen
               name="CameraPreview"
               component={CameraPreviewScreen}
               options={{
                 animation: 'slide_from_bottom',
               }}
             />
-            <StackScreen
+            <Stack.Screen
               name="NewsWebView"
               component={NewsWebViewScreen}
               options={{
@@ -134,9 +120,9 @@ function App(): React.JSX.Element {
                 animation: 'slide_from_bottom',
               }}
             />
-          </StackGroup>
-        </StackNavigator>
-      </NavigationContainerComponent>
+          </Stack.Group>
+        </Stack.Navigator>
+      </NavigationContainer>
     </SafeAreaProvider>
   );
 }

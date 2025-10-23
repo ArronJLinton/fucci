@@ -18,8 +18,6 @@ import {TableScreen} from './TableScreen';
 
 type MatchDetailsRouteProp = RouteProp<RootStackParamList, 'MatchDetails'>;
 const Tab = createMaterialTopTabNavigator();
-const TabNavigator = Tab.Navigator as any;
-const TabScreen = Tab.Screen as any;
 
 const MatchDetailsScreen = () => {
   const route = useRoute<MatchDetailsRouteProp>();
@@ -69,7 +67,7 @@ const MatchDetailsScreen = () => {
   return (
     <SafeAreaView style={styles.container}>
       <MatchHeader />
-      <TabNavigator
+      <Tab.Navigator
         screenOptions={{
           tabBarScrollEnabled: true,
           tabBarItemStyle: {
@@ -87,42 +85,42 @@ const MatchDetailsScreen = () => {
           tabBarPressColor: '#E3F2FD',
           tabBarPressOpacity: 0.8,
         }}>
-        <TabScreen
+        <Tab.Screen
           name="Story"
           component={StoryScreen}
           options={{
             tabBarLabel: 'Story',
           }}
         />
-        <TabScreen
+        <Tab.Screen
           name="Lineup"
           options={{
             tabBarLabel: 'Lineup',
           }}>
           {() => <LineupScreen match={match} />}
-        </TabScreen>
-        <TabScreen
+        </Tab.Screen>
+        <Tab.Screen
           name="Table"
           options={{
             tabBarLabel: 'Table',
           }}>
           {() => <TableScreen match={match} />}
-        </TabScreen>
-        <TabScreen
+        </Tab.Screen>
+        <Tab.Screen
           name="News"
           options={{
             tabBarLabel: 'News',
           }}>
           {() => <NewsScreen match={match} />}
-        </TabScreen>
-        <TabScreen
+        </Tab.Screen>
+        <Tab.Screen
           name="Debate"
           options={{
             tabBarLabel: 'Debate',
           }}>
           {() => <DebateScreen match={match} />}
-        </TabScreen>
-      </TabNavigator>
+        </Tab.Screen>
+      </Tab.Navigator>
     </SafeAreaView>
   );
 };

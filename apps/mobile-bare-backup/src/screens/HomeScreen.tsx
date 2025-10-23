@@ -9,7 +9,6 @@ import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs
 import type {NavigationState} from '@react-navigation/native';
 import {useNavigation, useRoute} from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/Ionicons';
-const IconComponent = Icon as any;
 import DateScreen from './DateScreen';
 import SearchBar from '../components/SearchBar';
 
@@ -18,8 +17,6 @@ type RootTabParamList = {
 };
 
 const Tab = createMaterialTopTabNavigator<RootTabParamList>();
-const TabNavigator = Tab.Navigator as any;
-const TabScreen = Tab.Screen as any;
 
 const fetchMatches = async (date: Date) => {
   try {
@@ -167,10 +164,10 @@ const HomeScreen = () => {
         <TouchableOpacity
           style={styles.searchButton}
           onPress={() => setIsSearchVisible(true)}>
-          <IconComponent name="search-outline" size={24} color="#007AFF" />
+          <Icon name="search-outline" size={24} color="#007AFF" />
         </TouchableOpacity>
       </View>
-      <TabNavigator
+      <Tab.Navigator
         initialRouteName={initialRoute}
         screenOptions={{
           tabBarScrollEnabled: true,
@@ -195,7 +192,7 @@ const HomeScreen = () => {
           const screenKey = `date-${dateString}`;
 
           return (
-            <TabScreen
+            <Tab.Screen
               key={screenKey}
               name={screenKey}
               options={{
@@ -204,10 +201,10 @@ const HomeScreen = () => {
                 tabBarAccessibilityLabel: `Switch to ${getTabLabel(date)}`,
               }}>
               {() => <DateTabScreen date={date} searchQuery={searchQuery} />}
-            </TabScreen>
+            </Tab.Screen>
           );
         })}
-      </TabNavigator>
+      </Tab.Navigator>
     </View>
   );
 };
