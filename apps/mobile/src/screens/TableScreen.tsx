@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -7,10 +7,10 @@ import {
   ActivityIndicator,
   Image,
 } from 'react-native';
-import {Match} from '../types/match';
-import {fetchStandings} from '../services/api';
+import { Match } from '../types/match';
+import { fetchStandings } from '../services/api';
 
-interface Standing {
+type Standing = {
   rank: number;
   team: {
     id: number;
@@ -31,14 +31,14 @@ interface Standing {
     };
   };
   goalDifference?: number;
-}
+};
 
 interface TableScreenProps {
   match: Match;
 }
 
-export const TableScreen: React.FC<TableScreenProps> = ({match}) => {
-  const [standings, setStandings] = useState<Standing[]>([]);
+export const TableScreen: React.FC<TableScreenProps> = ({ match }) => {
+  const [standings, setStandings] = useState<Standing[][]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -50,9 +50,12 @@ export const TableScreen: React.FC<TableScreenProps> = ({match}) => {
     const loadStandings = async () => {
       try {
         setLoading(true);
-        const {id, season} = match.league;
+        const { id, season } = match.league;
         const data = await fetchStandings(id, season);
-        setStandings(data);
+        // API returns Standing[][]
+        // Cast to expected structure for this screen
+        // FIXME: This is a hack to get the data to display. Need a better solution.
+        setStandings(data as unknown as Standing[][]);
         setError(null);
       } catch (err) {
         setError('Failed to load standings');
@@ -84,18 +87,19 @@ export const TableScreen: React.FC<TableScreenProps> = ({match}) => {
     <ScrollView style={styles.container}>
       <View style={styles.tableContainer}>
         {Array.isArray(standings) &&
-          standings.map((group, groupIdx) => (
-            <View key={groupIdx} style={{marginBottom: 24}}>
+          standings.map((group: Standing[], groupIdx: number) => (
+            <View key={groupIdx} style={{ marginBottom: 24 }}>
               {/* Group Header */}
-              {group && group[0] && group[0].group && (
+              {group && group[0] && (group[0] as Standing).group && (
                 <Text
                   style={{
                     fontWeight: 'bold',
                     fontSize: 16,
                     marginBottom: 8,
                     marginTop: 8,
-                  }}>
-                  {group[0].group}
+                  }}
+                >
+                  {(group[0] as Standing).group}
                 </Text>
               )}
               {/* Table Header */}
@@ -110,23 +114,20 @@ export const TableScreen: React.FC<TableScreenProps> = ({match}) => {
                 <Text style={styles.headerCell}>GD</Text>
                 <Text style={styles.headerCell}>Pts</Text>
               </View>
-              {group.map(standing => {
-                let rowStyle = [styles.tableRow];
+              {group.map((standing: Standing) => {
+                let rowStyle: import('react-native').ViewStyle[] = [
+                  styles.tableRow,
+                ];
                 if (standing.team.name === match.teams.home.name) {
-                  rowStyle.push({
-                    backgroundColor:
-                      '#007AFF' as import('react-native').ViewStyle,
-                  }); // Blue for home
+                  rowStyle.push(styles.homeRow);
                 } else if (standing.team.name === match.teams.away.name) {
-                  rowStyle.push({
-                    backgroundColor:
-                      '#FFDF00' as import('react-native').ViewStyle,
-                  }); // Yellow for away
+                  rowStyle.push(styles.awayRow);
                 }
                 return (
                   <View
                     key={`${standing.rank}-${standing.team.id}`}
-                    style={rowStyle}>
+                    style={rowStyle}
+                  >
                     <Text style={[styles.cell, styles.rankCell]}>
                       {standing.rank}
                     </Text>
@@ -134,16 +135,18 @@ export const TableScreen: React.FC<TableScreenProps> = ({match}) => {
                       style={[
                         styles.cell,
                         styles.teamCell,
-                        {flexDirection: 'row', alignItems: 'center'},
-                      ]}>
+                        { flexDirection: 'row', alignItems: 'center' },
+                      ]}
+                    >
                       <Image
-                        source={{uri: standing.team.logo}}
-                        style={{width: 20, height: 20, marginRight: 6}}
+                        source={{ uri: standing.team.logo }}
+                        style={{ width: 20, height: 20, marginRight: 6 }}
                       />
                       <Text
                         numberOfLines={2}
                         allowFontScaling={false}
-                        style={{flex: 1}}>
+                        style={{ flex: 1 }}
+                      >
                         {standing.team.name}
                       </Text>
                     </View>
@@ -152,9 +155,8 @@ export const TableScreen: React.FC<TableScreenProps> = ({match}) => {
                     <Text style={styles.cell}>{standing.all.draw}</Text>
                     <Text style={styles.cell}>{standing.all.lose}</Text>
                     <Text
-                      style={
-                        styles.cell
-                      }>{`${standing.all.goals.for}-${standing.all.goals.against}`}</Text>
+                      style={styles.cell}
+                    >{`${standing.all.goals.for}-${standing.all.goals.against}`}</Text>
                     <Text style={styles.cell}>
                       {standing.goalsDiff ?? standing.goalDifference}
                     </Text>
@@ -211,6 +213,12 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     borderBottomWidth: 1,
     borderBottomColor: '#e0e0e0',
+  },
+  homeRow: {
+    backgroundColor: '#E3F2FD',
+  },
+  awayRow: {
+    backgroundColor: '#FFF9C4',
   },
   highlightedRow: {
     backgroundColor: '#e3f2fd',
