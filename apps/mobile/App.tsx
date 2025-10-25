@@ -6,12 +6,12 @@
  */
 
 import React from 'react';
-import { NavigationContainer } from '@react-navigation/native';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { StatusBar } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
-import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
+import {NavigationContainer} from '@react-navigation/native';
+import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
+import {createNativeStackNavigator} from '@react-navigation/native-stack';
+import {StatusBar} from 'react-native';
+import {Ionicons} from '@expo/vector-icons';
+import {SafeAreaProvider, SafeAreaView} from 'react-native-safe-area-context';
 
 // Screens
 import HomeScreen from './src/screens/HomeScreen';
@@ -20,7 +20,7 @@ import CameraPreviewScreen from './src/screens/CameraPreviewScreen';
 import NewsWebViewScreen from './src/screens/NewsWebViewScreen';
 
 // Types
-import type { RootStackParamList } from './src/types/navigation';
+import type {RootStackParamList} from './src/types/navigation';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -54,7 +54,7 @@ const HomeStack = () => {
 
 const MainStack = () => {
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: '#fff' }}>
+    <SafeAreaView style={{flex: 1, backgroundColor: '#fff'}}>
       <StatusBar barStyle="dark-content" backgroundColor="#fff" />
       <Tab.Navigator
         screenOptions={{
@@ -80,14 +80,13 @@ const MainStack = () => {
           headerTitleStyle: {
             fontWeight: '600',
           },
-        }}
-      >
+        }}>
         <Tab.Screen
           name="Home"
           component={HomeStack}
           options={{
             headerShown: false,
-            tabBarIcon: ({ color, size }) => (
+            tabBarIcon: ({color, size}) => (
               <Ionicons name="football-outline" size={size} color={color} />
             ),
             tabBarLabel: () => null,
@@ -103,9 +102,9 @@ function App(): React.JSX.Element {
   return (
     <SafeAreaProvider>
       <NavigationContainer>
-        <Stack.Navigator screenOptions={{ headerShown: false }}>
+        <Stack.Navigator screenOptions={{headerShown: false}}>
           <Stack.Screen name="Main" component={MainStack} />
-          <Stack.Group screenOptions={{ presentation: 'fullScreenModal' }}>
+          <Stack.Group screenOptions={{presentation: 'fullScreenModal'}}>
             <Stack.Screen
               name="CameraPreview"
               component={CameraPreviewScreen}
