@@ -4,6 +4,17 @@
 **Feature**: Football Community Platform  
 **Target**: Developers setting up the development environment
 
+## Branch Organization
+
+Each phase is implemented under its own branch for better organization and parallel development:
+
+1. **`001-setup-foundational`**: Phase 1-2 - Setup & Foundational (blocking prerequisites)
+2. **`002-live-match-following`**: Phase 3 - User Story 1 - Live Match Following (P1) - **MVP**
+3. **`003-ai-debate-engagement`**: Phase 4 - User Story 2 - AI-Powered Debate Engagement (P2)
+4. **`004-community-team-management`**: Phase 5 - User Story 3 - Community Team Management (P3)
+5. **`005-media-driven-engagement`**: Phase 6 - User Story 4 - Media-Driven Engagement (P4)
+6. **`006-polish-cross-cutting`**: Phase 7 - Polish & Cross-Cutting Concerns
+
 ## Prerequisites
 
 ### System Requirements
@@ -24,6 +35,33 @@
   - PostgreSQL
 - **Expo CLI**: `npm install -g @expo/cli`
 - **Go tools**: `go install golang.org/x/tools/gopls@latest`
+
+## Branch Workflow
+
+### Development Process
+
+1. **Start with foundational branch**: `git checkout -b 001-setup-foundational`
+2. **Complete phase tasks**: Implement all tasks for the current phase
+3. **Test independently**: Ensure the phase meets its independent test criteria
+4. **Create PR**: Submit pull request for review
+5. **Merge to main**: After approval, merge to main branch
+6. **Move to next phase**: Create new branch for next phase
+
+### Branch Creation Commands
+
+```bash
+# Create and switch to foundational branch
+git checkout -b 001-setup-foundational
+
+# After completing foundational work, create MVP branch
+git checkout -b 002-live-match-following
+
+# Continue with subsequent phases
+git checkout -b 003-ai-debate-engagement
+git checkout -b 004-community-team-management
+git checkout -b 005-media-driven-engagement
+git checkout -b 006-polish-cross-cutting
+```
 
 ## Environment Setup
 
