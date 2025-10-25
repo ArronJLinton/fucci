@@ -1,7 +1,6 @@
 # Tasks: Football Community Platform
 
 **Feature**: Football Community Platform  
-**Branch**: `001-football-community`  
 **Date**: 2025-01-23  
 **Generated from**: spec.md, data-model.md, contracts/api.yaml, plan.md
 
@@ -14,16 +13,27 @@ This task list implements a global fan and grassroots football community platfor
 **MVP Scope**: User Story 1 (Live Match Following) - 18 tasks  
 **Full Implementation**: All 4 user stories - 67 tasks
 
+## Branch Organization
+
+Each phase is implemented under its own branch for better organization and parallel development:
+
+1. **`001-setup-foundational`**: Phase 1-2 - Setup & Foundational (blocking prerequisites)
+2. **`002-live-match-following`**: Phase 3 - User Story 1 - Live Match Following (P1) - **MVP**
+3. **`003-ai-debate-engagement`**: Phase 4 - User Story 2 - AI-Powered Debate Engagement (P2)
+4. **`004-community-team-management`**: Phase 5 - User Story 3 - Community Team Management (P3)
+5. **`005-media-driven-engagement`**: Phase 6 - User Story 4 - Media-Driven Engagement (P4)
+6. **`006-polish-cross-cutting`**: Phase 7 - Polish & Cross-Cutting Concerns
+
 ## Dependencies
 
 **Story Completion Order**:
 
-1. **Phase 1-2**: Setup & Foundational (blocking prerequisites)
-2. **Phase 3**: User Story 1 - Live Match Following (P1) - **MVP**
-3. **Phase 4**: User Story 2 - AI-Powered Debate Engagement (P2)
-4. **Phase 5**: User Story 3 - Community Team Management (P3)
-5. **Phase 6**: User Story 4 - Media-Driven Engagement (P4)
-6. **Phase 7**: Polish & Cross-Cutting Concerns
+1. **Phase 1-2**: Setup & Foundational (blocking prerequisites) - **Branch**: `001-setup-foundational`
+2. **Phase 3**: User Story 1 - Live Match Following (P1) - **MVP** - **Branch**: `002-live-match-following`
+3. **Phase 4**: User Story 2 - AI-Powered Debate Engagement (P2) - **Branch**: `003-ai-debate-engagement`
+4. **Phase 5**: User Story 3 - Community Team Management (P3) - **Branch**: `004-community-team-management`
+5. **Phase 6**: User Story 4 - Media-Driven Engagement (P4) - **Branch**: `005-media-driven-engagement`
+6. **Phase 7**: Polish & Cross-Cutting Concerns - **Branch**: `006-polish-cross-cutting`
 
 **Parallel Opportunities**: Each user story can be developed independently once foundational tasks are complete. Within each story, models, services, and endpoints can be developed in parallel.
 
@@ -44,6 +54,7 @@ This task list implements a global fan and grassroots football community platfor
 
 ## Phase 1: Setup (Project Initialization)
 
+**Branch**: `001-setup-foundational`  
 **Goal**: Initialize project structure and development environment
 
 **Independent Test**: Development environment can be set up and basic services can start
@@ -64,6 +75,7 @@ This task list implements a global fan and grassroots football community platfor
 
 ## Phase 2: Foundational (Blocking Prerequisites)
 
+**Branch**: `001-setup-foundational` (continued)  
 **Goal**: Implement core infrastructure required by all user stories
 
 **Independent Test**: Authentication, database, and basic API structure work
@@ -98,6 +110,7 @@ This task list implements a global fan and grassroots football community platfor
 
 ## Phase 3: User Story 1 - Live Match Following (P1) - MVP
 
+**Branch**: `002-live-match-following`  
 **Goal**: Football fans can follow live professional and community matches with real-time updates, scores, and match insights.
 
 **Independent Test**: Can follow a single match from start to finish, receiving live updates, and viewing match statistics without any other features.
@@ -136,6 +149,7 @@ This task list implements a global fan and grassroots football community platfor
 
 ## Phase 4: User Story 2 - AI-Powered Debate Engagement (P2)
 
+**Branch**: `003-ai-debate-engagement`  
 **Goal**: Users can participate in AI-generated debates about matches, players, and teams, with intelligent prompts that encourage discussion and learning.
 
 **Independent Test**: Can view AI-generated debate topics for a completed match and participate in discussions without needing to follow live matches.
@@ -169,6 +183,7 @@ This task list implements a global fan and grassroots football community platfor
 
 ## Phase 5: User Story 3 - Community Team Management (P3)
 
+**Branch**: `004-community-team-management`  
 **Goal**: Community team managers can create and manage digital profiles for their teams, players, and content to build their local football community presence.
 
 **Independent Test**: Can create a team profile, add players, and manage team information without needing live match data or debates.
@@ -194,6 +209,7 @@ This task list implements a global fan and grassroots football community platfor
 
 ## Phase 6: User Story 4 - Media-Driven Engagement (P4)
 
+**Branch**: `005-media-driven-engagement`  
 **Goal**: Users can view and share dynamic match stories, news, and lineups in a social media-style format that encourages community interaction.
 
 **Independent Test**: Can browse match stories, view team lineups, and share content without participating in debates or managing teams.
@@ -227,6 +243,7 @@ This task list implements a global fan and grassroots football community platfor
 
 ## Phase 7: Polish & Cross-Cutting Concerns
 
+**Branch**: `006-polish-cross-cutting`  
 **Goal**: Implement cross-cutting features and polish the application
 
 **Independent Test**: All features work together seamlessly with proper error handling and performance
@@ -297,7 +314,8 @@ Developer C: T081-T087 (Mobile App - Social Features)
 
 ## MVP Scope Recommendation
 
-**Start with User Story 1 (Live Match Following)** - Tasks T027-T044 (18 tasks)
+**Start with User Story 1 (Live Match Following)** - Tasks T027-T044 (18 tasks)  
+**Branch**: `002-live-match-following`
 
 This provides:
 
@@ -313,6 +331,15 @@ This provides:
 - Match details and events display correctly
 - External API integration functions
 - Mobile app provides smooth user experience
+
+## Branch Workflow
+
+1. **Create feature branch**: `git checkout -b 002-live-match-following`
+2. **Implement tasks**: Complete all tasks T027-T044 for the phase
+3. **Test independently**: Ensure the phase meets its independent test criteria
+4. **Create PR**: Submit pull request for review
+5. **Merge to main**: After approval, merge to main branch
+6. **Repeat**: Move to next phase branch
 
 ## Task Validation
 
