@@ -50,15 +50,15 @@ This task list implements a global fan and grassroots football community platfor
 
 ### Setup Tasks
 
-- [ ] T001 Create database migration system in services/api/cmd/migrate/
-- [ ] T002 Set up Redis connection and caching layer in services/api/internal/cache/
-- [ ] T003 Configure environment variables and configuration management in services/api/internal/config/
-- [ ] T004 Set up logging and monitoring infrastructure in services/api/internal/
-- [ ] T005 [P] Create shared TypeScript types in packages/api-schema/src/types/
-- [ ] T006 [P] Set up API client package in packages/api-client/src/
-- [ ] T007 [P] Configure mobile app environment in apps/mobile/src/config/
-- [ ] T008 [P] Set up testing infrastructure for Go backend in services/api/
-- [ ] T009 [P] Set up testing infrastructure for React Native in apps/mobile/
+- [x] T001 Create database migration system in services/api/cmd/migrate/
+- [x] T002 Set up Redis connection and caching layer in services/api/internal/cache/
+- [x] T003 Configure environment variables and configuration management in services/api/internal/config/
+- [x] T004 Set up logging and monitoring infrastructure in services/api/internal/
+- [x] T005 [P] Create shared TypeScript types in packages/api-schema/src/types/
+- [x] T006 [P] Set up API client package in packages/api-client/src/
+- [x] T007 [P] Configure mobile app environment in apps/mobile/src/config/
+- [x] T008 [P] Set up testing infrastructure for Go backend in services/api/
+- [x] T009 [P] Set up testing infrastructure for React Native in apps/mobile/
 
 ---
 
