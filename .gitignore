@@ -226,3 +226,4 @@ out/
 # yarn.lock
 # pnpm-lock.yaml
 node_modules
+.DS_Store
