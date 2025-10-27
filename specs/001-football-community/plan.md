@@ -1,9 +1,20 @@
 # Implementation Plan: Football Community Platform
 
-**Branch**: `001-football-community` | **Date**: 2025-01-23 | **Spec**: [spec.md](./spec.md)
+**Date**: 2025-01-23 | **Spec**: [spec.md](./spec.md)
 **Input**: Feature specification from `/specs/001-football-community/spec.md`
 
 **Note**: This template is filled in by the `/speckit.plan` command. See `.specify/templates/commands/plan.md` for the execution workflow.
+
+## Branch Organization
+
+Each phase is implemented under its own branch for better organization and parallel development:
+
+1. **`001-setup-foundational`**: Phase 1-2 - Setup & Foundational (blocking prerequisites)
+2. **`002-live-match-following`**: Phase 3 - User Story 1 - Live Match Following (P1) - **MVP**
+3. **`003-ai-debate-engagement`**: Phase 4 - User Story 2 - AI-Powered Debate Engagement (P2)
+4. **`004-community-team-management`**: Phase 5 - User Story 3 - Community Team Management (P3)
+5. **`005-media-driven-engagement`**: Phase 6 - User Story 4 - Media-Driven Engagement (P4)
+6. **`006-polish-cross-cutting`**: Phase 7 - Polish & Cross-Cutting Concerns
 
 ## Summary
 
@@ -21,9 +32,10 @@ Build a global fan and grassroots football community platform combining live mat
 **Project Type**: Mobile + API (React Native app with Go backend)  
 **Performance Goals**: <3s app load, <200ms API p95, <1s navigation, 10k concurrent users  
 **Constraints**: Offline-capable, <50MB bundle size, <200MB memory usage, real-time updates  
-**Scale/Scope**: 10k users initially, 23 functional requirements, 4 user stories, 7 key entities  
+**Scale/Scope**: 10k users initially, 23 functional requirements, 4 user stories, 7 key entities
 
 **Key Integrations**:
+
 - API-Football for match data (cached aggressively)
 - OpenAI GPT-4 for AI debate generation
 - AWS Comprehend for content moderation
@@ -31,6 +43,7 @@ Build a global fan and grassroots football community platform combining live mat
 - AWS Cognito for authentication
 
 **Architecture Decisions**:
+
 - Monorepo structure with apps/ (mobile, admin) and services/ (api, workers)
 - Real-time updates via WebSockets
 - Offline-first with conflict resolution

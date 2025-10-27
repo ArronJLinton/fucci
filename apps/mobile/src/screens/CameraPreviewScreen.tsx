@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, {useState, useRef, useEffect} from 'react';
 import {
   View,
   StyleSheet,
@@ -10,11 +10,11 @@ import {
   ActivityIndicator,
   Text,
 } from 'react-native';
-import { Camera, CameraView } from 'expo-camera';
-import type { PermissionResponse } from 'expo-camera';
-import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
-import { Ionicons } from '@expo/vector-icons';
-import type { NavigationProp, RootStackParamList } from '../types/navigation';
+import {Camera, CameraView} from 'expo-camera';
+import type {PermissionResponse} from 'expo-camera';
+import {useNavigation, useRoute, RouteProp} from '@react-navigation/native';
+import {Ionicons} from '@expo/vector-icons';
+import type {NavigationProp, RootStackParamList} from '../types/navigation';
 
 type FacingMode = 'front' | 'back';
 type FlashMode = 'off' | 'on' | 'auto';
@@ -27,7 +27,7 @@ type CameraPreviewScreenRouteProp = RouteProp<
 const CameraPreviewScreen = () => {
   const navigation = useNavigation<NavigationProp>();
   const route = useRoute<CameraPreviewScreenRouteProp>();
-  const { onPhotoCapture } = route.params;
+  const {onPhotoCapture} = route.params;
 
   const [permission, setPermission] = useState<PermissionResponse | null>(null);
   const [facing, setFacing] = useState<FacingMode>('back');
@@ -76,11 +76,11 @@ const CameraPreviewScreen = () => {
   };
 
   const toggleFacing = () => {
-    setFacing((current) => (current === 'back' ? 'front' : 'back'));
+    setFacing(current => (current === 'back' ? 'front' : 'back'));
   };
 
   const toggleFlash = () => {
-    setFlash((current) => {
+    setFlash(current => {
       switch (current) {
         case 'off':
           return 'on';
@@ -130,7 +130,7 @@ const CameraPreviewScreen = () => {
   if (capturedImage) {
     return (
       <View style={styles.container}>
-        <Image source={{ uri: capturedImage }} style={styles.previewImage} />
+        <Image source={{uri: capturedImage}} style={styles.previewImage} />
         {isProcessing && (
           <View style={styles.processingOverlay}>
             <ActivityIndicator size="large" color="#007AFF" />
@@ -148,21 +148,18 @@ const CameraPreviewScreen = () => {
         style={styles.camera}
         facing={facing}
         flash={flash}
-        ref={cameraRef}
-      >
+        ref={cameraRef}>
         <View style={styles.overlay}>
           <View style={styles.topControls}>
             <TouchableOpacity
               style={styles.controlButton}
-              onPress={() => navigation.goBack()}
-            >
+              onPress={() => navigation.goBack()}>
               <Ionicons name="close" size={30} color="white" />
             </TouchableOpacity>
 
             <TouchableOpacity
               style={styles.controlButton}
-              onPress={toggleFlash}
-            >
+              onPress={toggleFlash}>
               <Ionicons name={getFlashIcon()} size={30} color="white" />
             </TouchableOpacity>
           </View>
@@ -171,8 +168,7 @@ const CameraPreviewScreen = () => {
             <View style={styles.bottomRow}>
               <TouchableOpacity
                 style={styles.controlButton}
-                onPress={toggleFacing}
-              >
+                onPress={toggleFacing}>
                 <Ionicons name="camera-reverse" size={30} color="white" />
               </TouchableOpacity>
 
@@ -182,8 +178,7 @@ const CameraPreviewScreen = () => {
                   isCapturing && styles.capturingButton,
                 ]}
                 onPress={takePicture}
-                disabled={isCapturing}
-              >
+                disabled={isCapturing}>
                 {isCapturing ? (
                   <ActivityIndicator size="large" color="white" />
                 ) : (

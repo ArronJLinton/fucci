@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, {useEffect} from 'react';
 import {
   StyleSheet,
   TextInput,
@@ -8,7 +8,7 @@ import {
   Animated,
   Dimensions,
 } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import {Ionicons} from '@expo/vector-icons';
 
 interface SearchBarProps {
   value: string;
@@ -19,7 +19,7 @@ interface SearchBarProps {
   onClose: () => void;
 }
 
-const { width } = Dimensions.get('window');
+const {width} = Dimensions.get('window');
 
 const SearchBar: React.FC<SearchBarProps> = ({
   value,
@@ -31,7 +31,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
 }) => {
   const slideAnim = React.useRef(new Animated.Value(width)).current;
   const [isAnimationComplete, setIsAnimationComplete] = React.useState(
-    !isVisible
+    !isVisible,
   );
 
   useEffect(() => {
@@ -39,7 +39,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
       toValue: isVisible ? 0 : width,
       duration: 300,
       useNativeDriver: true,
-    }).start(({ finished }) => {
+    }).start(({finished}) => {
       if (finished) {
         setIsAnimationComplete(!isVisible);
       }
@@ -55,15 +55,14 @@ const SearchBar: React.FC<SearchBarProps> = ({
       style={[
         styles.container,
         {
-          transform: [{ translateX: slideAnim }],
+          transform: [{translateX: slideAnim}],
           position: 'absolute',
           top: 0,
           left: 0,
           right: 0,
           zIndex: 1000,
         },
-      ]}
-    >
+      ]}>
       <View style={styles.searchContainer}>
         <Ionicons
           name="search-outline"
@@ -86,8 +85,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
         {value.length > 0 ? (
           <TouchableOpacity
             onPress={() => onChangeText('')}
-            style={styles.clearButton}
-          >
+            style={styles.clearButton}>
             <Ionicons name="close-circle" size={20} color="#666" />
           </TouchableOpacity>
         ) : (

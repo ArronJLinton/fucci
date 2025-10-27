@@ -1,6 +1,11 @@
 # Dependencies
 node_modules/
 apps/mobile/node_modules/
+apps/admin/node_modules/
+packages/api-schema/node_modules/
+packages/api-client/node_modules/
+packages/ui/node_modules/
+
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
@@ -226,3 +231,4 @@ out/
 # yarn.lock
 # pnpm-lock.yaml
 node_modules
+.DS_Store
