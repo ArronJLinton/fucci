@@ -1,9 +1,6 @@
 # Dependencies
 node_modules/
-<<<<<<< HEAD
 apps/mobile/node_modules/
-=======
->>>>>>> f0663344 (migrating to expo ...)
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
