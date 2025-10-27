@@ -1,25 +1,17 @@
-import React, { useMemo, useState } from 'react';
+import React, {useMemo, useState} from 'react';
 import {
   useWindowDimensions,
   View,
   TouchableOpacity,
   StyleSheet,
 } from 'react-native';
-<<<<<<< HEAD
-import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
-import type { NavigationState } from '@react-navigation/native';
-import { useNavigation, useRoute } from '@react-navigation/native';
-import { Ionicons } from '@expo/vector-icons';
-=======
 import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
 import type {NavigationState} from '@react-navigation/native';
 import {useNavigation, useRoute} from '@react-navigation/native';
-import Icon from 'react-native-vector-icons/Ionicons';
-const IconComponent = Icon as any;
->>>>>>> f0663344 (migrating to expo ...)
+import {Ionicons} from '@expo/vector-icons';
 import DateScreen from './DateScreen';
 import SearchBar from '../components/SearchBar';
-import { fetchMatches } from '../services/api';
+import {fetchMatches} from '../services/api';
 
 type RootTabParamList = {
   [key: string]: undefined;
@@ -60,7 +52,7 @@ type DateTabScreenProps = {
   searchQuery: string;
 };
 
-const DateTabScreen: React.FC<DateTabScreenProps> = ({ date, searchQuery }) => {
+const DateTabScreen: React.FC<DateTabScreenProps> = ({date, searchQuery}) => {
   const route = useRoute();
   const navigation = useNavigation();
   const currentRoute = (navigation.getState() as NavigationState).routes[
@@ -74,7 +66,7 @@ const DateTabScreen: React.FC<DateTabScreenProps> = ({ date, searchQuery }) => {
     if (isSelected) {
       setIsLoading(true);
       fetchMatches(date)
-        .then((data) => {
+        .then(data => {
           if (data) {
             setMatches(data);
           }
@@ -90,10 +82,10 @@ const DateTabScreen: React.FC<DateTabScreenProps> = ({ date, searchQuery }) => {
 
     const query = searchQuery.toLowerCase();
     return matches.filter(
-      (match) =>
+      match =>
         match.teams.home.name.toLowerCase().includes(query) ||
         match.teams.away.name.toLowerCase().includes(query) ||
-        match.league.name.toLowerCase().includes(query)
+        match.league.name.toLowerCase().includes(query),
     );
   }, [matches, searchQuery]);
 
@@ -108,7 +100,7 @@ const DateTabScreen: React.FC<DateTabScreenProps> = ({ date, searchQuery }) => {
 };
 
 const HomeScreen = () => {
-  const { width } = useWindowDimensions();
+  const {width} = useWindowDimensions();
   const [searchQuery, setSearchQuery] = useState('');
   const [isSearchVisible, setIsSearchVisible] = useState(false);
 
@@ -129,7 +121,7 @@ const HomeScreen = () => {
   const todayIndex = useMemo(() => {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
-    return dates.findIndex((date) => date.getTime() === today.getTime());
+    return dates.findIndex(date => date.getTime() === today.getTime());
   }, [dates]);
 
   const initialRoute = useMemo(() => {
@@ -138,7 +130,7 @@ const HomeScreen = () => {
   }, [dates, todayIndex]);
 
   return (
-    <View style={{ flex: 1 }}>
+    <View style={{flex: 1}}>
       <SearchBar
         value={searchQuery}
         onChangeText={setSearchQuery}
@@ -152,14 +144,8 @@ const HomeScreen = () => {
       <View style={styles.header}>
         <TouchableOpacity
           style={styles.searchButton}
-<<<<<<< HEAD
-          onPress={() => setIsSearchVisible(true)}
-        >
-          <Ionicons name="search-outline" size={24} color="#007AFF" />
-=======
           onPress={() => setIsSearchVisible(true)}>
-          <IconComponent name="search-outline" size={24} color="#007AFF" />
->>>>>>> f0663344 (migrating to expo ...)
+          <Ionicons name="search-outline" size={24} color="#007AFF" />
         </TouchableOpacity>
       </View>
       <TabNavigator
@@ -181,9 +167,8 @@ const HomeScreen = () => {
           tabBarPressColor: '#E3F2FD',
           tabBarPressOpacity: 0.8,
           lazy: true,
-        }}
-      >
-        {dates.map((date) => {
+        }}>
+        {dates.map(date => {
           const dateString = date.toISOString();
           const screenKey = `date-${dateString}`;
 
@@ -195,8 +180,7 @@ const HomeScreen = () => {
                 title: getTabLabel(date),
                 tabBarLabel: getTabLabel(date),
                 tabBarAccessibilityLabel: `Switch to ${getTabLabel(date)}`,
-              }}
-            >
+              }}>
               {() => <DateTabScreen date={date} searchQuery={searchQuery} />}
             </TabScreen>
           );

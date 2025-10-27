@@ -6,24 +6,11 @@ import {
   TouchableOpacity,
   ActivityIndicator,
 } from 'react-native';
-<<<<<<< HEAD
-import { WebView } from 'react-native-webview';
-import { useRoute, useNavigation, RouteProp } from '@react-navigation/native';
-import type { NavigationProp } from '@react-navigation/native';
-import { Ionicons } from '@expo/vector-icons';
-import type { RootStackParamList } from '../types/navigation';
-=======
 import {WebView} from 'react-native-webview';
-import {
-  useRoute,
-  useNavigation,
-  RouteProp,
-  NavigationProp,
-} from '@react-navigation/native';
-import Icon from 'react-native-vector-icons/Ionicons';
-const IconComponent = Icon as any;
+import {useRoute, useNavigation, RouteProp} from '@react-navigation/native';
+import type {NavigationProp} from '@react-navigation/native';
+import {Ionicons} from '@expo/vector-icons';
 import type {RootStackParamList} from '../types/navigation';
->>>>>>> f0663344 (migrating to expo ...)
 
 type NewsWebViewRouteProp = RouteProp<RootStackParamList, 'NewsWebView'>;
 
@@ -32,7 +19,7 @@ const NewsWebViewScreen: React.FC = () => {
   const navigation =
     useNavigation<NavigationProp<RootStackParamList, 'NewsWebView'>>();
   const [isLoading, setIsLoading] = React.useState(true);
-  const { url } = route.params;
+  const {url} = route.params;
 
   const handleClose = () => {
     navigation.goBack();
@@ -44,14 +31,8 @@ const NewsWebViewScreen: React.FC = () => {
         <TouchableOpacity
           style={styles.closeButton}
           onPress={handleClose}
-<<<<<<< HEAD
-          accessibilityLabel="Close news view"
-        >
-          <Ionicons name="close" size={24} color="#333" />
-=======
           accessibilityLabel="Close news view">
-          <IconComponent name="close" size={24} color="#333" />
->>>>>>> f0663344 (migrating to expo ...)
+          <Ionicons name="close" size={24} color="#333" />
         </TouchableOpacity>
       </View>
 
@@ -62,7 +43,7 @@ const NewsWebViewScreen: React.FC = () => {
       )}
 
       <WebView
-        source={{ uri: url }}
+        source={{uri: url}}
         style={styles.webview}
         onLoadStart={() => setIsLoading(true)}
         onLoadEnd={() => setIsLoading(false)}

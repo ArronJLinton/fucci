@@ -12,9 +12,13 @@ Resolve these 685 merge conflicts across 72 files
 
 _**Assistant (default)**_
 
+
+
 ---
 
+
 Examining the conflicted files to understand the scope.
+
 
 ---
 
@@ -36,9 +40,12 @@ Read file: apps/mobile/app.json
 
 ---
 
+
+
 ---
 
 Counting conflicted files with `git grep`:
+
 
 ---
 
@@ -57,9 +64,12 @@ yarn.lock
 
 ---
 
+
+
 ---
 
 Resolving 3 files with conflicts, keeping the HEAD version:
+
 
 ---
 
@@ -85,6 +95,7 @@ The string to replace was not found in the file.
 
 Tool use: **search_replace**
 
+
 <details><summary>Edit file: apps/mobile/App.tsx</summary>
 
 **Chunk 1**
@@ -106,9 +117,12 @@ Lines added: 2, lines removed: 2
 
 ---
 
+
+
 ---
 
 Re-reading `apps/mobile/App.tsx`:
+
 
 ---
 
@@ -118,13 +132,17 @@ Read file: apps/mobile/App.tsx
 
 ---
 
+
+
 ---
 
 Multiple branches are in conflict. Rewriting the file with a clean version:
 
+
 ---
 
 Tool use: **write**
+
 
 <details><summary>Edit file: apps/mobile/App.tsx</summary>
 
@@ -133,7 +151,7 @@ Lines added: undefined, lines removed: 2
 
 ```diff
 @@ -7,6 +7,4 @@
-
+  
   import React from 'react';
 - <<<<<<< HEAD
 - <<<<<<< HEAD
@@ -167,7 +185,7 @@ Lines added: undefined, lines removed: 19
 - import {Ionicons} from '@expo/vector-icons';
 - import {SafeAreaProvider, SafeAreaView} from 'react-native-safe-area-context';
 - >>>>>>> 4dedb793 (Fix runtime errors and workspace configuration)
-
+  
   // Screens
 ```
 
@@ -176,11 +194,11 @@ Lines added: 1, lines removed: 1
 
 ```diff
 @@ -42,5 +21,5 @@
-
+  
   // Types
 - import type {RootStackParamList} from './src/types/navigation';
 + import type { RootStackParamList } from './src/types/navigation';
-
+  
   const Tab = createBottomTabNavigator();
 ```
 
@@ -302,9 +320,12 @@ Lines added: 1, lines removed: 1
 
 ---
 
+
+
 ---
 
 Resolving the `app.json` file:
+
 
 ---
 
@@ -314,9 +335,12 @@ Read file: apps/mobile/app.json
 
 ---
 
+
+
 ---
 
 Tool use: **write**
+
 
 <details><summary>Edit file: apps/mobile/app.json</summary>
 
@@ -399,16 +423,19 @@ Lines added: undefined, lines removed: 8
 -   }
 - }
 - >>>>>>> f0663344 (migrating to expo ...)
-
+  
 ```
 
 </details>
 
 ---
 
+
+
 ---
 
 Checking yarn.lock conflicts, then resolving:
+
 
 ---
 
@@ -426,6 +453,8 @@ Use '--' to separate paths from revisions, like this:
 ```
 
 ---
+
+
 
 ---
 
@@ -456,6 +485,8 @@ UU yarn.lock
 ```
 
 ---
+
+
 
 ---
 
@@ -510,6 +541,8 @@ git add apps/mobile/app.json
 
 ---
 
+
+
 ---
 
 Tool use: **run_terminal_cmd**
@@ -527,6 +560,8 @@ git status --short
 
 ---
 
+
+
 ---
 
 Tool use: **run_terminal_cmd**
@@ -549,9 +584,12 @@ nothing added to commit but untracked files present (use "git add" to track)
 
 ---
 
+
+
 ---
 
 Verifying the resolved files:
+
 
 ---
 
@@ -567,6 +605,8 @@ Read file: apps/mobile/app.json
 
 ---
 
+
+
 ---
 
 Tool use: **read_file**
@@ -574,6 +614,8 @@ Tool use: **read_file**
 Read file: apps/mobile/App.tsx
 
 ---
+
+
 
 ---
 
@@ -589,15 +631,18 @@ Lint paths:
 
 Lint results
 
-**No lint errors found**
 
+**No lint errors found**
 </details>
 
 ---
 
+
+
 ---
 
 Checking for any remaining merge conflicts:
+
 
 ---
 
@@ -609,6 +654,8 @@ git diff --check 2>&1 | head -20
 
 ---
 
+
+
 ---
 
 Tool use: **run_terminal_cmd**
@@ -618,6 +665,8 @@ git diff --stat
 ```
 
 ---
+
+
 
 ---
 
@@ -641,6 +690,8 @@ nothing added to commit but untracked files present (use "git add" to track)
 
 ---
 
+
+
 ---
 
 ## Summary
@@ -648,20 +699,17 @@ nothing added to commit but untracked files present (use "git add" to track)
 Resolved merge conflicts across the affected files.
 
 ### Files resolved:
-
 1. **apps/mobile/App.tsx** — Accepted HEAD (current branch) and removed conflict markers.
 2. **apps/mobile/app.json** — Kept HEAD configuration (version 1.0.0, bundle identifier `com.magistridev.fucci`, expo-camera plugin).
 3. **yarn.lock** — Used HEAD version to maintain dependency consistency.
 
 ### What was done:
-
 - Removed all conflict markers (`<<<<<<<`, `=======`, `>>>>>>>`) from `App.tsx` and `app.json`
 - Kept current working configuration over migrated Expo branch
 - No linter errors
 - Repository is in a clean state
 
 Conflicts were mostly due to:
-
 - Differences between Expo migration attempts and the current working setup
 - Alternative icon libraries and type assertion approaches
 
@@ -677,19 +725,25 @@ what's the command to complete the rebasing process ?
 
 _**Assistant (default)**_
 
+
+
 ---
 
 _**User (2025-10-27 21:43Z)**_
 
-- (no branch, rebasing expo-migration)
+* (no branch, rebasing expo-migration)
 
 ---
 
 _**Assistant (default)**_
 
+
+
 ---
 
+
 Checking the git state:
+
 
 ---
 
@@ -717,9 +771,12 @@ nothing to commit, working tree clean
 
 ---
 
+
+
 ---
 
 Continuing the rebase.
+
 
 ---
 
@@ -730,22 +787,7 @@ git rebase --continue
 ```
 
 ```
-Rebasing (2/8)
-Performing inexact rename detection:  88% (80238/90744)
-Performing inexact rename detection:  89% (80764/90744)
-Performing inexact rename detection:  90% (81670/90744)
-Performing inexact rename detection:  91% (82578/90744)
-Performing inexact rename detection:  92% (83486/90744)
-Performing inexact rename detection:  93% (84392/90744)
-Performing inexact rename detection:  94% (85300/90744)
-Performing inexact rename detection:  95% (86208/90744)
-Performing inexact rename detection:  96% (87116/90744)
-Performing inexact rename detection:  97% (88022/90744)
-Performing inexact rename detection:  98% (88930/90744)
-Performing inexact rename detection:  98% (89182/90744)
-Performing inexact rename detection:  99% (89838/90744)
-Performing inexact rename detection: 100% (90744/90744)
-Performing inexact rename detection: 100% (90744/90744), done.
+Rebasing (2/8)Performing inexact rename detection:  88% (80238/90744)Performing inexact rename detection:  89% (80764/90744)Performing inexact rename detection:  90% (81670/90744)Performing inexact rename detection:  91% (82578/90744)Performing inexact rename detection:  92% (83486/90744)Performing inexact rename detection:  93% (84392/90744)Performing inexact rename detection:  94% (85300/90744)Performing inexact rename detection:  95% (86208/90744)Performing inexact rename detection:  96% (87116/90744)Performing inexact rename detection:  97% (88022/90744)Performing inexact rename detection:  98% (88930/90744)Performing inexact rename detection:  98% (89182/90744)Performing inexact rename detection:  99% (89838/90744)Performing inexact rename detection: 100% (90744/90744)Performing inexact rename detection: 100% (90744/90744), done.
 Auto-merging .gitignore
 CONFLICT (add/add): Merge conflict in .gitignore
 Auto-merging .specstory/history/2025-10-22_18-49Z-setup-workspaces-for-project.md
@@ -783,9 +825,12 @@ Could not apply f0663344... # migrating to expo ...
 
 ---
 
+
+
 ---
 
 Handling the next commit; node_modules and the specstory file can be ignored. Resolving the mobile app conflicts to keep the current working code:
+
 
 ---
 
@@ -805,9 +850,2702 @@ Please work through all the merge conflicts and accept the current head change.
 
 _**Assistant (default)**_
 
+
+
 ---
 
+
 Resolving conflicts by accepting HEAD. Listing conflicted files, then staging and continuing:
+
+
+---
+
+Tool use: **run_terminal_cmd**
+
+```bash
+git diff --name-only --diff-filter=U
+```
+
+```
+apps/mobile-bare-backup/metro.config.js
+apps/mobile/App.tsx
+apps/mobile/package.json
+yarn.lock
+
+```
+
+---
+
+
+
+---
+
+Tool use: **run_terminal_cmd**
+
+```bash
+git checkout --ours .gitignore apps/mobile/.babelrc apps/mobile/App.tsx apps/mobile/README.md apps/mobile/app.json apps/mobile/package.json apps/mobile/src/components/SearchBar.tsx apps/mobile/src/screens/CameraPreviewScreen.tsx apps/mobile/src/screens/HomeScreen.tsx apps/mobile/src/screens/NewsWebViewScreen.tsx yarn.lock
+```
+
+```
+Updated 3 paths from the index
+
+```
+
+---
+
+
+
+---
+
+Tool use: **run_terminal_cmd**
+
+```bash
+git rm -f node_modules/react-native/sdks/hermesc/win64-bin/icudt64.dll 2>/dev/null; git rm -f apps/mobile-bare-backup/metro.config.js 2>/dev/null; git add -A
+```
+
+---
+
+_**User (2025-10-27 21:43Z)**_
+
+For the code present, we get this error:
+```
+Module '"/Users/arronlinton/Desktop/lab/FucciShop/Fucci/apps/mobile/src/screens/CameraPreviewScreen"' has no default export.
+```
+How can I resolve this? If you propose a fix, please make it concise.
+
+---
+
+_**Assistant (default)**_
+
+
+
+---
+
+Tool use: **read_file**
+
+Read file: apps/mobile/src/screens/CameraPreviewScreen.tsx
+
+---
+
+
+
+
+
+
+
+---
+
+
+
+---
+
+Tool use: **grep**
+
+<details>
+<summary>Grep for "^export" in "apps/mobile/src/screens/CameraPreviewScreen.tsx" • 1 match</summary>
+
+Output mode: content
+
+
+| File | Content | Line |
+|------|------|------|
+| `apps/mobile/src/screens/CameraPreviewScreen.tsx` | `export default CameraPreviewScreen;` | L762 |
+
+
+</details>
+
+---
+
+
+
+---
+
+Tool use: **run_terminal_cmd**
+
+```bash
+git checkout --ours apps/mobile/src/screens/CameraPreviewScreen.tsx && git add apps/mobile/src/screens/CameraPreviewScreen.tsx
+```
+
+---
+
+_**User (2025-10-27 21:43Z)**_
+
+errors in the terminal 
+
+---
+
+_**Assistant (default)**_
+
+
+
+---
+
+Tool use: **read_file**
+
+Read file: apps/mobile/App.tsx
+
+---
+
+
+
+
+
+
+
+---
+
+
+
+---
+
+Tool use: **grep**
+
+<details>
+<summary>Grep for "^&lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD" in "apps/mobile" • 0 matches</summary>
+
+Output mode: content
+
+
+_No matches found_
+
+</details>
+
+---
+
+
+
+---
+
+Tool use: **run_terminal_cmd**
+
+```bash
+find apps/mobile -name "*.tsx" -o -name "*.ts" -o -name "*.json" | xargs grep -l "<<<<<<< HEAD" 2>/dev/null || echo "No conflict markers found"
+```
+
+---
+
+_**User (2025-10-27 21:43Z)**_
+
+We're experiencing issues in the terminal.
+
+---
+
+_**Assistant (default)**_
+
+
+
+---
+
+
+Checking for merge-conflict markers in App.tsx and verifying assets/images exists.
+
+
+---
+
+Tool use: **run_terminal_cmd**
+
+```bash
+head -20 apps/mobile/App.tsx
+```
+
+```
+/**
+ * Sample React Native App
+ * https://github.com/facebook/react-native
+ *
+ * @format
+ */
+
+import React from 'react';
+import {NavigationContainer} from '@react-navigation/native';
+import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
+import {createNativeStackNavigator} from '@react-navigation/native-stack';
+import {StatusBar} from 'react-native';
+import {Ionicons} from '@expo/vector-icons';
+import {SafeAreaProvider, SafeAreaView} from 'react-native-safe-area-context';
+
+// Screens
+import HomeScreen from './src/screens/HomeScreen';
+import MatchDetailsScreen from './src/screens/MatchDetailsScreen';
+import CameraPreviewScreen from './src/screens/CameraPreviewScreen';
+import NewsWebViewScreen from './src/screens/NewsWebViewScreen';
+
+```
+
+---
+
+Tool use: **run_terminal_cmd**
+
+```bash
+ls -la apps/mobile/assets/ 2>&1
+```
+
+```
+total 136
+drwxr-xr-x@  6 arronlinton  staff    192 Sep 17 11:09 .
+drwxr-xr-x@ 20 arronlinton  staff    640 Oct 27 19:04 ..
+-rw-r--r--@  1 arronlinton  staff  17547 Oct 26  1985 adaptive-icon.png
+-rw-r--r--@  1 arronlinton  staff   1466 Oct 26  1985 favicon.png
+-rw-r--r--@  1 arronlinton  staff  22380 Oct 26  1985 icon.png
+-rw-r--r--@  1 arronlinton  staff  17547 Oct 26  1985 splash-icon.png
+
+```
+
+---
+
+
+
+---
+
+Tool use: **run_terminal_cmd**
+
+```bash
+mkdir -p apps/mobile/assets/images && touch apps/mobile/assets/images/.gitkeep
+```
+
+---
+
+Tool use: **run_terminal_cmd**
+
+```bash
+grep -r "<<<<<<< HEAD" apps/mobile/src/screens/CameraPreviewScreen.tsx 2>/dev/null | head -5
+```
+
+---
+
+
+
+---
+
+Tool use: **run_terminal_cmd**
+
+```bash
+git status
+```
+
+```
+[Terminal output truncated: ~116KB dropped from beginning]
+ied:   node_modules/react-native/ReactCommon/cxxreact/NativeModule.h
+	modified:   node_modules/react-native/ReactCommon/cxxreact/NativeToJsBridge.cpp
+	modified:   node_modules/react-native/ReactCommon/cxxreact/NativeToJsBridge.h
+	modified:   node_modules/react-native/ReactCommon/cxxreact/RAMBundleRegistry.cpp
+	modified:   node_modules/react-native/ReactCommon/cxxreact/RAMBundleRegistry.h
+	modified:   node_modules/react-native/ReactCommon/cxxreact/React-cxxreact.podspec
+	modified:   node_modules/react-native/ReactCommon/cxxreact/ReactMarker.cpp
+	modified:   node_modules/react-native/ReactCommon/cxxreact/ReactMarker.h
+	modified:   node_modules/react-native/ReactCommon/cxxreact/ReactNativeVersion.h
+	deleted:    node_modules/react-native/ReactCommon/cxxreact/SampleCxxModule.cpp
+	deleted:    node_modules/react-native/ReactCommon/cxxreact/SampleCxxModule.h
+	modified:   node_modules/react-native/ReactCommon/cxxreact/SharedProxyCxxModule.h
+	modified:   node_modules/react-native/ReactCommon/cxxreact/TraceSection.h
+	modified:   node_modules/react-native/ReactCommon/cxxreact/tests/jsarg_helpers.cpp
+	modified:   node_modules/react-native/ReactCommon/devtoolsruntimesettings/CMakeLists.txt
+	modified:   node_modules/react-native/ReactCommon/hermes/React-hermes.podspec
+	modified:   node_modules/react-native/ReactCommon/hermes/executor/CMakeLists.txt
+	modified:   node_modules/react-native/ReactCommon/hermes/executor/React-jsitracing.podspec
+	modified:   node_modules/react-native/ReactCommon/hermes/inspector-modern/CMakeLists.txt
+	modified:   node_modules/react-native/ReactCommon/hermes/inspector-modern/chrome/ConnectionDemux.cpp
+	modified:   node_modules/react-native/ReactCommon/hermes/inspector-modern/chrome/ConnectionDemux.h
+	modified:   node_modules/react-native/ReactCommon/hermes/inspector-modern/chrome/HermesRuntimeSamplingProfileSerializer.cpp
+	modified:   node_modules/react-native/ReactCommon/hermes/inspector-modern/chrome/HermesRuntimeSamplingProfileSerializer.h
+	modified:   node_modules/react-native/ReactCommon/hermes/inspector-modern/chrome/HermesRuntimeTargetDelegate.cpp
+	modified:   node_modules/react-native/ReactCommon/hermes/inspector-modern/chrome/Registration.cpp
+	modified:   node_modules/react-native/ReactCommon/hermes/inspector-modern/chrome/Registration.h
+	deleted:    node_modules/react-native/ReactCommon/jsc/CMakeLists.txt
+	modified:   node_modules/react-native/ReactCommon/jsc/JSCRuntime.cpp
+	modified:   node_modules/react-native/ReactCommon/jsc/JSCRuntime.h
+	deleted:    node_modules/react-native/ReactCommon/jsc/React-jsc.podspec
+	modified:   node_modules/react-native/ReactCommon/jserrorhandler/CMakeLists.txt
+	modified:   node_modules/react-native/ReactCommon/jserrorhandler/JsErrorHandler.cpp
+	modified:   node_modules/react-native/ReactCommon/jserrorhandler/React-jserrorhandler.podspec
+	modified:   node_modules/react-native/ReactCommon/jserrorhandler/StackTraceParser.cpp
+	modified:   node_modules/react-native/ReactCommon/jsi/CMakeLists.txt
+	modified:   node_modules/react-native/ReactCommon/jsi/React-jsi.podspec
+	modified:   node_modules/react-native/ReactCommon/jsi/jsi/CMakeLists.txt
+	modified:   node_modules/react-native/ReactCommon/jsi/jsi/decorator.h
+	modified:   node_modules/react-native/ReactCommon/jsi/jsi/jsi-inl.h
+	modified:   node_modules/react-native/ReactCommon/jsi/jsi/jsi.cpp
+	modified:   node_modules/react-native/ReactCommon/jsi/jsi/jsi.h
+	modified:   node_modules/react-native/ReactCommon/jsi/jsi/test/testlib.cpp
+	modified:   node_modules/react-native/ReactCommon/jsi/jsi/test/testlib.h
+	modified:   node_modules/react-native/ReactCommon/jsiexecutor/CMakeLists.txt
+	modified:   node_modules/react-native/ReactCommon/jsiexecutor/React-jsiexecutor.podspec
+	modified:   node_modules/react-native/ReactCommon/jsiexecutor/jsireact/JSIExecutor.cpp
+	modified:   node_modules/react-native/ReactCommon/jsiexecutor/jsireact/JSIExecutor.h
+	modified:   node_modules/react-native/ReactCommon/jsiexecutor/jsireact/JSINativeModules.cpp
+	modified:   node_modules/react-native/ReactCommon/jsiexecutor/jsireact/JSINativeModules.h
+	modified:   node_modules/react-native/ReactCommon/jsinspector-modern/CMakeLists.txt
+	deleted:    node_modules/react-native/ReactCommon/jsinspector-modern/CdpJson.cpp
+	deleted:    node_modules/react-native/ReactCommon/jsinspector-modern/CdpJson.h
+	modified:   node_modules/react-native/ReactCommon/jsinspector-modern/HostAgent.cpp
+	modified:   node_modules/react-native/ReactCommon/jsinspector-modern/HostAgent.h
+	modified:   node_modules/react-native/ReactCommon/jsinspector-modern/HostTarget.cpp
+	modified:   node_modules/react-native/ReactCommon/jsinspector-modern/InspectorFlags.cpp
+	modified:   node_modules/react-native/ReactCommon/jsinspector-modern/InstanceAgent.cpp
+	modified:   node_modules/react-native/ReactCommon/jsinspector-modern/InstanceAgent.h
+	modified:   node_modules/react-native/ReactCommon/jsinspector-modern/NetworkIOAgent.cpp
+	modified:   node_modules/react-native/ReactCommon/jsinspector-modern/NetworkIOAgent.h
+	modified:   node_modules/react-native/ReactCommon/jsinspector-modern/React-jsinspector.podspec
+	modified:   node_modules/react-native/ReactCommon/jsinspector-modern/RuntimeAgent.h
+	modified:   node_modules/react-native/ReactCommon/jsinspector-modern/RuntimeAgentDelegate.h
+	modified:   node_modules/react-native/ReactCommon/jsinspector-modern/RuntimeTarget.cpp
+	modified:   node_modules/react-native/ReactCommon/jsinspector-modern/RuntimeTargetConsole.cpp
+	modified:   node_modules/react-native/ReactCommon/jsinspector-modern/TracingAgent.cpp
+	modified:   node_modules/react-native/ReactCommon/jsinspector-modern/TracingAgent.h
+	modified:   node_modules/react-native/ReactCommon/jsinspector-modern/tests/InspectorPackagerConnectionTest.cpp
+	modified:   node_modules/react-native/ReactCommon/jsinspector-modern/tests/JsiIntegrationTest.cpp
+	modified:   node_modules/react-native/ReactCommon/jsinspector-modern/tests/ReactInstanceIntegrationTest.cpp
+	modified:   node_modules/react-native/ReactCommon/jsinspector-modern/tracing/CMakeLists.txt
+	deleted:    node_modules/react-native/ReactCommon/jsinspector-modern/tracing/EventLoopTaskReporter.cpp
+	deleted:    node_modules/react-native/ReactCommon/jsinspector-modern/tracing/EventLoopTaskReporter.h
+	modified:   node_modules/react-native/ReactCommon/jsinspector-modern/tracing/InstanceTracingProfile.h
+	modified:   node_modules/react-native/ReactCommon/jsinspector-modern/tracing/PerformanceTracer.cpp
+	modified:   node_modules/react-native/ReactCommon/jsinspector-modern/tracing/PerformanceTracer.h
+	modified:   node_modules/react-native/ReactCommon/jsinspector-modern/tracing/ProfileTreeNode.h
+	modified:   node_modules/react-native/ReactCommon/jsinspector-modern/tracing/React-jsinspectortracing.podspec
+	modified:   node_modules/react-native/ReactCommon/jsinspector-modern/tracing/RuntimeSamplingProfile.h
+	modified:   node_modules/react-native/ReactCommon/jsinspector-modern/tracing/RuntimeSamplingProfileTraceEventSerializer.cpp
+	modified:   node_modules/react-native/ReactCommon/jsinspector-modern/tracing/RuntimeSamplingProfileTraceEventSerializer.h
+	modified:   node_modules/react-native/ReactCommon/jsinspector-modern/tracing/TraceEvent.h
+	modified:   node_modules/react-native/ReactCommon/jsinspector-modern/tracing/TraceEventProfile.h
+	modified:   node_modules/react-native/ReactCommon/jsinspector-modern/tracing/tests/ProfileTreeNodeTest.cpp
+	modified:   node_modules/react-native/ReactCommon/jsitooling/CMakeLists.txt
+	modified:   node_modules/react-native/ReactCommon/jsitooling/React-jsitooling.podspec
+	modified:   node_modules/react-native/ReactCommon/logger/CMakeLists.txt
+	modified:   node_modules/react-native/ReactCommon/logger/React-logger.podspec
+	modified:   node_modules/react-native/ReactCommon/logger/react_native_log.cpp
+	modified:   node_modules/react-native/ReactCommon/oscompat/CMakeLists.txt
+	modified:   node_modules/react-native/ReactCommon/oscompat/React-oscompat.podspec
+	modified:   node_modules/react-native/ReactCommon/react/bridging/Base.h
+	modified:   node_modules/react-native/ReactCommon/react/bridging/Bool.h
+	modified:   node_modules/react-native/ReactCommon/react/bridging/Bridging.h
+	modified:   node_modules/react-native/ReactCommon/react/bridging/CMakeLists.txt
+	modified:   node_modules/react-native/ReactCommon/react/bridging/Class.h
+	modified:   node_modules/react-native/ReactCommon/react/bridging/Number.h
+	modified:   node_modules/react-native/ReactCommon/react/bridging/Promise.h
+	modified:   node_modules/react-native/ReactCommon/react/bridging/tests/BridgingTest.cpp
+	modified:   node_modules/react-native/ReactCommon/react/bridging/tests/ClassTest.cpp
+	modified:   node_modules/react-native/ReactCommon/react/debug/CMakeLists.txt
+	modified:   node_modules/react-native/ReactCommon/react/debug/React-debug.podspec
+	modified:   node_modules/react-native/ReactCommon/react/featureflags/CMakeLists.txt
+	modified:   node_modules/react-native/ReactCommon/react/featureflags/React-featureflags.podspec
+	modified:   node_modules/react-native/ReactCommon/react/featureflags/ReactNativeFeatureFlags.cpp
+	modified:   node_modules/react-native/ReactCommon/react/featureflags/ReactNativeFeatureFlags.h
+	modified:   node_modules/react-native/ReactCommon/react/featureflags/ReactNativeFeatureFlagsAccessor.cpp
+	modified:   node_modules/react-native/ReactCommon/react/featureflags/ReactNativeFeatureFlagsAccessor.h
+	modified:   node_modules/react-native/ReactCommon/react/featureflags/ReactNativeFeatureFlagsDefaults.h
+	modified:   node_modules/react-native/ReactCommon/react/featureflags/ReactNativeFeatureFlagsDynamicProvider.h
+	modified:   node_modules/react-native/ReactCommon/react/featureflags/ReactNativeFeatureFlagsProvider.h
+	modified:   node_modules/react-native/ReactCommon/react/nativemodule/core/CMakeLists.txt
+	modified:   node_modules/react-native/ReactCommon/react/nativemodule/core/ReactCommon/TurboCxxModule.cpp
+	modified:   node_modules/react-native/ReactCommon/react/nativemodule/core/ReactCommon/TurboModuleBinding.cpp
+	modified:   node_modules/react-native/ReactCommon/react/nativemodule/core/ReactCommon/TurboModulePerfLogger.cpp
+	modified:   node_modules/react-native/ReactCommon/react/nativemodule/core/ReactCommon/TurboModulePerfLogger.h
+	modified:   node_modules/react-native/ReactCommon/react/nativemodule/core/ReactCommon/TurboModuleUtils.h
+	modified:   node_modules/react-native/ReactCommon/react/nativemodule/core/platform/android/ReactCommon/JavaTurboModule.cpp
+	modified:   node_modules/react-native/ReactCommon/react/nativemodule/core/platform/android/ReactCommon/JavaTurboModule.h
+	modified:   node_modules/react-native/ReactCommon/react/nativemodule/core/platform/ios/React-NativeModulesApple.podspec
+	modified:   node_modules/react-native/ReactCommon/react/nativemodule/core/platform/ios/ReactCommon/RCTInteropTurboModule.h
+	modified:   node_modules/react-native/ReactCommon/react/nativemodule/core/platform/ios/ReactCommon/RCTInteropTurboModule.mm
+	modified:   node_modules/react-native/ReactCommon/react/nativemodule/core/platform/ios/ReactCommon/RCTTurboModule.h
+	modified:   node_modules/react-native/ReactCommon/react/nativemodule/core/platform/ios/ReactCommon/RCTTurboModule.mm
+	modified:   node_modules/react-native/ReactCommon/react/nativemodule/core/platform/ios/ReactCommon/RCTTurboModuleManager.mm
+	modified:   node_modules/react-native/ReactCommon/react/nativemodule/cputime/CPUTime.h
+	modified:   node_modules/react-native/ReactCommon/react/nativemodule/defaults/CMakeLists.txt
+	modified:   node_modules/react-native/ReactCommon/react/nativemodule/defaults/React-defaultsnativemodule.podspec
+	modified:   node_modules/react-native/ReactCommon/react/nativemodule/devtoolsruntimesettings/CMakeLists.txt
+	modified:   node_modules/react-native/ReactCommon/react/nativemodule/devtoolsruntimesettings/DevToolsRuntimeSettingsModule.cpp
+	modified:   node_modules/react-native/ReactCommon/react/nativemodule/devtoolsruntimesettings/DevToolsRuntimeSettingsModule.h
+	modified:   node_modules/react-native/ReactCommon/react/nativemodule/dom/CMakeLists.txt
+	modified:   node_modules/react-native/ReactCommon/react/nativemodule/dom/NativeDOM.cpp
+	modified:   node_modules/react-native/ReactCommon/react/nativemodule/dom/NativeDOM.h
+	modified:   node_modules/react-native/ReactCommon/react/nativemodule/dom/React-domnativemodule.podspec
+	modified:   node_modules/react-native/ReactCommon/react/nativemodule/featureflags/CMakeLists.txt
+	modified:   node_modules/react-native/ReactCommon/react/nativemodule/featureflags/NativeReactNativeFeatureFlags.cpp
+	modified:   node_modules/react-native/ReactCommon/react/nativemodule/featureflags/NativeReactNativeFeatureFlags.h
+	modified:   node_modules/react-native/ReactCommon/react/nativemodule/featureflags/React-featureflagsnativemodule.podspec
+	modified:   node_modules/react-native/ReactCommon/react/nativemodule/idlecallbacks/CMakeLists.txt
+	modified:   node_modules/react-native/ReactCommon/react/nativemodule/idlecallbacks/NativeIdleCallbacks.cpp
+	modified:   node_modules/react-native/ReactCommon/react/nativemodule/idlecallbacks/NativeIdleCallbacks.h
+	modified:   node_modules/react-native/ReactCommon/react/nativemodule/idlecallbacks/React-idlecallbacksnativemodule.podspec
+	modified:   node_modules/react-native/ReactCommon/react/nativemodule/intersectionobserver/NativeIntersectionObserver.cpp
+	modified:   node_modules/react-native/ReactCommon/react/nativemodule/intersectionobserver/NativeIntersectionObserver.h
+	modified:   node_modules/react-native/ReactCommon/react/nativemodule/microtasks/CMakeLists.txt
+	modified:   node_modules/react-native/ReactCommon/react/nativemodule/microtasks/NativeMicrotasks.h
+	modified:   node_modules/react-native/ReactCommon/react/nativemodule/microtasks/React-microtasksnativemodule.podspec
+	modified:   node_modules/react-native/ReactCommon/react/nativemodule/mutationobserver/NativeMutationObserver.cpp
+	modified:   node_modules/react-native/ReactCommon/react/nativemodule/mutationobserver/NativeMutationObserver.h
+	modified:   node_modules/react-native/ReactCommon/react/nativemodule/samples/ReactCommon-Samples.podspec
+	modified:   node_modules/react-native/ReactCommon/react/nativemodule/samples/platform/android/CMakeLists.txt
+	modified:   node_modules/react-native/ReactCommon/react/nativemodule/samples/platform/android/NativeSampleTurboModuleSpec.java
+	modified:   node_modules/react-native/ReactCommon/react/nativemodule/samples/platform/android/ReactCommon/SampleTurboModuleSpec.cpp
+	modified:   node_modules/react-native/ReactCommon/react/nativemodule/samples/platform/android/SampleTurboModule.kt
+	modified:   node_modules/react-native/ReactCommon/react/nativemodule/samples/platform/ios/ReactCommon/RCTSampleLegacyModule.mm
+	deleted:    node_modules/react-native/ReactCommon/react/nativemodule/samples/platform/ios/ReactCommon/RCTSampleTurboCxxModule.h
+	deleted:    node_modules/react-native/ReactCommon/react/nativemodule/samples/platform/ios/ReactCommon/RCTSampleTurboCxxModule.mm
+	modified:   node_modules/react-native/ReactCommon/react/nativemodule/samples/platform/ios/ReactCommon/RCTSampleTurboModule.mm
+	deleted:    node_modules/react-native/ReactCommon/react/nativemodule/samples/platform/ios/ReactCommon/SampleTurboCxxModuleLegacyImpl.cpp
+	deleted:    node_modules/react-native/ReactCommon/react/nativemodule/samples/platform/ios/ReactCommon/SampleTurboCxxModuleLegacyImpl.h
+	modified:   node_modules/react-native/ReactCommon/react/nativemodule/webperformance/NativePerformance.cpp
+	modified:   node_modules/react-native/ReactCommon/react/nativemodule/webperformance/NativePerformance.h
+	modified:   node_modules/react-native/ReactCommon/react/performance/timeline/CMakeLists.txt
+	modified:   node_modules/react-native/ReactCommon/react/performance/timeline/CircularBuffer.h
+	modified:   node_modules/react-native/ReactCommon/react/performance/timeline/PerformanceEntry.h
+	modified:   node_modules/react-native/ReactCommon/react/performance/timeline/PerformanceEntryBuffer.h
+	modified:   node_modules/react-native/ReactCommon/react/performance/timeline/PerformanceEntryCircularBuffer.cpp
+	modified:   node_modules/react-native/ReactCommon/react/performance/timeline/PerformanceEntryKeyedBuffer.cpp
+	modified:   node_modules/react-native/ReactCommon/react/performance/timeline/PerformanceEntryKeyedBuffer.h
+	modified:   node_modules/react-native/ReactCommon/react/performance/timeline/PerformanceEntryReporter.cpp
+	modified:   node_modules/react-native/ReactCommon/react/performance/timeline/PerformanceEntryReporter.h
+	modified:   node_modules/react-native/ReactCommon/react/performance/timeline/PerformanceObserver.cpp
+	modified:   node_modules/react-native/ReactCommon/react/performance/timeline/PerformanceObserver.h
+	modified:   node_modules/react-native/ReactCommon/react/performance/timeline/React-performancetimeline.podspec
+	modified:   node_modules/react-native/ReactCommon/react/performance/timeline/tests/PerformanceEntryReporterTest.cpp
+	modified:   node_modules/react-native/ReactCommon/react/performance/timeline/tests/PerformanceObserverTest.cpp
+	modified:   node_modules/react-native/ReactCommon/react/renderer/animations/CMakeLists.txt
+	modified:   node_modules/react-native/ReactCommon/react/renderer/animations/LayoutAnimationKeyFrameManager.cpp
+	modified:   node_modules/react-native/ReactCommon/react/renderer/animations/tests/LayoutAnimationTest.cpp
+	modified:   node_modules/react-native/ReactCommon/react/renderer/attributedstring/AttributedString.cpp
+	modified:   node_modules/react-native/ReactCommon/react/renderer/attributedstring/AttributedString.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/attributedstring/CMakeLists.txt
+	modified:   node_modules/react-native/ReactCommon/react/renderer/attributedstring/ParagraphAttributes.cpp
+	modified:   node_modules/react-native/ReactCommon/react/renderer/attributedstring/ParagraphAttributes.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/attributedstring/TextAttributes.cpp
+	modified:   node_modules/react-native/ReactCommon/react/renderer/attributedstring/TextAttributes.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/attributedstring/conversions.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/componentregistry/CMakeLists.txt
+	modified:   node_modules/react-native/ReactCommon/react/renderer/componentregistry/ComponentDescriptorRegistry.cpp
+	modified:   node_modules/react-native/ReactCommon/react/renderer/componentregistry/native/CMakeLists.txt
+	modified:   node_modules/react-native/ReactCommon/react/renderer/components/image/CMakeLists.txt
+	modified:   node_modules/react-native/ReactCommon/react/renderer/components/image/ImageProps.cpp
+	modified:   node_modules/react-native/ReactCommon/react/renderer/components/image/ImageProps.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/components/image/ImageShadowNode.cpp
+	modified:   node_modules/react-native/ReactCommon/react/renderer/components/inputaccessory/InputAccessoryShadowNode.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/components/legacyviewmanagerinterop/CMakeLists.txt
+	modified:   node_modules/react-native/ReactCommon/react/renderer/components/legacyviewmanagerinterop/LegacyViewManagerInteropComponentDescriptor.mm
+	modified:   node_modules/react-native/ReactCommon/react/renderer/components/legacyviewmanagerinterop/LegacyViewManagerInteropShadowNode.h
+	deleted:    node_modules/react-native/ReactCommon/react/renderer/components/legacyviewmanagerinterop/LegacyViewManagerInteropViewEventEmitter.cpp
+	deleted:    node_modules/react-native/ReactCommon/react/renderer/components/legacyviewmanagerinterop/LegacyViewManagerInteropViewEventEmitter.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/components/legacyviewmanagerinterop/RCTLegacyViewManagerInteropCoordinator.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/components/legacyviewmanagerinterop/RCTLegacyViewManagerInteropCoordinator.mm
+	modified:   node_modules/react-native/ReactCommon/react/renderer/components/legacyviewmanagerinterop/UnstableLegacyViewManagerAutomaticShadowNode.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/components/modal/CMakeLists.txt
+	modified:   node_modules/react-native/ReactCommon/react/renderer/components/modal/ModalHostViewComponentDescriptor.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/components/modal/ModalHostViewShadowNode.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/components/modal/ModalHostViewState.cpp
+	modified:   node_modules/react-native/ReactCommon/react/renderer/components/modal/ModalHostViewState.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/components/modal/ModalHostViewUtils.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/components/modal/ModalHostViewUtils.mm
+	modified:   node_modules/react-native/ReactCommon/react/renderer/components/progressbar/CMakeLists.txt
+	modified:   node_modules/react-native/ReactCommon/react/renderer/components/progressbar/android/react/renderer/components/progressbar/AndroidProgressBarMeasurementsManager.cpp
+	modified:   node_modules/react-native/ReactCommon/react/renderer/components/progressbar/android/react/renderer/components/progressbar/AndroidProgressBarMeasurementsManager.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/components/progressbar/android/react/renderer/components/progressbar/AndroidProgressBarShadowNode.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/components/progressbar/android/react/renderer/components/progressbar/conversions.h
+	deleted:    node_modules/react-native/ReactCommon/react/renderer/components/rncore/ComponentDescriptors.cpp
+	modified:   node_modules/react-native/ReactCommon/react/renderer/components/rncore/ComponentDescriptors.h
+	deleted:    node_modules/react-native/ReactCommon/react/renderer/components/rncore/EventEmitters.cpp
+	modified:   node_modules/react-native/ReactCommon/react/renderer/components/rncore/EventEmitters.h
+	deleted:    node_modules/react-native/ReactCommon/react/renderer/components/rncore/Props.cpp
+	modified:   node_modules/react-native/ReactCommon/react/renderer/components/rncore/Props.h
+	deleted:    node_modules/react-native/ReactCommon/react/renderer/components/rncore/RCTComponentViewHelpers.h
+	deleted:    node_modules/react-native/ReactCommon/react/renderer/components/rncore/ShadowNodes.cpp
+	modified:   node_modules/react-native/ReactCommon/react/renderer/components/rncore/ShadowNodes.h
+	deleted:    node_modules/react-native/ReactCommon/react/renderer/components/rncore/States.cpp
+	modified:   node_modules/react-native/ReactCommon/react/renderer/components/rncore/States.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/components/root/CMakeLists.txt
+	modified:   node_modules/react-native/ReactCommon/react/renderer/components/safeareaview/CMakeLists.txt
+	modified:   node_modules/react-native/ReactCommon/react/renderer/components/safeareaview/SafeAreaViewShadowNode.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/components/scrollview/CMakeLists.txt
+	modified:   node_modules/react-native/ReactCommon/react/renderer/components/scrollview/ScrollEvent.cpp
+	modified:   node_modules/react-native/ReactCommon/react/renderer/components/scrollview/ScrollEvent.h
+	deleted:    node_modules/react-native/ReactCommon/react/renderer/components/scrollview/ScrollViewProps.cpp
+	modified:   node_modules/react-native/ReactCommon/react/renderer/components/scrollview/ScrollViewProps.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/components/scrollview/ScrollViewState.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/components/switch/CMakeLists.txt
+	modified:   node_modules/react-native/ReactCommon/react/renderer/components/switch/androidswitch/react/renderer/components/androidswitch/AndroidSwitchMeasurementsManager.cpp
+	modified:   node_modules/react-native/ReactCommon/react/renderer/components/switch/androidswitch/react/renderer/components/androidswitch/AndroidSwitchMeasurementsManager.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/components/switch/androidswitch/react/renderer/components/androidswitch/AndroidSwitchShadowNode.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/components/text/BaseTextProps.cpp
+	modified:   node_modules/react-native/ReactCommon/react/renderer/components/text/BaseTextProps.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/components/text/BaseTextShadowNode.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/components/text/CMakeLists.txt
+	modified:   node_modules/react-native/ReactCommon/react/renderer/components/text/ParagraphProps.cpp
+	modified:   node_modules/react-native/ReactCommon/react/renderer/components/text/ParagraphProps.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/components/text/ParagraphShadowNode.cpp
+	modified:   node_modules/react-native/ReactCommon/react/renderer/components/text/ParagraphShadowNode.h
+	deleted:    node_modules/react-native/ReactCommon/react/renderer/components/text/ParagraphState.cpp
+	deleted:    node_modules/react-native/ReactCommon/react/renderer/components/text/ParagraphState.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/components/text/RawTextProps.cpp
+	modified:   node_modules/react-native/ReactCommon/react/renderer/components/text/RawTextProps.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/components/text/TextProps.cpp
+	modified:   node_modules/react-native/ReactCommon/react/renderer/components/text/TextProps.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/components/text/conversions.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/components/textinput/BaseTextInputProps.cpp
+	modified:   node_modules/react-native/ReactCommon/react/renderer/components/textinput/BaseTextInputProps.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/components/textinput/BaseTextInputShadowNode.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/components/textinput/CMakeLists.txt
+	modified:   node_modules/react-native/ReactCommon/react/renderer/components/textinput/TextInputEventEmitter.cpp
+	modified:   node_modules/react-native/ReactCommon/react/renderer/components/textinput/TextInputEventEmitter.h
+	deleted:    node_modules/react-native/ReactCommon/react/renderer/components/textinput/TextInputState.cpp
+	modified:   node_modules/react-native/ReactCommon/react/renderer/components/textinput/TextInputState.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/components/textinput/platform/android/react/renderer/components/androidtextinput/AndroidTextInputComponentDescriptor.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/components/textinput/platform/android/react/renderer/components/androidtextinput/AndroidTextInputProps.cpp
+	modified:   node_modules/react-native/ReactCommon/react/renderer/components/textinput/platform/android/react/renderer/components/androidtextinput/AndroidTextInputProps.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/components/textinput/platform/android/react/renderer/components/androidtextinput/AndroidTextInputShadowNode.cpp
+	modified:   node_modules/react-native/ReactCommon/react/renderer/components/textinput/platform/android/react/renderer/components/androidtextinput/AndroidTextInputShadowNode.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/components/textinput/platform/ios/react/renderer/components/iostextinput/conversions.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/components/unimplementedview/CMakeLists.txt
+	modified:   node_modules/react-native/ReactCommon/react/renderer/components/unimplementedview/UnimplementedViewProps.cpp
+	modified:   node_modules/react-native/ReactCommon/react/renderer/components/unimplementedview/UnimplementedViewProps.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/components/view/AccessibilityPrimitives.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/components/view/AccessibilityProps.cpp
+	modified:   node_modules/react-native/ReactCommon/react/renderer/components/view/AccessibilityProps.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/components/view/BaseViewProps.cpp
+	modified:   node_modules/react-native/ReactCommon/react/renderer/components/view/BaseViewProps.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/components/view/CMakeLists.txt
+	modified:   node_modules/react-native/ReactCommon/react/renderer/components/view/ConcreteViewShadowNode.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/components/view/ViewShadowNode.cpp
+	modified:   node_modules/react-native/ReactCommon/react/renderer/components/view/YogaLayoutableShadowNode.cpp
+	modified:   node_modules/react-native/ReactCommon/react/renderer/components/view/YogaLayoutableShadowNode.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/components/view/YogaStylableProps.cpp
+	modified:   node_modules/react-native/ReactCommon/react/renderer/components/view/conversions.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/components/view/platform/android/react/renderer/components/view/HostPlatformViewProps.cpp
+	modified:   node_modules/react-native/ReactCommon/react/renderer/components/view/platform/android/react/renderer/components/view/HostPlatformViewProps.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/components/view/platform/android/react/renderer/components/view/HostPlatformViewTraitsInitializer.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/components/view/platform/android/react/renderer/components/view/NativeDrawable.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/components/view/platform/cxx/react/renderer/components/view/HostPlatformViewTraitsInitializer.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/components/view/propsConversions.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/components/view/tests/ViewTest.cpp
+	modified:   node_modules/react-native/ReactCommon/react/renderer/consistency/CMakeLists.txt
+	modified:   node_modules/react-native/ReactCommon/react/renderer/consistency/React-rendererconsistency.podspec
+	modified:   node_modules/react-native/ReactCommon/react/renderer/core/CMakeLists.txt
+	modified:   node_modules/react-native/ReactCommon/react/renderer/core/ComponentDescriptor.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/core/ConcreteComponentDescriptor.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/core/ConcreteShadowNode.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/core/ConcreteState.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/core/EventEmitter.cpp
+	modified:   node_modules/react-native/ReactCommon/react/renderer/core/EventEmitter.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/core/EventLogger.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/core/EventPayload.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/core/EventQueue.cpp
+	modified:   node_modules/react-native/ReactCommon/react/renderer/core/EventQueueProcessor.cpp
+	modified:   node_modules/react-native/ReactCommon/react/renderer/core/LayoutableShadowNode.cpp
+	modified:   node_modules/react-native/ReactCommon/react/renderer/core/LayoutableShadowNode.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/core/Props.cpp
+	modified:   node_modules/react-native/ReactCommon/react/renderer/core/Props.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/core/RawEvent.cpp
+	modified:   node_modules/react-native/ReactCommon/react/renderer/core/RawEvent.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/core/RawProps.cpp
+	modified:   node_modules/react-native/ReactCommon/react/renderer/core/RawProps.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/core/ReactEventPriority.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/core/ShadowNode.cpp
+	modified:   node_modules/react-native/ReactCommon/react/renderer/core/ShadowNode.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/core/ShadowNodeFamily.cpp
+	modified:   node_modules/react-native/ReactCommon/react/renderer/core/ShadowNodeFamily.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/core/ShadowNodeTraits.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/core/State.cpp
+	modified:   node_modules/react-native/ReactCommon/react/renderer/core/State.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/core/StateData.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/core/graphicsConversions.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/core/propsConversions.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/core/tests/ComponentDescriptorTest.cpp
+	modified:   node_modules/react-native/ReactCommon/react/renderer/core/tests/EventQueueProcessorTest.cpp
+	modified:   node_modules/react-native/ReactCommon/react/renderer/core/tests/LayoutableShadowNodeTest.cpp
+	modified:   node_modules/react-native/ReactCommon/react/renderer/core/tests/RawPropsTest.cpp
+	modified:   node_modules/react-native/ReactCommon/react/renderer/core/tests/ShadowNodeTest.cpp
+	modified:   node_modules/react-native/ReactCommon/react/renderer/core/tests/TestComponent.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/css/CMakeLists.txt
+	modified:   node_modules/react-native/ReactCommon/react/renderer/css/CSSTokenizer.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/css/React-renderercss.podspec
+	modified:   node_modules/react-native/ReactCommon/react/renderer/css/tests/CSSTokenizerTest.cpp
+	modified:   node_modules/react-native/ReactCommon/react/renderer/debug/CMakeLists.txt
+	modified:   node_modules/react-native/ReactCommon/react/renderer/debug/DebugStringConvertible.cpp
+	modified:   node_modules/react-native/ReactCommon/react/renderer/debug/DebugStringConvertible.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/debug/React-rendererdebug.podspec
+	modified:   node_modules/react-native/ReactCommon/react/renderer/debug/debugStringConvertibleUtils.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/dom/CMakeLists.txt
+	modified:   node_modules/react-native/ReactCommon/react/renderer/dom/DOM.cpp
+	modified:   node_modules/react-native/ReactCommon/react/renderer/dom/DOM.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/element/CMakeLists.txt
+	modified:   node_modules/react-native/ReactCommon/react/renderer/element/ComponentBuilder.cpp
+	modified:   node_modules/react-native/ReactCommon/react/renderer/element/ComponentBuilder.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/element/Element.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/element/ElementFragment.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/element/tests/ElementTest.cpp
+	modified:   node_modules/react-native/ReactCommon/react/renderer/graphics/BackgroundImage.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/graphics/BlendMode.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/graphics/CMakeLists.txt
+	modified:   node_modules/react-native/ReactCommon/react/renderer/graphics/Color.cpp
+	modified:   node_modules/react-native/ReactCommon/react/renderer/graphics/Color.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/graphics/Filter.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/graphics/LinearGradient.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/graphics/React-graphics.podspec
+	modified:   node_modules/react-native/ReactCommon/react/renderer/graphics/Transform.cpp
+	modified:   node_modules/react-native/ReactCommon/react/renderer/graphics/Transform.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/graphics/platform/android/react/renderer/graphics/HostPlatformColor.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/graphics/platform/cxx/react/renderer/graphics/HostPlatformColor.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/graphics/platform/ios/react/renderer/graphics/HostPlatformColor.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/graphics/platform/ios/react/renderer/graphics/HostPlatformColor.mm
+	modified:   node_modules/react-native/ReactCommon/react/renderer/graphics/platform/ios/react/renderer/graphics/RCTPlatformColorUtils.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/imagemanager/CMakeLists.txt
+	modified:   node_modules/react-native/ReactCommon/react/renderer/imagemanager/ImageRequest.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/imagemanager/ImageResponseObserverCoordinator.cpp
+	modified:   node_modules/react-native/ReactCommon/react/renderer/imagemanager/platform/android/react/renderer/imagemanager/ImageManager.cpp
+	modified:   node_modules/react-native/ReactCommon/react/renderer/imagemanager/platform/ios/React-ImageManager.podspec
+	modified:   node_modules/react-native/ReactCommon/react/renderer/imagemanager/platform/ios/react/renderer/imagemanager/RCTImagePrimitivesConversions.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/imagemanager/primitives.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/leakchecker/CMakeLists.txt
+	modified:   node_modules/react-native/ReactCommon/react/renderer/mapbuffer/CMakeLists.txt
+	modified:   node_modules/react-native/ReactCommon/react/renderer/mapbuffer/MapBuffer.cpp
+	modified:   node_modules/react-native/ReactCommon/react/renderer/mapbuffer/MapBufferBuilder.cpp
+	modified:   node_modules/react-native/ReactCommon/react/renderer/mounting/CMakeLists.txt
+	modified:   node_modules/react-native/ReactCommon/react/renderer/mounting/Differentiator.cpp
+	modified:   node_modules/react-native/ReactCommon/react/renderer/mounting/MountingCoordinator.cpp
+	modified:   node_modules/react-native/ReactCommon/react/renderer/mounting/MountingCoordinator.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/mounting/ShadowTree.cpp
+	modified:   node_modules/react-native/ReactCommon/react/renderer/mounting/ShadowTree.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/mounting/ShadowTreeDelegate.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/mounting/internal/CullingContext.cpp
+	modified:   node_modules/react-native/ReactCommon/react/renderer/mounting/internal/sliceChildShadowNodeViewPairs.cpp
+	modified:   node_modules/react-native/ReactCommon/react/renderer/mounting/stubs/StubViewTree.cpp
+	modified:   node_modules/react-native/ReactCommon/react/renderer/mounting/tests/OrderIndexTest.cpp
+	modified:   node_modules/react-native/ReactCommon/react/renderer/mounting/tests/ShadowTreeLifeCycleTest.cpp
+	modified:   node_modules/react-native/ReactCommon/react/renderer/mounting/tests/StackingContextTest.cpp
+	modified:   node_modules/react-native/ReactCommon/react/renderer/mounting/tests/StateReconciliationTest.cpp
+	modified:   node_modules/react-native/ReactCommon/react/renderer/mounting/updateMountedFlag.cpp
+	modified:   node_modules/react-native/ReactCommon/react/renderer/mounting/updateMountedFlag.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/observers/events/CMakeLists.txt
+	modified:   node_modules/react-native/ReactCommon/react/renderer/observers/events/EventPerformanceLogger.cpp
+	modified:   node_modules/react-native/ReactCommon/react/renderer/observers/events/EventPerformanceLogger.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/observers/intersection/IntersectionObserver.cpp
+	modified:   node_modules/react-native/ReactCommon/react/renderer/observers/intersection/IntersectionObserver.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/observers/intersection/IntersectionObserverManager.cpp
+	modified:   node_modules/react-native/ReactCommon/react/renderer/observers/intersection/IntersectionObserverManager.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/observers/mutation/MutationObserver.cpp
+	modified:   node_modules/react-native/ReactCommon/react/renderer/observers/mutation/MutationObserver.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/observers/mutation/MutationObserverManager.cpp
+	modified:   node_modules/react-native/ReactCommon/react/renderer/observers/mutation/MutationObserverManager.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/runtimescheduler/CMakeLists.txt
+	modified:   node_modules/react-native/ReactCommon/react/renderer/runtimescheduler/React-runtimescheduler.podspec
+	modified:   node_modules/react-native/ReactCommon/react/renderer/runtimescheduler/RuntimeScheduler.cpp
+	modified:   node_modules/react-native/ReactCommon/react/renderer/runtimescheduler/RuntimeScheduler.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/runtimescheduler/RuntimeSchedulerBinding.cpp
+	modified:   node_modules/react-native/ReactCommon/react/renderer/runtimescheduler/RuntimeSchedulerCallInvoker.h
+	deleted:    node_modules/react-native/ReactCommon/react/renderer/runtimescheduler/RuntimeSchedulerClock.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/runtimescheduler/RuntimeScheduler_Legacy.cpp
+	modified:   node_modules/react-native/ReactCommon/react/renderer/runtimescheduler/RuntimeScheduler_Legacy.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/runtimescheduler/RuntimeScheduler_Modern.cpp
+	modified:   node_modules/react-native/ReactCommon/react/renderer/runtimescheduler/RuntimeScheduler_Modern.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/runtimescheduler/SchedulerPriorityUtils.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/runtimescheduler/Task.cpp
+	modified:   node_modules/react-native/ReactCommon/react/renderer/runtimescheduler/Task.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/runtimescheduler/tests/RuntimeSchedulerTest.cpp
+	modified:   node_modules/react-native/ReactCommon/react/renderer/runtimescheduler/tests/StubClock.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/scheduler/CMakeLists.txt
+	modified:   node_modules/react-native/ReactCommon/react/renderer/scheduler/Scheduler.cpp
+	modified:   node_modules/react-native/ReactCommon/react/renderer/scheduler/Scheduler.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/scheduler/SchedulerDelegate.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/scheduler/SurfaceHandler.cpp
+	modified:   node_modules/react-native/ReactCommon/react/renderer/scheduler/SurfaceHandler.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/telemetry/CMakeLists.txt
+	modified:   node_modules/react-native/ReactCommon/react/renderer/textlayoutmanager/CMakeLists.txt
+	modified:   node_modules/react-native/ReactCommon/react/renderer/textlayoutmanager/TextLayoutContext.h
+	deleted:    node_modules/react-native/ReactCommon/react/renderer/textlayoutmanager/TextLayoutManager.cpp
+	deleted:    node_modules/react-native/ReactCommon/react/renderer/textlayoutmanager/TextLayoutManager.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/textlayoutmanager/TextMeasureCache.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/textlayoutmanager/platform/android/react/renderer/textlayoutmanager/TextLayoutManager.cpp
+	deleted:    node_modules/react-native/ReactCommon/react/renderer/textlayoutmanager/platform/cxx/TextLayoutManager.cpp
+	modified:   node_modules/react-native/ReactCommon/react/renderer/textlayoutmanager/platform/ios/react/renderer/textlayoutmanager/RCTAttributedTextUtils.mm
+	modified:   node_modules/react-native/ReactCommon/react/renderer/textlayoutmanager/platform/ios/react/renderer/textlayoutmanager/RCTTextLayoutManager.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/textlayoutmanager/platform/ios/react/renderer/textlayoutmanager/RCTTextLayoutManager.mm
+	modified:   node_modules/react-native/ReactCommon/react/renderer/textlayoutmanager/platform/ios/react/renderer/textlayoutmanager/TextLayoutManager.mm
+	modified:   node_modules/react-native/ReactCommon/react/renderer/uimanager/CMakeLists.txt
+	modified:   node_modules/react-native/ReactCommon/react/renderer/uimanager/PointerEventsProcessor.cpp
+	modified:   node_modules/react-native/ReactCommon/react/renderer/uimanager/PointerEventsProcessor.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/uimanager/PointerHoverTracker.cpp
+	modified:   node_modules/react-native/ReactCommon/react/renderer/uimanager/PointerHoverTracker.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/uimanager/UIManager.cpp
+	modified:   node_modules/react-native/ReactCommon/react/renderer/uimanager/UIManager.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/uimanager/UIManagerBinding.cpp
+	modified:   node_modules/react-native/ReactCommon/react/renderer/uimanager/UIManagerCommitHook.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/uimanager/UIManagerDelegate.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/uimanager/UIManagerMountHook.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/uimanager/consistency/CMakeLists.txt
+	deleted:    node_modules/react-native/ReactCommon/react/renderer/uimanager/consistency/LatestShadowTreeRevisionProvider.cpp
+	deleted:    node_modules/react-native/ReactCommon/react/renderer/uimanager/consistency/LatestShadowTreeRevisionProvider.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/uimanager/consistency/tests/LazyShadowTreeRevisionConsistencyManagerTest.cpp
+	modified:   node_modules/react-native/ReactCommon/react/renderer/uimanager/primitives.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/uimanager/tests/PointerEventsProcessorTest.cpp
+	modified:   node_modules/react-native/ReactCommon/react/runtime/BridgelessNativeMethodCallInvoker.h
+	modified:   node_modules/react-native/ReactCommon/react/runtime/BufferedRuntimeExecutor.h
+	modified:   node_modules/react-native/ReactCommon/react/runtime/CMakeLists.txt
+	modified:   node_modules/react-native/ReactCommon/react/runtime/React-RuntimeCore.podspec
+	modified:   node_modules/react-native/ReactCommon/react/runtime/React-RuntimeHermes.podspec
+	modified:   node_modules/react-native/ReactCommon/react/runtime/ReactInstance.cpp
+	modified:   node_modules/react-native/ReactCommon/react/runtime/ReactInstance.h
+	modified:   node_modules/react-native/ReactCommon/react/runtime/TimerManager.cpp
+	modified:   node_modules/react-native/ReactCommon/react/runtime/TimerManager.h
+	modified:   node_modules/react-native/ReactCommon/react/runtime/hermes/CMakeLists.txt
+	modified:   node_modules/react-native/ReactCommon/react/runtime/iostests/RCTHostTests.mm
+	modified:   node_modules/react-native/ReactCommon/react/runtime/nativeviewconfig/CMakeLists.txt
+	modified:   node_modules/react-native/ReactCommon/react/runtime/platform/ios/React-RuntimeApple.podspec
+	modified:   node_modules/react-native/ReactCommon/react/runtime/platform/ios/ReactCommon/RCTHost.h
+	modified:   node_modules/react-native/ReactCommon/react/runtime/platform/ios/ReactCommon/RCTHost.mm
+	modified:   node_modules/react-native/ReactCommon/react/runtime/platform/ios/ReactCommon/RCTInstance.h
+	modified:   node_modules/react-native/ReactCommon/react/runtime/platform/ios/ReactCommon/RCTInstance.mm
+	modified:   node_modules/react-native/ReactCommon/react/runtime/platform/ios/ReactCommon/RCTLegacyUIManagerConstantsProvider.mm
+	modified:   node_modules/react-native/ReactCommon/react/runtime/tests/cxx/ReactInstanceTest.cpp
+	modified:   node_modules/react-native/ReactCommon/react/test_utils/shadowTreeGeneration.h
+	modified:   node_modules/react-native/ReactCommon/react/timing/CMakeLists.txt
+	modified:   node_modules/react-native/ReactCommon/react/timing/React-timing.podspec
+	modified:   node_modules/react-native/ReactCommon/react/timing/primitives.h
+	modified:   node_modules/react-native/ReactCommon/react/timing/tests/PrimitivesTest.cpp
+	modified:   node_modules/react-native/ReactCommon/react/utils/CMakeLists.txt
+	modified:   node_modules/react-native/ReactCommon/react/utils/FloatComparison.h
+	modified:   node_modules/react-native/ReactCommon/react/utils/ManagedObjectWrapper.mm
+	modified:   node_modules/react-native/ReactCommon/react/utils/OnScopeExit.h
+	modified:   node_modules/react-native/ReactCommon/react/utils/PackTraits.h
+	modified:   node_modules/react-native/ReactCommon/react/utils/React-utils.podspec
+	modified:   node_modules/react-native/ReactCommon/react/utils/SimpleThreadSafeCache.h
+	modified:   node_modules/react-native/ReactCommon/react/utils/iequals.h
+	modified:   node_modules/react-native/ReactCommon/reactperflogger/CMakeLists.txt
+	modified:   node_modules/react-native/ReactCommon/reactperflogger/React-perflogger.podspec
+	modified:   node_modules/react-native/ReactCommon/reactperflogger/reactperflogger/BridgeNativeModulePerfLogger.cpp
+	modified:   node_modules/react-native/ReactCommon/reactperflogger/reactperflogger/BridgeNativeModulePerfLogger.h
+	modified:   node_modules/react-native/ReactCommon/reactperflogger/reactperflogger/FuseboxPerfettoDataSource.cpp
+	modified:   node_modules/react-native/ReactCommon/reactperflogger/reactperflogger/HermesPerfettoDataSource.cpp
+	modified:   node_modules/react-native/ReactCommon/reactperflogger/reactperflogger/NativeModulePerfLogger.h
+	modified:   node_modules/react-native/ReactCommon/reactperflogger/reactperflogger/ReactPerfetto.cpp
+	modified:   node_modules/react-native/ReactCommon/reactperflogger/reactperflogger/ReactPerfetto.h
+	modified:   node_modules/react-native/ReactCommon/reactperflogger/reactperflogger/ReactPerfettoLogger.cpp
+	modified:   node_modules/react-native/ReactCommon/reactperflogger/reactperflogger/ReactPerfettoLogger.h
+	modified:   node_modules/react-native/ReactCommon/runtimeexecutor/CMakeLists.txt
+	modified:   node_modules/react-native/ReactCommon/runtimeexecutor/React-runtimeexecutor.podspec
+	modified:   node_modules/react-native/ReactCommon/runtimeexecutor/ReactCommon/RuntimeExecutor.h
+	modified:   node_modules/react-native/ReactCommon/yoga/Yoga.podspec
+	modified:   node_modules/react-native/ReactCommon/yoga/cmake/project-defaults.cmake
+	modified:   node_modules/react-native/ReactCommon/yoga/yoga/YGNodeLayout.cpp
+	modified:   node_modules/react-native/ReactCommon/yoga/yoga/YGNodeLayout.h
+	modified:   node_modules/react-native/ReactCommon/yoga/yoga/YGValue.h
+	modified:   node_modules/react-native/ReactCommon/yoga/yoga/algorithm/CalculateLayout.cpp
+	modified:   node_modules/react-native/ReactCommon/yoga/yoga/algorithm/PixelGrid.cpp
+	modified:   node_modules/react-native/ReactCommon/yoga/yoga/debug/AssertFatal.cpp
+	modified:   node_modules/react-native/ReactCommon/yoga/yoga/event/event.h
+	modified:   node_modules/react-native/ReactCommon/yoga/yoga/node/LayoutResults.h
+	modified:   node_modules/react-native/ReactCommon/yoga/yoga/node/Node.cpp
+	modified:   node_modules/react-native/ReactCommon/yoga/yoga/node/Node.h
+	deleted:    node_modules/react-native/android/README.md
+	modified:   node_modules/react-native/cli.js
+	modified:   node_modules/react-native/flow/global.js
+	deleted:    node_modules/react-native/flow/jest.js
+	modified:   node_modules/react-native/gradle/libs.versions.toml
+	modified:   node_modules/react-native/index.js
+	modified:   node_modules/react-native/interface.js
+	modified:   node_modules/react-native/jest-preset.js
+	modified:   node_modules/react-native/jest/MockNativeMethods.js
+	deleted:    node_modules/react-native/jest/__tests__/setup-test.js
+	modified:   node_modules/react-native/jest/assetFileTransformer.js
+	modified:   node_modules/react-native/jest/local-setup.js
+	modified:   node_modules/react-native/jest/mockComponent.js
+	deleted:    node_modules/react-native/jest/mockModal.js
+	modified:   node_modules/react-native/jest/mockNativeComponent.js
+	deleted:    node_modules/react-native/jest/mockScrollView.js
+	modified:   node_modules/react-native/jest/react-native-env.js
+	modified:   node_modules/react-native/jest/renderer.js
+	modified:   node_modules/react-native/jest/setup.js
+	modified:   node_modules/react-native/package.json
+	modified:   node_modules/react-native/react-native.config.js
+	modified:   node_modules/react-native/scripts/bundle.js
+	modified:   node_modules/react-native/scripts/cocoapods/autolinking.rb
+	modified:   node_modules/react-native/scripts/cocoapods/codegen_utils.rb
+	modified:   node_modules/react-native/scripts/cocoapods/fabric.rb
+	modified:   node_modules/react-native/scripts/cocoapods/helpers.rb
+	modified:   node_modules/react-native/scripts/cocoapods/jsengine.rb
+	modified:   node_modules/react-native/scripts/cocoapods/new_architecture.rb
+	modified:   node_modules/react-native/scripts/cocoapods/utils.rb
+	modified:   node_modules/react-native/scripts/codegen/codegen-utils.js
+	deleted:    node_modules/react-native/scripts/codegen/generate-artifacts-executor.js
+	modified:   node_modules/react-native/scripts/codegen/generate-specs-cli-executor.js
+	modified:   node_modules/react-native/scripts/codegen/templates/RCTAppDependencyProviderMM.template
+	modified:   node_modules/react-native/scripts/codegen/templates/ReactCodegen.podspec.template
+	modified:   node_modules/react-native/scripts/compose-source-maps.js
+	modified:   node_modules/react-native/scripts/generate-codegen-artifacts.js
+	modified:   node_modules/react-native/scripts/generate-provider-cli.js
+	modified:   node_modules/react-native/scripts/generate-specs-cli.js
+	modified:   node_modules/react-native/scripts/hermes/hermes-utils.js
+	modified:   node_modules/react-native/scripts/hermes/prepare-hermes-for-build.js
+	modified:   node_modules/react-native/scripts/packager-reporter.js
+	modified:   node_modules/react-native/scripts/react-native-xcode.sh
+	modified:   node_modules/react-native/scripts/react_native_pods.rb
+	modified:   node_modules/react-native/scripts/xcode/with-environment.sh
+	modified:   node_modules/react-native/sdks/.hermesversion
+	modified:   node_modules/react-native/sdks/hermes-engine/hermes-utils.rb
+	modified:   node_modules/react-native/sdks/hermes-engine/utils/build-apple-framework.sh
+	modified:   node_modules/react-native/sdks/hermes-engine/utils/build-hermes-xcode.sh
+	modified:   node_modules/react-native/sdks/hermes-engine/utils/build-hermesc-xcode.sh
+	modified:   node_modules/react-native/sdks/hermes-engine/utils/replace_hermes_version.js
+	modified:   node_modules/react-native/sdks/hermesc/osx-bin/hermes
+	modified:   node_modules/react-native/sdks/hermesc/osx-bin/hermesc
+	modified:   node_modules/react-native/sdks/hermesc/win64-bin/hermesc.exe
+	modified:   node_modules/react-native/sdks/hermesc/win64-bin/msvcp140.dll
+	modified:   node_modules/react-native/sdks/hermesc/win64-bin/vcruntime140.dll
+	modified:   node_modules/react-native/sdks/hermesc/win64-bin/vcruntime140_1.dll
+	modified:   node_modules/react-native/src/private/animated/NativeAnimatedHelper.js
+	modified:   node_modules/react-native/src/private/animated/createAnimatedPropsHook.js
+	modified:   node_modules/react-native/src/private/animated/createAnimatedPropsMemoHook.js
+	deleted:    node_modules/react-native/src/private/components/HScrollViewNativeComponents.js
+	deleted:    node_modules/react-native/src/private/components/SafeAreaView_INTERNAL_DO_NOT_USE.js
+	deleted:    node_modules/react-native/src/private/components/VScrollViewNativeComponents.js
+	deleted:    node_modules/react-native/src/private/debugging/FuseboxSessionObserver.js
+	deleted:    node_modules/react-native/src/private/debugging/ReactDevToolsSettingsManager.android.js
+	deleted:    node_modules/react-native/src/private/debugging/ReactDevToolsSettingsManager.ios.js
+	deleted:    node_modules/react-native/src/private/debugging/ReactDevToolsSettingsManager.js.flow
+	deleted:    node_modules/react-native/src/private/debugging/setUpFuseboxReactDevToolsDispatcher.js
+	deleted:    node_modules/react-native/src/private/devmenu/DevMenu.d.ts
+	deleted:    node_modules/react-native/src/private/devmenu/DevMenu.js
+	deleted:    node_modules/react-native/src/private/featureflags/README.md
+	modified:   node_modules/react-native/src/private/featureflags/ReactNativeFeatureFlags.js
+	modified:   node_modules/react-native/src/private/featureflags/ReactNativeFeatureFlagsBase.js
+	modified:   node_modules/react-native/src/private/featureflags/specs/NativeReactNativeFeatureFlags.js
+	deleted:    node_modules/react-native/src/private/fusebox/specs/NativeReactDevToolsRuntimeSettingsModule.js
+	deleted:    node_modules/react-native/src/private/inspector/BorderBox.js
+	deleted:    node_modules/react-native/src/private/inspector/BoxInspector.js
+	deleted:    node_modules/react-native/src/private/inspector/ElementBox.js
+	deleted:    node_modules/react-native/src/private/inspector/ElementProperties.js
+	deleted:    node_modules/react-native/src/private/inspector/Inspector.js
+	deleted:    node_modules/react-native/src/private/inspector/InspectorOverlay.js
+	deleted:    node_modules/react-native/src/private/inspector/InspectorPanel.js
+	deleted:    node_modules/react-native/src/private/inspector/NetworkOverlay.js
+	deleted:    node_modules/react-native/src/private/inspector/PerformanceOverlay.js
+	deleted:    node_modules/react-native/src/private/inspector/ReactDevToolsOverlay.js
+	deleted:    node_modules/react-native/src/private/inspector/StyleInspector.js
+	deleted:    node_modules/react-native/src/private/inspector/XHRInterceptor.js
+	deleted:    node_modules/react-native/src/private/inspector/getInspectorDataForViewAtPoint.js
+	deleted:    node_modules/react-native/src/private/inspector/resolveBoxStyle.js
+	modified:   node_modules/react-native/src/private/renderer/errorhandling/ErrorHandlers.js
+	modified:   node_modules/react-native/src/private/setup/setUpPerformanceObserver.js
+	deleted:    node_modules/react-native/src/private/specs_DEPRECATED/README.md
+	modified:   node_modules/react-native/src/private/specs_DEPRECATED/components/ActivityIndicatorViewNativeComponent.js
+	modified:   node_modules/react-native/src/private/specs_DEPRECATED/components/AndroidDrawerLayoutNativeComponent.js
+	modified:   node_modules/react-native/src/private/specs_DEPRECATED/components/AndroidHorizontalScrollContentViewNativeComponent.js
+	modified:   node_modules/react-native/src/private/specs_DEPRECATED/components/AndroidSwipeRefreshLayoutNativeComponent.js
+	modified:   node_modules/react-native/src/private/specs_DEPRECATED/components/AndroidSwitchNativeComponent.js
+	modified:   node_modules/react-native/src/private/specs_DEPRECATED/components/DebuggingOverlayNativeComponent.js
+	modified:   node_modules/react-native/src/private/specs_DEPRECATED/components/ProgressBarAndroidNativeComponent.js
+	modified:   node_modules/react-native/src/private/specs_DEPRECATED/components/PullToRefreshViewNativeComponent.js
+	modified:   node_modules/react-native/src/private/specs_DEPRECATED/components/RCTInputAccessoryViewNativeComponent.js
+	modified:   node_modules/react-native/src/private/specs_DEPRECATED/components/RCTModalHostViewNativeComponent.js
+	modified:   node_modules/react-native/src/private/specs_DEPRECATED/components/RCTSafeAreaViewNativeComponent.js
+	modified:   node_modules/react-native/src/private/specs_DEPRECATED/components/SwitchNativeComponent.js
+	modified:   node_modules/react-native/src/private/specs_DEPRECATED/components/UnimplementedNativeViewNativeComponent.js
+	modified:   node_modules/react-native/src/private/specs_DEPRECATED/modules/NativeAnimatedModule.js
+	modified:   node_modules/react-native/src/private/specs_DEPRECATED/modules/NativeAnimatedTurboModule.js
+	deleted:    node_modules/react-native/src/private/specs_DEPRECATED/modules/NativeBugReporting.js
+	deleted:    node_modules/react-native/src/private/specs_DEPRECATED/modules/NativeDevMenu.js
+	modified:   node_modules/react-native/src/private/specs_DEPRECATED/modules/NativeDeviceInfo.js
+	modified:   node_modules/react-native/src/private/specs_DEPRECATED/modules/NativeFrameRateLogger.js
+	modified:   node_modules/react-native/src/private/specs_DEPRECATED/modules/NativePermissionsAndroid.js
+	modified:   node_modules/react-native/src/private/specs_DEPRECATED/modules/NativePushNotificationManagerIOS.js
+	deleted:    node_modules/react-native/src/private/specs_DEPRECATED/modules/NativeReactDevToolsSettingsManager.js
+	modified:   node_modules/react-native/src/private/specs_DEPRECATED/modules/NativeSampleTurboModule.js
+	modified:   node_modules/react-native/src/private/specs_DEPRECATED/modules/NativeUIManager.js
+	modified:   node_modules/react-native/src/private/styles/composeStyles.js
+	modified:   node_modules/react-native/src/private/types/HostComponent.js
+	modified:   node_modules/react-native/src/private/types/HostInstance.js
+	deleted:    node_modules/react-native/src/private/utilities/ensureInstance.js
+	modified:   node_modules/react-native/src/private/webapis/dom/events/Event.js
+	modified:   node_modules/react-native/src/private/webapis/dom/events/EventTarget.js
+	modified:   node_modules/react-native/src/private/webapis/dom/nodes/ReactNativeDocument.js
+	modified:   node_modules/react-native/src/private/webapis/dom/nodes/ReactNativeElement.js
+	modified:   node_modules/react-native/src/private/webapis/dom/nodes/ReadOnlyCharacterData.js
+	modified:   node_modules/react-native/src/private/webapis/dom/nodes/ReadOnlyElement.js
+	modified:   node_modules/react-native/src/private/webapis/dom/nodes/ReadOnlyNode.js
+	modified:   node_modules/react-native/src/private/webapis/dom/nodes/ReadOnlyText.js
+	modified:   node_modules/react-native/src/private/webapis/dom/nodes/internals/NodeInternals.js
+	modified:   node_modules/react-native/src/private/webapis/dom/nodes/internals/ReactNativeDocumentElementInstanceHandle.js
+	modified:   node_modules/react-native/src/private/webapis/dom/nodes/internals/ReactNativeDocumentInstanceHandle.js
+	modified:   node_modules/react-native/src/private/webapis/dom/nodes/internals/Traversal.js
+	modified:   node_modules/react-native/src/private/webapis/dom/nodes/specs/NativeDOM.js
+	modified:   node_modules/react-native/src/private/webapis/dom/oldstylecollections/HTMLCollection.js
+	modified:   node_modules/react-native/src/private/webapis/dom/oldstylecollections/HTMLCollection.js.flow
+	modified:   node_modules/react-native/src/private/webapis/dom/oldstylecollections/NodeList.js
+	modified:   node_modules/react-native/src/private/webapis/dom/oldstylecollections/NodeList.js.flow
+	modified:   node_modules/react-native/src/private/webapis/geometry/DOMRect.js
+	modified:   node_modules/react-native/src/private/webapis/geometry/DOMRectList.js
+	modified:   node_modules/react-native/src/private/webapis/geometry/DOMRectList.js.flow
+	modified:   node_modules/react-native/src/private/webapis/geometry/DOMRectReadOnly.js
+	modified:   node_modules/react-native/src/private/webapis/idlecallbacks/specs/NativeIdleCallbacks.js
+	modified:   node_modules/react-native/src/private/webapis/intersectionobserver/IntersectionObserver.js
+	modified:   node_modules/react-native/src/private/webapis/intersectionobserver/IntersectionObserverEntry.js
+	modified:   node_modules/react-native/src/private/webapis/intersectionobserver/internals/IntersectionObserverManager.js
+	modified:   node_modules/react-native/src/private/webapis/intersectionobserver/specs/NativeIntersectionObserver.js
+	modified:   node_modules/react-native/src/private/webapis/mutationobserver/MutationObserver.js
+	modified:   node_modules/react-native/src/private/webapis/mutationobserver/MutationRecord.js
+	modified:   node_modules/react-native/src/private/webapis/mutationobserver/internals/MutationObserverManager.js
+	modified:   node_modules/react-native/src/private/webapis/mutationobserver/specs/NativeMutationObserver.js
+	modified:   node_modules/react-native/src/private/webapis/performance/EventTiming.js
+	modified:   node_modules/react-native/src/private/webapis/performance/LongTasks.js
+	modified:   node_modules/react-native/src/private/webapis/performance/MemoryInfo.js
+	modified:   node_modules/react-native/src/private/webapis/performance/Performance.js
+	modified:   node_modules/react-native/src/private/webapis/performance/PerformanceEntry.js
+	modified:   node_modules/react-native/src/private/webapis/performance/PerformanceObserver.js
+	modified:   node_modules/react-native/src/private/webapis/performance/ReactNativeStartupTiming.js
+	modified:   node_modules/react-native/src/private/webapis/performance/UserTiming.js
+	modified:   node_modules/react-native/src/private/webapis/performance/internals/RawPerformanceEntry.js
+	modified:   node_modules/react-native/src/private/webapis/performance/internals/Utilities.js
+	modified:   node_modules/react-native/src/private/webapis/performance/specs/NativePerformance.js
+	deleted:    node_modules/react-native/src/private/webapis/performance/specs/__mocks__/NativePerformanceMock.js
+	modified:   node_modules/react-native/src/private/webapis/utils/ArrayLikeUtils.js
+	deleted:    node_modules/react-native/src/types/bom.js.flow
+	deleted:    node_modules/react-native/src/types/dom.js.flow
+	modified:   node_modules/react-native/src/types/globals.d.ts
+	modified:   node_modules/react-native/third-party-podspecs/RCT-Folly.podspec
+	modified:   node_modules/react-native/third-party-podspecs/fast_float.podspec
+	modified:   node_modules/react-native/types/index.d.ts
+	modified:   node_modules/react-native/types/modules/Devtools.d.ts
+	deleted:    node_modules/react-native/types/modules/LaunchScreen.d.ts
+	modified:   node_modules/react-native/types/public/ReactNativeTypes.d.ts
+	deleted:    node_modules/react-native/types/tslint.json
+	deleted:    node_modules/react-test-renderer/LICENSE
+	deleted:    node_modules/react-test-renderer/README.md
+	deleted:    node_modules/react-test-renderer/cjs/react-test-renderer.development.js
+	deleted:    node_modules/react-test-renderer/cjs/react-test-renderer.production.js
+	deleted:    node_modules/react-test-renderer/index.js
+	deleted:    node_modules/react-test-renderer/node_modules/react-is/LICENSE
+	deleted:    node_modules/react-test-renderer/node_modules/react-is/README.md
+	deleted:    node_modules/react-test-renderer/node_modules/react-is/cjs/react-is.development.js
+	deleted:    node_modules/react-test-renderer/node_modules/react-is/cjs/react-is.production.js
+	deleted:    node_modules/react-test-renderer/node_modules/react-is/index.js
+	deleted:    node_modules/react-test-renderer/node_modules/react-is/package.json
+	deleted:    node_modules/react-test-renderer/package.json
+	deleted:    node_modules/react-test-renderer/shallow.js
+	modified:   node_modules/react/cjs/react-jsx-dev-runtime.development.js
+	modified:   node_modules/react/cjs/react-jsx-dev-runtime.react-server.development.js
+	modified:   node_modules/react/cjs/react-jsx-runtime.development.js
+	modified:   node_modules/react/cjs/react-jsx-runtime.react-server.development.js
+	modified:   node_modules/react/cjs/react.development.js
+	modified:   node_modules/react/cjs/react.production.js
+	modified:   node_modules/react/cjs/react.react-server.development.js
+	modified:   node_modules/react/cjs/react.react-server.production.js
+	modified:   node_modules/react/package.json
+	deleted:    node_modules/readable-stream/CONTRIBUTING.md
+	deleted:    node_modules/readable-stream/GOVERNANCE.md
+	deleted:    node_modules/readable-stream/LICENSE
+	deleted:    node_modules/readable-stream/README.md
+	deleted:    node_modules/readable-stream/errors-browser.js
+	deleted:    node_modules/readable-stream/errors.js
+	deleted:    node_modules/readable-stream/experimentalWarning.js
+	deleted:    node_modules/readable-stream/lib/_stream_duplex.js
+	deleted:    node_modules/readable-stream/lib/_stream_passthrough.js
+	deleted:    node_modules/readable-stream/lib/_stream_readable.js
+	deleted:    node_modules/readable-stream/lib/_stream_transform.js
+	deleted:    node_modules/readable-stream/lib/_stream_writable.js
+	deleted:    node_modules/readable-stream/lib/internal/streams/async_iterator.js
+	deleted:    node_modules/readable-stream/lib/internal/streams/buffer_list.js
+	deleted:    node_modules/readable-stream/lib/internal/streams/destroy.js
+	deleted:    node_modules/readable-stream/lib/internal/streams/end-of-stream.js
+	deleted:    node_modules/readable-stream/lib/internal/streams/from-browser.js
+	deleted:    node_modules/readable-stream/lib/internal/streams/from.js
+	deleted:    node_modules/readable-stream/lib/internal/streams/pipeline.js
+	deleted:    node_modules/readable-stream/lib/internal/streams/state.js
+	deleted:    node_modules/readable-stream/lib/internal/streams/stream-browser.js
+	deleted:    node_modules/readable-stream/lib/internal/streams/stream.js
+	deleted:    node_modules/readable-stream/package.json
+	deleted:    node_modules/readable-stream/readable-browser.js
+	deleted:    node_modules/readable-stream/readable.js
+	deleted:    node_modules/require-main-filename/CHANGELOG.md
+	deleted:    node_modules/require-main-filename/LICENSE.txt
+	deleted:    node_modules/require-main-filename/README.md
+	deleted:    node_modules/require-main-filename/index.js
+	deleted:    node_modules/require-main-filename/package.json
+	deleted:    node_modules/resolve-cwd/index.d.ts
+	deleted:    node_modules/resolve-cwd/index.js
+	deleted:    node_modules/resolve-cwd/license
+	deleted:    node_modules/resolve-cwd/package.json
+	deleted:    node_modules/resolve-cwd/readme.md
+	deleted:    node_modules/safer-buffer/LICENSE
+	deleted:    node_modules/safer-buffer/Porting-Buffer.md
+	deleted:    node_modules/safer-buffer/Readme.md
+	deleted:    node_modules/safer-buffer/dangerous.js
+	deleted:    node_modules/safer-buffer/package.json
+	deleted:    node_modules/safer-buffer/safer.js
+	deleted:    node_modules/safer-buffer/tests.js
+	modified:   node_modules/scheduler/LICENSE
+	modified:   node_modules/scheduler/cjs/scheduler-unstable_mock.development.js
+	modified:   node_modules/scheduler/cjs/scheduler-unstable_post_task.development.js
+	modified:   node_modules/scheduler/cjs/scheduler.development.js
+	modified:   node_modules/scheduler/index.js
+	modified:   node_modules/scheduler/package.json
+	modified:   node_modules/scheduler/unstable_mock.js
+	modified:   node_modules/scheduler/unstable_post_task.js
+	deleted:    node_modules/set-blocking/CHANGELOG.md
+	deleted:    node_modules/set-blocking/LICENSE.txt
+	deleted:    node_modules/set-blocking/README.md
+	deleted:    node_modules/set-blocking/index.js
+	deleted:    node_modules/set-blocking/package.json
+	deleted:    node_modules/simple-swizzle/node_modules/is-arrayish/LICENSE
+	deleted:    node_modules/simple-swizzle/node_modules/is-arrayish/README.md
+	deleted:    node_modules/simple-swizzle/node_modules/is-arrayish/index.js
+	deleted:    node_modules/simple-swizzle/node_modules/is-arrayish/package.json
+	deleted:    node_modules/slice-ansi/index.js
+	deleted:    node_modules/slice-ansi/license
+	deleted:    node_modules/slice-ansi/node_modules/ansi-styles/index.js
+	deleted:    node_modules/slice-ansi/node_modules/ansi-styles/license
+	deleted:    node_modules/slice-ansi/node_modules/ansi-styles/package.json
+	deleted:    node_modules/slice-ansi/node_modules/ansi-styles/readme.md
+	deleted:    node_modules/slice-ansi/node_modules/is-fullwidth-code-point/index.js
+	deleted:    node_modules/slice-ansi/node_modules/is-fullwidth-code-point/license
+	deleted:    node_modules/slice-ansi/node_modules/is-fullwidth-code-point/package.json
+	deleted:    node_modules/slice-ansi/node_modules/is-fullwidth-code-point/readme.md
+	deleted:    node_modules/slice-ansi/package.json
+	deleted:    node_modules/slice-ansi/readme.md
+	deleted:    node_modules/string-length/index.d.ts
+	deleted:    node_modules/string-length/index.js
+	deleted:    node_modules/string-length/license
+	deleted:    node_modules/string-length/package.json
+	deleted:    node_modules/string-length/readme.md
+	deleted:    node_modules/string-natural-compare/LICENSE.txt
+	deleted:    node_modules/string-natural-compare/README.md
+	deleted:    node_modules/string-natural-compare/natural-compare.js
+	deleted:    node_modules/string-natural-compare/package.json
+	deleted:    node_modules/string_decoder/LICENSE
+	deleted:    node_modules/string_decoder/README.md
+	deleted:    node_modules/string_decoder/lib/string_decoder.js
+	deleted:    node_modules/string_decoder/package.json
+	deleted:    node_modules/strip-final-newline/index.js
+	deleted:    node_modules/strip-final-newline/license
+	deleted:    node_modules/strip-final-newline/package.json
+	deleted:    node_modules/strip-final-newline/readme.md
+	deleted:    node_modules/strnum/.vscode/launch.json
+	deleted:    node_modules/strnum/CHANGELOG.md
+	deleted:    node_modules/strnum/LICENSE
+	deleted:    node_modules/strnum/README.md
+	deleted:    node_modules/strnum/package.json
+	deleted:    node_modules/strnum/strnum.js
+	deleted:    node_modules/strnum/strnum.test.js
+	modified:   node_modules/ts-api-utils/README.md
+	modified:   node_modules/ts-api-utils/lib/index.cjs
+	modified:   node_modules/ts-api-utils/lib/index.d.cts
+	modified:   node_modules/ts-api-utils/lib/index.d.ts
+	modified:   node_modules/ts-api-utils/lib/index.js
+	modified:   node_modules/ts-api-utils/node_modules/.bin/tsc
+	modified:   node_modules/ts-api-utils/node_modules/.bin/tsserver
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/LICENSE.txt
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/README.md
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/SECURITY.md
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/ThirdPartyNoticeText.txt
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/bin/tsc
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/bin/tsserver
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/lib/README.md
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/lib/cancellationToken.js
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/lib/cs/diagnosticMessages.generated.json
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/lib/de/diagnosticMessages.generated.json
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/lib/es/diagnosticMessages.generated.json
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/lib/fr/diagnosticMessages.generated.json
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/lib/it/diagnosticMessages.generated.json
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/lib/ja/diagnosticMessages.generated.json
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/lib/ko/diagnosticMessages.generated.json
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/lib/lib.d.ts
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/lib/lib.decorators.d.ts
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/lib/lib.decorators.legacy.d.ts
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/lib/lib.dom.d.ts
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/lib/lib.dom.iterable.d.ts
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/lib/lib.es2015.collection.d.ts
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/lib/lib.es2015.core.d.ts
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/lib/lib.es2015.d.ts
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/lib/lib.es2015.generator.d.ts
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/lib/lib.es2015.iterable.d.ts
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/lib/lib.es2015.promise.d.ts
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/lib/lib.es2015.proxy.d.ts
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/lib/lib.es2015.reflect.d.ts
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/lib/lib.es2015.symbol.d.ts
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/lib/lib.es2015.symbol.wellknown.d.ts
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/lib/lib.es2016.array.include.d.ts
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/lib/lib.es2016.d.ts
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/lib/lib.es2016.full.d.ts
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/lib/lib.es2017.d.ts
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/lib/lib.es2017.full.d.ts
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/lib/lib.es2017.intl.d.ts
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/lib/lib.es2017.object.d.ts
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/lib/lib.es2017.sharedmemory.d.ts
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/lib/lib.es2017.string.d.ts
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/lib/lib.es2017.typedarrays.d.ts
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/lib/lib.es2018.asyncgenerator.d.ts
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/lib/lib.es2018.asynciterable.d.ts
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/lib/lib.es2018.d.ts
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/lib/lib.es2018.full.d.ts
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/lib/lib.es2018.intl.d.ts
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/lib/lib.es2018.promise.d.ts
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/lib/lib.es2018.regexp.d.ts
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/lib/lib.es2019.array.d.ts
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/lib/lib.es2019.d.ts
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/lib/lib.es2019.full.d.ts
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/lib/lib.es2019.intl.d.ts
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/lib/lib.es2019.object.d.ts
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/lib/lib.es2019.string.d.ts
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/lib/lib.es2019.symbol.d.ts
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/lib/lib.es2020.bigint.d.ts
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/lib/lib.es2020.d.ts
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/lib/lib.es2020.date.d.ts
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/lib/lib.es2020.full.d.ts
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/lib/lib.es2020.intl.d.ts
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/lib/lib.es2020.number.d.ts
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/lib/lib.es2020.promise.d.ts
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/lib/lib.es2020.sharedmemory.d.ts
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/lib/lib.es2020.string.d.ts
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/lib/lib.es2020.symbol.wellknown.d.ts
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/lib/lib.es2021.d.ts
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/lib/lib.es2021.full.d.ts
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/lib/lib.es2021.intl.d.ts
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/lib/lib.es2021.promise.d.ts
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/lib/lib.es2021.string.d.ts
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/lib/lib.es2021.weakref.d.ts
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/lib/lib.es2022.array.d.ts
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/lib/lib.es2022.d.ts
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/lib/lib.es2022.error.d.ts
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/lib/lib.es2022.full.d.ts
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/lib/lib.es2022.intl.d.ts
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/lib/lib.es2022.object.d.ts
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/lib/lib.es2022.regexp.d.ts
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/lib/lib.es2022.sharedmemory.d.ts
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/lib/lib.es2022.string.d.ts
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/lib/lib.es2023.array.d.ts
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/lib/lib.es2023.d.ts
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/lib/lib.es2023.full.d.ts
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/lib/lib.es5.d.ts
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/lib/lib.es6.d.ts
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/lib/lib.esnext.d.ts
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/lib/lib.esnext.full.d.ts
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/lib/lib.esnext.intl.d.ts
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/lib/lib.scripthost.d.ts
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/lib/lib.webworker.d.ts
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/lib/lib.webworker.importscripts.d.ts
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/lib/lib.webworker.iterable.d.ts
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/lib/pl/diagnosticMessages.generated.json
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/lib/pt-br/diagnosticMessages.generated.json
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/lib/ru/diagnosticMessages.generated.json
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/lib/tr/diagnosticMessages.generated.json
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/lib/tsc.js
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/lib/tsserver.js
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/lib/tsserverlibrary.d.ts
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/lib/tsserverlibrary.js
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/lib/typesMap.json
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/lib/typescript.d.ts
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/lib/typescript.js
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/lib/typingsInstaller.js
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/lib/watchGuard.js
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/lib/zh-cn/diagnosticMessages.generated.json
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/lib/zh-tw/diagnosticMessages.generated.json
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/package.json
+	modified:   node_modules/ts-api-utils/package.json
+	deleted:    node_modules/tsutils/CHANGELOG.md
+	deleted:    node_modules/tsutils/LICENSE
+	deleted:    node_modules/tsutils/README.md
+	deleted:    node_modules/tsutils/index.d.ts
+	deleted:    node_modules/tsutils/index.js
+	deleted:    node_modules/tsutils/index.js.map
+	deleted:    node_modules/tsutils/node_modules/.bin/tsc
+	deleted:    node_modules/tsutils/node_modules/.bin/tsserver
+	deleted:    node_modules/tsutils/node_modules/tslib/CopyrightNotice.txt
+	deleted:    node_modules/tsutils/node_modules/tslib/LICENSE.txt
+	deleted:    node_modules/tsutils/node_modules/tslib/README.md
+	deleted:    node_modules/tsutils/node_modules/tslib/modules/index.js
+	deleted:    node_modules/tsutils/node_modules/tslib/modules/package.json
+	deleted:    node_modules/tsutils/node_modules/tslib/package.json
+	deleted:    node_modules/tsutils/node_modules/tslib/test/validateModuleExportsMatchCommonJS/index.js
+	deleted:    node_modules/tsutils/node_modules/tslib/test/validateModuleExportsMatchCommonJS/package.json
+	deleted:    node_modules/tsutils/node_modules/tslib/tslib.d.ts
+	deleted:    node_modules/tsutils/node_modules/tslib/tslib.es6.html
+	deleted:    node_modules/tsutils/node_modules/tslib/tslib.es6.js
+	deleted:    node_modules/tsutils/node_modules/tslib/tslib.html
+	deleted:    node_modules/tsutils/node_modules/tslib/tslib.js
+	deleted:    node_modules/tsutils/node_modules/typescript/LICENSE.txt
+	deleted:    node_modules/tsutils/node_modules/typescript/README.md
+	deleted:    node_modules/tsutils/node_modules/typescript/SECURITY.md
+	deleted:    node_modules/tsutils/node_modules/typescript/ThirdPartyNoticeText.txt
+	deleted:    node_modules/tsutils/node_modules/typescript/bin/tsc
+	deleted:    node_modules/tsutils/node_modules/typescript/bin/tsserver
+	deleted:    node_modules/tsutils/node_modules/typescript/lib/README.md
+	deleted:    node_modules/tsutils/node_modules/typescript/lib/cancellationToken.js
+	deleted:    node_modules/tsutils/node_modules/typescript/lib/cs/diagnosticMessages.generated.json
+	deleted:    node_modules/tsutils/node_modules/typescript/lib/de/diagnosticMessages.generated.json
+	deleted:    node_modules/tsutils/node_modules/typescript/lib/es/diagnosticMessages.generated.json
+	deleted:    node_modules/tsutils/node_modules/typescript/lib/fr/diagnosticMessages.generated.json
+	deleted:    node_modules/tsutils/node_modules/typescript/lib/it/diagnosticMessages.generated.json
+	deleted:    node_modules/tsutils/node_modules/typescript/lib/ja/diagnosticMessages.generated.json
+	deleted:    node_modules/tsutils/node_modules/typescript/lib/ko/diagnosticMessages.generated.json
+	deleted:    node_modules/tsutils/node_modules/typescript/lib/lib.d.ts
+	deleted:    node_modules/tsutils/node_modules/typescript/lib/lib.decorators.d.ts
+	deleted:    node_modules/tsutils/node_modules/typescript/lib/lib.decorators.legacy.d.ts
+	deleted:    node_modules/tsutils/node_modules/typescript/lib/lib.dom.d.ts
+	deleted:    node_modules/tsutils/node_modules/typescript/lib/lib.dom.iterable.d.ts
+	deleted:    node_modules/tsutils/node_modules/typescript/lib/lib.es2015.collection.d.ts
+	deleted:    node_modules/tsutils/node_modules/typescript/lib/lib.es2015.core.d.ts
+	deleted:    node_modules/tsutils/node_modules/typescript/lib/lib.es2015.d.ts
+	deleted:    node_modules/tsutils/node_modules/typescript/lib/lib.es2015.generator.d.ts
+	deleted:    node_modules/tsutils/node_modules/typescript/lib/lib.es2015.iterable.d.ts
+	deleted:    node_modules/tsutils/node_modules/typescript/lib/lib.es2015.promise.d.ts
+	deleted:    node_modules/tsutils/node_modules/typescript/lib/lib.es2015.proxy.d.ts
+	deleted:    node_modules/tsutils/node_modules/typescript/lib/lib.es2015.reflect.d.ts
+	deleted:    node_modules/tsutils/node_modules/typescript/lib/lib.es2015.symbol.d.ts
+	deleted:    node_modules/tsutils/node_modules/typescript/lib/lib.es2015.symbol.wellknown.d.ts
+	deleted:    node_modules/tsutils/node_modules/typescript/lib/lib.es2016.array.include.d.ts
+	deleted:    node_modules/tsutils/node_modules/typescript/lib/lib.es2016.d.ts
+	deleted:    node_modules/tsutils/node_modules/typescript/lib/lib.es2016.full.d.ts
+	deleted:    node_modules/tsutils/node_modules/typescript/lib/lib.es2017.d.ts
+	deleted:    node_modules/tsutils/node_modules/typescript/lib/lib.es2017.full.d.ts
+	deleted:    node_modules/tsutils/node_modules/typescript/lib/lib.es2017.intl.d.ts
+	deleted:    node_modules/tsutils/node_modules/typescript/lib/lib.es2017.object.d.ts
+	deleted:    node_modules/tsutils/node_modules/typescript/lib/lib.es2017.sharedmemory.d.ts
+	deleted:    node_modules/tsutils/node_modules/typescript/lib/lib.es2017.string.d.ts
+	deleted:    node_modules/tsutils/node_modules/typescript/lib/lib.es2017.typedarrays.d.ts
+	deleted:    node_modules/tsutils/node_modules/typescript/lib/lib.es2018.asyncgenerator.d.ts
+	deleted:    node_modules/tsutils/node_modules/typescript/lib/lib.es2018.asynciterable.d.ts
+	deleted:    node_modules/tsutils/node_modules/typescript/lib/lib.es2018.d.ts
+	deleted:    node_modules/tsutils/node_modules/typescript/lib/lib.es2018.full.d.ts
+	deleted:    node_modules/tsutils/node_modules/typescript/lib/lib.es2018.intl.d.ts
+	deleted:    node_modules/tsutils/node_modules/typescript/lib/lib.es2018.promise.d.ts
+	deleted:    node_modules/tsutils/node_modules/typescript/lib/lib.es2018.regexp.d.ts
+	deleted:    node_modules/tsutils/node_modules/typescript/lib/lib.es2019.array.d.ts
+	deleted:    node_modules/tsutils/node_modules/typescript/lib/lib.es2019.d.ts
+	deleted:    node_modules/tsutils/node_modules/typescript/lib/lib.es2019.full.d.ts
+	deleted:    node_modules/tsutils/node_modules/typescript/lib/lib.es2019.intl.d.ts
+	deleted:    node_modules/tsutils/node_modules/typescript/lib/lib.es2019.object.d.ts
+	deleted:    node_modules/tsutils/node_modules/typescript/lib/lib.es2019.string.d.ts
+	deleted:    node_modules/tsutils/node_modules/typescript/lib/lib.es2019.symbol.d.ts
+	deleted:    node_modules/tsutils/node_modules/typescript/lib/lib.es2020.bigint.d.ts
+	deleted:    node_modules/tsutils/node_modules/typescript/lib/lib.es2020.d.ts
+	deleted:    node_modules/tsutils/node_modules/typescript/lib/lib.es2020.date.d.ts
+	deleted:    node_modules/tsutils/node_modules/typescript/lib/lib.es2020.full.d.ts
+	deleted:    node_modules/tsutils/node_modules/typescript/lib/lib.es2020.intl.d.ts
+	deleted:    node_modules/tsutils/node_modules/typescript/lib/lib.es2020.number.d.ts
+	deleted:    node_modules/tsutils/node_modules/typescript/lib/lib.es2020.promise.d.ts
+	deleted:    node_modules/tsutils/node_modules/typescript/lib/lib.es2020.sharedmemory.d.ts
+	deleted:    node_modules/tsutils/node_modules/typescript/lib/lib.es2020.string.d.ts
+	deleted:    node_modules/tsutils/node_modules/typescript/lib/lib.es2020.symbol.wellknown.d.ts
+	deleted:    node_modules/tsutils/node_modules/typescript/lib/lib.es2021.d.ts
+	deleted:    node_modules/tsutils/node_modules/typescript/lib/lib.es2021.full.d.ts
+	deleted:    node_modules/tsutils/node_modules/typescript/lib/lib.es2021.intl.d.ts
+	deleted:    node_modules/tsutils/node_modules/typescript/lib/lib.es2021.promise.d.ts
+	deleted:    node_modules/tsutils/node_modules/typescript/lib/lib.es2021.string.d.ts
+	deleted:    node_modules/tsutils/node_modules/typescript/lib/lib.es2021.weakref.d.ts
+	deleted:    node_modules/tsutils/node_modules/typescript/lib/lib.es2022.array.d.ts
+	deleted:    node_modules/tsutils/node_modules/typescript/lib/lib.es2022.d.ts
+	deleted:    node_modules/tsutils/node_modules/typescript/lib/lib.es2022.error.d.ts
+	deleted:    node_modules/tsutils/node_modules/typescript/lib/lib.es2022.full.d.ts
+	deleted:    node_modules/tsutils/node_modules/typescript/lib/lib.es2022.intl.d.ts
+	deleted:    node_modules/tsutils/node_modules/typescript/lib/lib.es2022.object.d.ts
+	deleted:    node_modules/tsutils/node_modules/typescript/lib/lib.es2022.regexp.d.ts
+	deleted:    node_modules/tsutils/node_modules/typescript/lib/lib.es2022.sharedmemory.d.ts
+	deleted:    node_modules/tsutils/node_modules/typescript/lib/lib.es2022.string.d.ts
+	deleted:    node_modules/tsutils/node_modules/typescript/lib/lib.es2023.array.d.ts
+	deleted:    node_modules/tsutils/node_modules/typescript/lib/lib.es2023.d.ts
+	deleted:    node_modules/tsutils/node_modules/typescript/lib/lib.es2023.full.d.ts
+	deleted:    node_modules/tsutils/node_modules/typescript/lib/lib.es5.d.ts
+	deleted:    node_modules/tsutils/node_modules/typescript/lib/lib.es6.d.ts
+	deleted:    node_modules/tsutils/node_modules/typescript/lib/lib.esnext.d.ts
+	deleted:    node_modules/tsutils/node_modules/typescript/lib/lib.esnext.full.d.ts
+	deleted:    node_modules/tsutils/node_modules/typescript/lib/lib.esnext.intl.d.ts
+	deleted:    node_modules/tsutils/node_modules/typescript/lib/lib.scripthost.d.ts
+	deleted:    node_modules/tsutils/node_modules/typescript/lib/lib.webworker.d.ts
+	deleted:    node_modules/tsutils/node_modules/typescript/lib/lib.webworker.importscripts.d.ts
+	deleted:    node_modules/tsutils/node_modules/typescript/lib/lib.webworker.iterable.d.ts
+	deleted:    node_modules/tsutils/node_modules/typescript/lib/pl/diagnosticMessages.generated.json
+	deleted:    node_modules/tsutils/node_modules/typescript/lib/pt-br/diagnosticMessages.generated.json
+	deleted:    node_modules/tsutils/node_modules/typescript/lib/ru/diagnosticMessages.generated.json
+	deleted:    node_modules/tsutils/node_modules/typescript/lib/tr/diagnosticMessages.generated.json
+	deleted:    node_modules/tsutils/node_modules/typescript/lib/tsc.js
+	deleted:    node_modules/tsutils/node_modules/typescript/lib/tsserver.js
+	deleted:    node_modules/tsutils/node_modules/typescript/lib/tsserverlibrary.d.ts
+	deleted:    node_modules/tsutils/node_modules/typescript/lib/tsserverlibrary.js
+	deleted:    node_modules/tsutils/node_modules/typescript/lib/typesMap.json
+	deleted:    node_modules/tsutils/node_modules/typescript/lib/typescript.d.ts
+	deleted:    node_modules/tsutils/node_modules/typescript/lib/typescript.js
+	deleted:    node_modules/tsutils/node_modules/typescript/lib/typingsInstaller.js
+	deleted:    node_modules/tsutils/node_modules/typescript/lib/watchGuard.js
+	deleted:    node_modules/tsutils/node_modules/typescript/lib/zh-cn/diagnosticMessages.generated.json
+	deleted:    node_modules/tsutils/node_modules/typescript/lib/zh-tw/diagnosticMessages.generated.json
+	deleted:    node_modules/tsutils/node_modules/typescript/package.json
+	deleted:    node_modules/tsutils/package.json
+	deleted:    node_modules/tsutils/typeguard/2.8/index.d.ts
+	deleted:    node_modules/tsutils/typeguard/2.8/index.js
+	deleted:    node_modules/tsutils/typeguard/2.8/index.js.map
+	deleted:    node_modules/tsutils/typeguard/2.8/node.d.ts
+	deleted:    node_modules/tsutils/typeguard/2.8/node.js
+	deleted:    node_modules/tsutils/typeguard/2.8/node.js.map
+	deleted:    node_modules/tsutils/typeguard/2.8/type.d.ts
+	deleted:    node_modules/tsutils/typeguard/2.8/type.js
+	deleted:    node_modules/tsutils/typeguard/2.8/type.js.map
+	deleted:    node_modules/tsutils/typeguard/2.9/index.d.ts
+	deleted:    node_modules/tsutils/typeguard/2.9/index.js
+	deleted:    node_modules/tsutils/typeguard/2.9/index.js.map
+	deleted:    node_modules/tsutils/typeguard/2.9/node.d.ts
+	deleted:    node_modules/tsutils/typeguard/2.9/node.js
+	deleted:    node_modules/tsutils/typeguard/2.9/node.js.map
+	deleted:    node_modules/tsutils/typeguard/2.9/type.d.ts
+	deleted:    node_modules/tsutils/typeguard/2.9/type.js
+	deleted:    node_modules/tsutils/typeguard/2.9/type.js.map
+	deleted:    node_modules/tsutils/typeguard/3.0/index.d.ts
+	deleted:    node_modules/tsutils/typeguard/3.0/index.js
+	deleted:    node_modules/tsutils/typeguard/3.0/index.js.map
+	deleted:    node_modules/tsutils/typeguard/3.0/node.d.ts
+	deleted:    node_modules/tsutils/typeguard/3.0/node.js
+	deleted:    node_modules/tsutils/typeguard/3.0/node.js.map
+	deleted:    node_modules/tsutils/typeguard/3.0/type.d.ts
+	deleted:    node_modules/tsutils/typeguard/3.0/type.js
+	deleted:    node_modules/tsutils/typeguard/3.0/type.js.map
+	deleted:    node_modules/tsutils/typeguard/3.2/index.d.ts
+	deleted:    node_modules/tsutils/typeguard/3.2/index.js
+	deleted:    node_modules/tsutils/typeguard/3.2/index.js.map
+	deleted:    node_modules/tsutils/typeguard/3.2/node.d.ts
+	deleted:    node_modules/tsutils/typeguard/3.2/node.js
+	deleted:    node_modules/tsutils/typeguard/3.2/node.js.map
+	deleted:    node_modules/tsutils/typeguard/3.2/type.d.ts
+	deleted:    node_modules/tsutils/typeguard/3.2/type.js
+	deleted:    node_modules/tsutils/typeguard/3.2/type.js.map
+	deleted:    node_modules/tsutils/typeguard/index.d.ts
+	deleted:    node_modules/tsutils/typeguard/index.js
+	deleted:    node_modules/tsutils/typeguard/index.js.map
+	deleted:    node_modules/tsutils/typeguard/next/index.d.ts
+	deleted:    node_modules/tsutils/typeguard/next/index.js
+	deleted:    node_modules/tsutils/typeguard/next/index.js.map
+	deleted:    node_modules/tsutils/typeguard/next/node.d.ts
+	deleted:    node_modules/tsutils/typeguard/next/node.js
+	deleted:    node_modules/tsutils/typeguard/next/node.js.map
+	deleted:    node_modules/tsutils/typeguard/next/type.d.ts
+	deleted:    node_modules/tsutils/typeguard/next/type.js
+	deleted:    node_modules/tsutils/typeguard/next/type.js.map
+	deleted:    node_modules/tsutils/typeguard/node.d.ts
+	deleted:    node_modules/tsutils/typeguard/node.js
+	deleted:    node_modules/tsutils/typeguard/node.js.map
+	deleted:    node_modules/tsutils/typeguard/type.d.ts
+	deleted:    node_modules/tsutils/typeguard/type.js
+	deleted:    node_modules/tsutils/typeguard/type.js.map
+	deleted:    node_modules/tsutils/util/control-flow.d.ts
+	deleted:    node_modules/tsutils/util/control-flow.js
+	deleted:    node_modules/tsutils/util/control-flow.js.map
+	deleted:    node_modules/tsutils/util/convert-ast.d.ts
+	deleted:    node_modules/tsutils/util/convert-ast.js
+	deleted:    node_modules/tsutils/util/convert-ast.js.map
+	deleted:    node_modules/tsutils/util/index.d.ts
+	deleted:    node_modules/tsutils/util/index.js
+	deleted:    node_modules/tsutils/util/index.js.map
+	deleted:    node_modules/tsutils/util/type.d.ts
+	deleted:    node_modules/tsutils/util/type.js
+	deleted:    node_modules/tsutils/util/type.js.map
+	deleted:    node_modules/tsutils/util/usage.d.ts
+	deleted:    node_modules/tsutils/util/usage.js
+	deleted:    node_modules/tsutils/util/usage.js.map
+	deleted:    node_modules/tsutils/util/util.d.ts
+	deleted:    node_modules/tsutils/util/util.js
+	deleted:    node_modules/tsutils/util/util.js.map
+	deleted:    node_modules/type-is/HISTORY.md
+	deleted:    node_modules/type-is/LICENSE
+	deleted:    node_modules/type-is/README.md
+	deleted:    node_modules/type-is/index.js
+	deleted:    node_modules/type-is/package.json
+	deleted:    node_modules/universalify/LICENSE
+	deleted:    node_modules/universalify/README.md
+	deleted:    node_modules/universalify/index.js
+	deleted:    node_modules/universalify/package.json
+	deleted:    node_modules/util-deprecate/History.md
+	deleted:    node_modules/util-deprecate/LICENSE
+	deleted:    node_modules/util-deprecate/README.md
+	deleted:    node_modules/util-deprecate/browser.js
+	deleted:    node_modules/util-deprecate/node.js
+	deleted:    node_modules/util-deprecate/package.json
+	deleted:    node_modules/v8-to-istanbul/CHANGELOG.md
+	deleted:    node_modules/v8-to-istanbul/LICENSE.txt
+	deleted:    node_modules/v8-to-istanbul/README.md
+	deleted:    node_modules/v8-to-istanbul/index.d.ts
+	deleted:    node_modules/v8-to-istanbul/index.js
+	deleted:    node_modules/v8-to-istanbul/lib/branch.js
+	deleted:    node_modules/v8-to-istanbul/lib/function.js
+	deleted:    node_modules/v8-to-istanbul/lib/line.js
+	deleted:    node_modules/v8-to-istanbul/lib/range.js
+	deleted:    node_modules/v8-to-istanbul/lib/source.js
+	deleted:    node_modules/v8-to-istanbul/lib/v8-to-istanbul.js
+	deleted:    node_modules/v8-to-istanbul/package.json
+	deleted:    node_modules/which-module/LICENSE
+	deleted:    node_modules/which-module/README.md
+	deleted:    node_modules/which-module/index.js
+	deleted:    node_modules/which-module/package.json
+	deleted:    node_modules/yallist/LICENSE
+	modified:   node_modules/yallist/README.md
+	deleted:    node_modules/yallist/iterator.js
+	modified:   node_modules/yallist/package.json
+	deleted:    node_modules/yallist/yallist.js
+	modified:   yarn.lock
+
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+	apps/mobile/assets/images/
+
+no changes added to commit (use "git add" and/or "git commit -a")
+
+```
+
+---
+
+
+
+---
+
+Staging assets/images and continuing the rebase:
+
+
+---
+
+Tool use: **run_terminal_cmd**
+
+```bash
+git add apps/mobile/assets/images/.gitkeep
+```
+
+---
+
+Tool use: **run_terminal_cmd**
+
+```bash
+git rebase --continue
+```
+
+```
+fatal: no rebase in progress
+
+```
+
+---
+
+
+
+---
+
+Tool use: **run_terminal_cmd**
+
+```bash
+git status
+```
+
+```
+[Terminal output truncated: ~211KB dropped from beginning]
+t/MethodCall.h
+	modified:   node_modules/react-native/ReactCommon/cxxreact/ModuleRegistry.cpp
+	modified:   node_modules/react-native/ReactCommon/cxxreact/ModuleRegistry.h
+	modified:   node_modules/react-native/ReactCommon/cxxreact/NativeModule.h
+	modified:   node_modules/react-native/ReactCommon/cxxreact/NativeToJsBridge.cpp
+	modified:   node_modules/react-native/ReactCommon/cxxreact/NativeToJsBridge.h
+	modified:   node_modules/react-native/ReactCommon/cxxreact/RAMBundleRegistry.cpp
+	modified:   node_modules/react-native/ReactCommon/cxxreact/RAMBundleRegistry.h
+	modified:   node_modules/react-native/ReactCommon/cxxreact/React-cxxreact.podspec
+	modified:   node_modules/react-native/ReactCommon/cxxreact/ReactMarker.cpp
+	modified:   node_modules/react-native/ReactCommon/cxxreact/ReactMarker.h
+	modified:   node_modules/react-native/ReactCommon/cxxreact/ReactNativeVersion.h
+	deleted:    node_modules/react-native/ReactCommon/cxxreact/SampleCxxModule.cpp
+	deleted:    node_modules/react-native/ReactCommon/cxxreact/SampleCxxModule.h
+	modified:   node_modules/react-native/ReactCommon/cxxreact/SharedProxyCxxModule.h
+	modified:   node_modules/react-native/ReactCommon/cxxreact/TraceSection.h
+	modified:   node_modules/react-native/ReactCommon/cxxreact/tests/jsarg_helpers.cpp
+	modified:   node_modules/react-native/ReactCommon/devtoolsruntimesettings/CMakeLists.txt
+	modified:   node_modules/react-native/ReactCommon/hermes/React-hermes.podspec
+	modified:   node_modules/react-native/ReactCommon/hermes/executor/CMakeLists.txt
+	modified:   node_modules/react-native/ReactCommon/hermes/executor/React-jsitracing.podspec
+	modified:   node_modules/react-native/ReactCommon/hermes/inspector-modern/CMakeLists.txt
+	modified:   node_modules/react-native/ReactCommon/hermes/inspector-modern/chrome/ConnectionDemux.cpp
+	modified:   node_modules/react-native/ReactCommon/hermes/inspector-modern/chrome/ConnectionDemux.h
+	modified:   node_modules/react-native/ReactCommon/hermes/inspector-modern/chrome/HermesRuntimeSamplingProfileSerializer.cpp
+	modified:   node_modules/react-native/ReactCommon/hermes/inspector-modern/chrome/HermesRuntimeSamplingProfileSerializer.h
+	modified:   node_modules/react-native/ReactCommon/hermes/inspector-modern/chrome/HermesRuntimeTargetDelegate.cpp
+	modified:   node_modules/react-native/ReactCommon/hermes/inspector-modern/chrome/Registration.cpp
+	modified:   node_modules/react-native/ReactCommon/hermes/inspector-modern/chrome/Registration.h
+	deleted:    node_modules/react-native/ReactCommon/jsc/CMakeLists.txt
+	modified:   node_modules/react-native/ReactCommon/jsc/JSCRuntime.cpp
+	modified:   node_modules/react-native/ReactCommon/jsc/JSCRuntime.h
+	deleted:    node_modules/react-native/ReactCommon/jsc/React-jsc.podspec
+	modified:   node_modules/react-native/ReactCommon/jserrorhandler/CMakeLists.txt
+	modified:   node_modules/react-native/ReactCommon/jserrorhandler/JsErrorHandler.cpp
+	modified:   node_modules/react-native/ReactCommon/jserrorhandler/React-jserrorhandler.podspec
+	modified:   node_modules/react-native/ReactCommon/jserrorhandler/StackTraceParser.cpp
+	modified:   node_modules/react-native/ReactCommon/jsi/CMakeLists.txt
+	modified:   node_modules/react-native/ReactCommon/jsi/React-jsi.podspec
+	modified:   node_modules/react-native/ReactCommon/jsi/jsi/CMakeLists.txt
+	modified:   node_modules/react-native/ReactCommon/jsi/jsi/decorator.h
+	modified:   node_modules/react-native/ReactCommon/jsi/jsi/jsi-inl.h
+	modified:   node_modules/react-native/ReactCommon/jsi/jsi/jsi.cpp
+	modified:   node_modules/react-native/ReactCommon/jsi/jsi/jsi.h
+	modified:   node_modules/react-native/ReactCommon/jsi/jsi/test/testlib.cpp
+	modified:   node_modules/react-native/ReactCommon/jsi/jsi/test/testlib.h
+	modified:   node_modules/react-native/ReactCommon/jsiexecutor/CMakeLists.txt
+	modified:   node_modules/react-native/ReactCommon/jsiexecutor/React-jsiexecutor.podspec
+	modified:   node_modules/react-native/ReactCommon/jsiexecutor/jsireact/JSIExecutor.cpp
+	modified:   node_modules/react-native/ReactCommon/jsiexecutor/jsireact/JSIExecutor.h
+	modified:   node_modules/react-native/ReactCommon/jsiexecutor/jsireact/JSINativeModules.cpp
+	modified:   node_modules/react-native/ReactCommon/jsiexecutor/jsireact/JSINativeModules.h
+	modified:   node_modules/react-native/ReactCommon/jsinspector-modern/CMakeLists.txt
+	deleted:    node_modules/react-native/ReactCommon/jsinspector-modern/CdpJson.cpp
+	deleted:    node_modules/react-native/ReactCommon/jsinspector-modern/CdpJson.h
+	modified:   node_modules/react-native/ReactCommon/jsinspector-modern/HostAgent.cpp
+	modified:   node_modules/react-native/ReactCommon/jsinspector-modern/HostAgent.h
+	modified:   node_modules/react-native/ReactCommon/jsinspector-modern/HostTarget.cpp
+	modified:   node_modules/react-native/ReactCommon/jsinspector-modern/InspectorFlags.cpp
+	modified:   node_modules/react-native/ReactCommon/jsinspector-modern/InstanceAgent.cpp
+	modified:   node_modules/react-native/ReactCommon/jsinspector-modern/InstanceAgent.h
+	modified:   node_modules/react-native/ReactCommon/jsinspector-modern/NetworkIOAgent.cpp
+	modified:   node_modules/react-native/ReactCommon/jsinspector-modern/NetworkIOAgent.h
+	modified:   node_modules/react-native/ReactCommon/jsinspector-modern/React-jsinspector.podspec
+	modified:   node_modules/react-native/ReactCommon/jsinspector-modern/RuntimeAgent.h
+	modified:   node_modules/react-native/ReactCommon/jsinspector-modern/RuntimeAgentDelegate.h
+	modified:   node_modules/react-native/ReactCommon/jsinspector-modern/RuntimeTarget.cpp
+	modified:   node_modules/react-native/ReactCommon/jsinspector-modern/RuntimeTargetConsole.cpp
+	modified:   node_modules/react-native/ReactCommon/jsinspector-modern/TracingAgent.cpp
+	modified:   node_modules/react-native/ReactCommon/jsinspector-modern/TracingAgent.h
+	modified:   node_modules/react-native/ReactCommon/jsinspector-modern/tests/InspectorPackagerConnectionTest.cpp
+	modified:   node_modules/react-native/ReactCommon/jsinspector-modern/tests/JsiIntegrationTest.cpp
+	modified:   node_modules/react-native/ReactCommon/jsinspector-modern/tests/ReactInstanceIntegrationTest.cpp
+	modified:   node_modules/react-native/ReactCommon/jsinspector-modern/tracing/CMakeLists.txt
+	deleted:    node_modules/react-native/ReactCommon/jsinspector-modern/tracing/EventLoopTaskReporter.cpp
+	deleted:    node_modules/react-native/ReactCommon/jsinspector-modern/tracing/EventLoopTaskReporter.h
+	modified:   node_modules/react-native/ReactCommon/jsinspector-modern/tracing/InstanceTracingProfile.h
+	modified:   node_modules/react-native/ReactCommon/jsinspector-modern/tracing/PerformanceTracer.cpp
+	modified:   node_modules/react-native/ReactCommon/jsinspector-modern/tracing/PerformanceTracer.h
+	modified:   node_modules/react-native/ReactCommon/jsinspector-modern/tracing/ProfileTreeNode.h
+	modified:   node_modules/react-native/ReactCommon/jsinspector-modern/tracing/React-jsinspectortracing.podspec
+	modified:   node_modules/react-native/ReactCommon/jsinspector-modern/tracing/RuntimeSamplingProfile.h
+	modified:   node_modules/react-native/ReactCommon/jsinspector-modern/tracing/RuntimeSamplingProfileTraceEventSerializer.cpp
+	modified:   node_modules/react-native/ReactCommon/jsinspector-modern/tracing/RuntimeSamplingProfileTraceEventSerializer.h
+	modified:   node_modules/react-native/ReactCommon/jsinspector-modern/tracing/TraceEvent.h
+	modified:   node_modules/react-native/ReactCommon/jsinspector-modern/tracing/TraceEventProfile.h
+	modified:   node_modules/react-native/ReactCommon/jsinspector-modern/tracing/tests/ProfileTreeNodeTest.cpp
+	modified:   node_modules/react-native/ReactCommon/jsitooling/CMakeLists.txt
+	modified:   node_modules/react-native/ReactCommon/jsitooling/React-jsitooling.podspec
+	modified:   node_modules/react-native/ReactCommon/logger/CMakeLists.txt
+	modified:   node_modules/react-native/ReactCommon/logger/React-logger.podspec
+	modified:   node_modules/react-native/ReactCommon/logger/react_native_log.cpp
+	modified:   node_modules/react-native/ReactCommon/oscompat/CMakeLists.txt
+	modified:   node_modules/react-native/ReactCommon/oscompat/React-oscompat.podspec
+	modified:   node_modules/react-native/ReactCommon/react/bridging/Base.h
+	modified:   node_modules/react-native/ReactCommon/react/bridging/Bool.h
+	modified:   node_modules/react-native/ReactCommon/react/bridging/Bridging.h
+	modified:   node_modules/react-native/ReactCommon/react/bridging/CMakeLists.txt
+	modified:   node_modules/react-native/ReactCommon/react/bridging/Class.h
+	modified:   node_modules/react-native/ReactCommon/react/bridging/Number.h
+	modified:   node_modules/react-native/ReactCommon/react/bridging/Promise.h
+	modified:   node_modules/react-native/ReactCommon/react/bridging/tests/BridgingTest.cpp
+	modified:   node_modules/react-native/ReactCommon/react/bridging/tests/ClassTest.cpp
+	modified:   node_modules/react-native/ReactCommon/react/debug/CMakeLists.txt
+	modified:   node_modules/react-native/ReactCommon/react/debug/React-debug.podspec
+	modified:   node_modules/react-native/ReactCommon/react/featureflags/CMakeLists.txt
+	modified:   node_modules/react-native/ReactCommon/react/featureflags/React-featureflags.podspec
+	modified:   node_modules/react-native/ReactCommon/react/featureflags/ReactNativeFeatureFlags.cpp
+	modified:   node_modules/react-native/ReactCommon/react/featureflags/ReactNativeFeatureFlags.h
+	modified:   node_modules/react-native/ReactCommon/react/featureflags/ReactNativeFeatureFlagsAccessor.cpp
+	modified:   node_modules/react-native/ReactCommon/react/featureflags/ReactNativeFeatureFlagsAccessor.h
+	modified:   node_modules/react-native/ReactCommon/react/featureflags/ReactNativeFeatureFlagsDefaults.h
+	modified:   node_modules/react-native/ReactCommon/react/featureflags/ReactNativeFeatureFlagsDynamicProvider.h
+	modified:   node_modules/react-native/ReactCommon/react/featureflags/ReactNativeFeatureFlagsProvider.h
+	modified:   node_modules/react-native/ReactCommon/react/nativemodule/core/CMakeLists.txt
+	modified:   node_modules/react-native/ReactCommon/react/nativemodule/core/ReactCommon/TurboCxxModule.cpp
+	modified:   node_modules/react-native/ReactCommon/react/nativemodule/core/ReactCommon/TurboModuleBinding.cpp
+	modified:   node_modules/react-native/ReactCommon/react/nativemodule/core/ReactCommon/TurboModulePerfLogger.cpp
+	modified:   node_modules/react-native/ReactCommon/react/nativemodule/core/ReactCommon/TurboModulePerfLogger.h
+	modified:   node_modules/react-native/ReactCommon/react/nativemodule/core/ReactCommon/TurboModuleUtils.h
+	modified:   node_modules/react-native/ReactCommon/react/nativemodule/core/platform/android/ReactCommon/JavaTurboModule.cpp
+	modified:   node_modules/react-native/ReactCommon/react/nativemodule/core/platform/android/ReactCommon/JavaTurboModule.h
+	modified:   node_modules/react-native/ReactCommon/react/nativemodule/core/platform/ios/React-NativeModulesApple.podspec
+	modified:   node_modules/react-native/ReactCommon/react/nativemodule/core/platform/ios/ReactCommon/RCTInteropTurboModule.h
+	modified:   node_modules/react-native/ReactCommon/react/nativemodule/core/platform/ios/ReactCommon/RCTInteropTurboModule.mm
+	modified:   node_modules/react-native/ReactCommon/react/nativemodule/core/platform/ios/ReactCommon/RCTTurboModule.h
+	modified:   node_modules/react-native/ReactCommon/react/nativemodule/core/platform/ios/ReactCommon/RCTTurboModule.mm
+	modified:   node_modules/react-native/ReactCommon/react/nativemodule/core/platform/ios/ReactCommon/RCTTurboModuleManager.mm
+	modified:   node_modules/react-native/ReactCommon/react/nativemodule/cputime/CPUTime.h
+	modified:   node_modules/react-native/ReactCommon/react/nativemodule/defaults/CMakeLists.txt
+	modified:   node_modules/react-native/ReactCommon/react/nativemodule/defaults/React-defaultsnativemodule.podspec
+	modified:   node_modules/react-native/ReactCommon/react/nativemodule/devtoolsruntimesettings/CMakeLists.txt
+	modified:   node_modules/react-native/ReactCommon/react/nativemodule/devtoolsruntimesettings/DevToolsRuntimeSettingsModule.cpp
+	modified:   node_modules/react-native/ReactCommon/react/nativemodule/devtoolsruntimesettings/DevToolsRuntimeSettingsModule.h
+	modified:   node_modules/react-native/ReactCommon/react/nativemodule/dom/CMakeLists.txt
+	modified:   node_modules/react-native/ReactCommon/react/nativemodule/dom/NativeDOM.cpp
+	modified:   node_modules/react-native/ReactCommon/react/nativemodule/dom/NativeDOM.h
+	modified:   node_modules/react-native/ReactCommon/react/nativemodule/dom/React-domnativemodule.podspec
+	modified:   node_modules/react-native/ReactCommon/react/nativemodule/featureflags/CMakeLists.txt
+	modified:   node_modules/react-native/ReactCommon/react/nativemodule/featureflags/NativeReactNativeFeatureFlags.cpp
+	modified:   node_modules/react-native/ReactCommon/react/nativemodule/featureflags/NativeReactNativeFeatureFlags.h
+	modified:   node_modules/react-native/ReactCommon/react/nativemodule/featureflags/React-featureflagsnativemodule.podspec
+	modified:   node_modules/react-native/ReactCommon/react/nativemodule/idlecallbacks/CMakeLists.txt
+	modified:   node_modules/react-native/ReactCommon/react/nativemodule/idlecallbacks/NativeIdleCallbacks.cpp
+	modified:   node_modules/react-native/ReactCommon/react/nativemodule/idlecallbacks/NativeIdleCallbacks.h
+	modified:   node_modules/react-native/ReactCommon/react/nativemodule/idlecallbacks/React-idlecallbacksnativemodule.podspec
+	modified:   node_modules/react-native/ReactCommon/react/nativemodule/intersectionobserver/NativeIntersectionObserver.cpp
+	modified:   node_modules/react-native/ReactCommon/react/nativemodule/intersectionobserver/NativeIntersectionObserver.h
+	modified:   node_modules/react-native/ReactCommon/react/nativemodule/microtasks/CMakeLists.txt
+	modified:   node_modules/react-native/ReactCommon/react/nativemodule/microtasks/NativeMicrotasks.h
+	modified:   node_modules/react-native/ReactCommon/react/nativemodule/microtasks/React-microtasksnativemodule.podspec
+	modified:   node_modules/react-native/ReactCommon/react/nativemodule/mutationobserver/NativeMutationObserver.cpp
+	modified:   node_modules/react-native/ReactCommon/react/nativemodule/mutationobserver/NativeMutationObserver.h
+	modified:   node_modules/react-native/ReactCommon/react/nativemodule/samples/ReactCommon-Samples.podspec
+	modified:   node_modules/react-native/ReactCommon/react/nativemodule/samples/platform/android/CMakeLists.txt
+	modified:   node_modules/react-native/ReactCommon/react/nativemodule/samples/platform/android/NativeSampleTurboModuleSpec.java
+	modified:   node_modules/react-native/ReactCommon/react/nativemodule/samples/platform/android/ReactCommon/SampleTurboModuleSpec.cpp
+	modified:   node_modules/react-native/ReactCommon/react/nativemodule/samples/platform/android/SampleTurboModule.kt
+	modified:   node_modules/react-native/ReactCommon/react/nativemodule/samples/platform/ios/ReactCommon/RCTSampleLegacyModule.mm
+	deleted:    node_modules/react-native/ReactCommon/react/nativemodule/samples/platform/ios/ReactCommon/RCTSampleTurboCxxModule.h
+	deleted:    node_modules/react-native/ReactCommon/react/nativemodule/samples/platform/ios/ReactCommon/RCTSampleTurboCxxModule.mm
+	modified:   node_modules/react-native/ReactCommon/react/nativemodule/samples/platform/ios/ReactCommon/RCTSampleTurboModule.mm
+	deleted:    node_modules/react-native/ReactCommon/react/nativemodule/samples/platform/ios/ReactCommon/SampleTurboCxxModuleLegacyImpl.cpp
+	deleted:    node_modules/react-native/ReactCommon/react/nativemodule/samples/platform/ios/ReactCommon/SampleTurboCxxModuleLegacyImpl.h
+	modified:   node_modules/react-native/ReactCommon/react/nativemodule/webperformance/NativePerformance.cpp
+	modified:   node_modules/react-native/ReactCommon/react/nativemodule/webperformance/NativePerformance.h
+	modified:   node_modules/react-native/ReactCommon/react/performance/timeline/CMakeLists.txt
+	modified:   node_modules/react-native/ReactCommon/react/performance/timeline/CircularBuffer.h
+	modified:   node_modules/react-native/ReactCommon/react/performance/timeline/PerformanceEntry.h
+	modified:   node_modules/react-native/ReactCommon/react/performance/timeline/PerformanceEntryBuffer.h
+	modified:   node_modules/react-native/ReactCommon/react/performance/timeline/PerformanceEntryCircularBuffer.cpp
+	modified:   node_modules/react-native/ReactCommon/react/performance/timeline/PerformanceEntryKeyedBuffer.cpp
+	modified:   node_modules/react-native/ReactCommon/react/performance/timeline/PerformanceEntryKeyedBuffer.h
+	modified:   node_modules/react-native/ReactCommon/react/performance/timeline/PerformanceEntryReporter.cpp
+	modified:   node_modules/react-native/ReactCommon/react/performance/timeline/PerformanceEntryReporter.h
+	modified:   node_modules/react-native/ReactCommon/react/performance/timeline/PerformanceObserver.cpp
+	modified:   node_modules/react-native/ReactCommon/react/performance/timeline/PerformanceObserver.h
+	modified:   node_modules/react-native/ReactCommon/react/performance/timeline/React-performancetimeline.podspec
+	modified:   node_modules/react-native/ReactCommon/react/performance/timeline/tests/PerformanceEntryReporterTest.cpp
+	modified:   node_modules/react-native/ReactCommon/react/performance/timeline/tests/PerformanceObserverTest.cpp
+	modified:   node_modules/react-native/ReactCommon/react/renderer/animations/CMakeLists.txt
+	modified:   node_modules/react-native/ReactCommon/react/renderer/animations/LayoutAnimationKeyFrameManager.cpp
+	modified:   node_modules/react-native/ReactCommon/react/renderer/animations/tests/LayoutAnimationTest.cpp
+	modified:   node_modules/react-native/ReactCommon/react/renderer/attributedstring/AttributedString.cpp
+	modified:   node_modules/react-native/ReactCommon/react/renderer/attributedstring/AttributedString.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/attributedstring/CMakeLists.txt
+	modified:   node_modules/react-native/ReactCommon/react/renderer/attributedstring/ParagraphAttributes.cpp
+	modified:   node_modules/react-native/ReactCommon/react/renderer/attributedstring/ParagraphAttributes.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/attributedstring/TextAttributes.cpp
+	modified:   node_modules/react-native/ReactCommon/react/renderer/attributedstring/TextAttributes.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/attributedstring/conversions.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/componentregistry/CMakeLists.txt
+	modified:   node_modules/react-native/ReactCommon/react/renderer/componentregistry/ComponentDescriptorRegistry.cpp
+	modified:   node_modules/react-native/ReactCommon/react/renderer/componentregistry/native/CMakeLists.txt
+	modified:   node_modules/react-native/ReactCommon/react/renderer/components/image/CMakeLists.txt
+	modified:   node_modules/react-native/ReactCommon/react/renderer/components/image/ImageProps.cpp
+	modified:   node_modules/react-native/ReactCommon/react/renderer/components/image/ImageProps.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/components/image/ImageShadowNode.cpp
+	modified:   node_modules/react-native/ReactCommon/react/renderer/components/inputaccessory/InputAccessoryShadowNode.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/components/legacyviewmanagerinterop/CMakeLists.txt
+	modified:   node_modules/react-native/ReactCommon/react/renderer/components/legacyviewmanagerinterop/LegacyViewManagerInteropComponentDescriptor.mm
+	modified:   node_modules/react-native/ReactCommon/react/renderer/components/legacyviewmanagerinterop/LegacyViewManagerInteropShadowNode.h
+	deleted:    node_modules/react-native/ReactCommon/react/renderer/components/legacyviewmanagerinterop/LegacyViewManagerInteropViewEventEmitter.cpp
+	deleted:    node_modules/react-native/ReactCommon/react/renderer/components/legacyviewmanagerinterop/LegacyViewManagerInteropViewEventEmitter.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/components/legacyviewmanagerinterop/RCTLegacyViewManagerInteropCoordinator.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/components/legacyviewmanagerinterop/RCTLegacyViewManagerInteropCoordinator.mm
+	modified:   node_modules/react-native/ReactCommon/react/renderer/components/legacyviewmanagerinterop/UnstableLegacyViewManagerAutomaticShadowNode.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/components/modal/CMakeLists.txt
+	modified:   node_modules/react-native/ReactCommon/react/renderer/components/modal/ModalHostViewComponentDescriptor.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/components/modal/ModalHostViewShadowNode.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/components/modal/ModalHostViewState.cpp
+	modified:   node_modules/react-native/ReactCommon/react/renderer/components/modal/ModalHostViewState.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/components/modal/ModalHostViewUtils.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/components/modal/ModalHostViewUtils.mm
+	modified:   node_modules/react-native/ReactCommon/react/renderer/components/progressbar/CMakeLists.txt
+	modified:   node_modules/react-native/ReactCommon/react/renderer/components/progressbar/android/react/renderer/components/progressbar/AndroidProgressBarMeasurementsManager.cpp
+	modified:   node_modules/react-native/ReactCommon/react/renderer/components/progressbar/android/react/renderer/components/progressbar/AndroidProgressBarMeasurementsManager.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/components/progressbar/android/react/renderer/components/progressbar/AndroidProgressBarShadowNode.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/components/progressbar/android/react/renderer/components/progressbar/conversions.h
+	deleted:    node_modules/react-native/ReactCommon/react/renderer/components/rncore/ComponentDescriptors.cpp
+	modified:   node_modules/react-native/ReactCommon/react/renderer/components/rncore/ComponentDescriptors.h
+	deleted:    node_modules/react-native/ReactCommon/react/renderer/components/rncore/EventEmitters.cpp
+	modified:   node_modules/react-native/ReactCommon/react/renderer/components/rncore/EventEmitters.h
+	deleted:    node_modules/react-native/ReactCommon/react/renderer/components/rncore/Props.cpp
+	modified:   node_modules/react-native/ReactCommon/react/renderer/components/rncore/Props.h
+	deleted:    node_modules/react-native/ReactCommon/react/renderer/components/rncore/RCTComponentViewHelpers.h
+	deleted:    node_modules/react-native/ReactCommon/react/renderer/components/rncore/ShadowNodes.cpp
+	modified:   node_modules/react-native/ReactCommon/react/renderer/components/rncore/ShadowNodes.h
+	deleted:    node_modules/react-native/ReactCommon/react/renderer/components/rncore/States.cpp
+	modified:   node_modules/react-native/ReactCommon/react/renderer/components/rncore/States.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/components/root/CMakeLists.txt
+	modified:   node_modules/react-native/ReactCommon/react/renderer/components/safeareaview/CMakeLists.txt
+	modified:   node_modules/react-native/ReactCommon/react/renderer/components/safeareaview/SafeAreaViewShadowNode.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/components/scrollview/CMakeLists.txt
+	modified:   node_modules/react-native/ReactCommon/react/renderer/components/scrollview/ScrollEvent.cpp
+	modified:   node_modules/react-native/ReactCommon/react/renderer/components/scrollview/ScrollEvent.h
+	deleted:    node_modules/react-native/ReactCommon/react/renderer/components/scrollview/ScrollViewProps.cpp
+	modified:   node_modules/react-native/ReactCommon/react/renderer/components/scrollview/ScrollViewProps.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/components/scrollview/ScrollViewState.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/components/switch/CMakeLists.txt
+	modified:   node_modules/react-native/ReactCommon/react/renderer/components/switch/androidswitch/react/renderer/components/androidswitch/AndroidSwitchMeasurementsManager.cpp
+	modified:   node_modules/react-native/ReactCommon/react/renderer/components/switch/androidswitch/react/renderer/components/androidswitch/AndroidSwitchMeasurementsManager.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/components/switch/androidswitch/react/renderer/components/androidswitch/AndroidSwitchShadowNode.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/components/text/BaseTextProps.cpp
+	modified:   node_modules/react-native/ReactCommon/react/renderer/components/text/BaseTextProps.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/components/text/BaseTextShadowNode.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/components/text/CMakeLists.txt
+	modified:   node_modules/react-native/ReactCommon/react/renderer/components/text/ParagraphProps.cpp
+	modified:   node_modules/react-native/ReactCommon/react/renderer/components/text/ParagraphProps.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/components/text/ParagraphShadowNode.cpp
+	modified:   node_modules/react-native/ReactCommon/react/renderer/components/text/ParagraphShadowNode.h
+	deleted:    node_modules/react-native/ReactCommon/react/renderer/components/text/ParagraphState.cpp
+	deleted:    node_modules/react-native/ReactCommon/react/renderer/components/text/ParagraphState.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/components/text/RawTextProps.cpp
+	modified:   node_modules/react-native/ReactCommon/react/renderer/components/text/RawTextProps.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/components/text/TextProps.cpp
+	modified:   node_modules/react-native/ReactCommon/react/renderer/components/text/TextProps.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/components/text/conversions.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/components/textinput/BaseTextInputProps.cpp
+	modified:   node_modules/react-native/ReactCommon/react/renderer/components/textinput/BaseTextInputProps.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/components/textinput/BaseTextInputShadowNode.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/components/textinput/CMakeLists.txt
+	modified:   node_modules/react-native/ReactCommon/react/renderer/components/textinput/TextInputEventEmitter.cpp
+	modified:   node_modules/react-native/ReactCommon/react/renderer/components/textinput/TextInputEventEmitter.h
+	deleted:    node_modules/react-native/ReactCommon/react/renderer/components/textinput/TextInputState.cpp
+	modified:   node_modules/react-native/ReactCommon/react/renderer/components/textinput/TextInputState.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/components/textinput/platform/android/react/renderer/components/androidtextinput/AndroidTextInputComponentDescriptor.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/components/textinput/platform/android/react/renderer/components/androidtextinput/AndroidTextInputProps.cpp
+	modified:   node_modules/react-native/ReactCommon/react/renderer/components/textinput/platform/android/react/renderer/components/androidtextinput/AndroidTextInputProps.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/components/textinput/platform/android/react/renderer/components/androidtextinput/AndroidTextInputShadowNode.cpp
+	modified:   node_modules/react-native/ReactCommon/react/renderer/components/textinput/platform/android/react/renderer/components/androidtextinput/AndroidTextInputShadowNode.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/components/textinput/platform/ios/react/renderer/components/iostextinput/conversions.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/components/unimplementedview/CMakeLists.txt
+	modified:   node_modules/react-native/ReactCommon/react/renderer/components/unimplementedview/UnimplementedViewProps.cpp
+	modified:   node_modules/react-native/ReactCommon/react/renderer/components/unimplementedview/UnimplementedViewProps.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/components/view/AccessibilityPrimitives.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/components/view/AccessibilityProps.cpp
+	modified:   node_modules/react-native/ReactCommon/react/renderer/components/view/AccessibilityProps.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/components/view/BaseViewProps.cpp
+	modified:   node_modules/react-native/ReactCommon/react/renderer/components/view/BaseViewProps.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/components/view/CMakeLists.txt
+	modified:   node_modules/react-native/ReactCommon/react/renderer/components/view/ConcreteViewShadowNode.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/components/view/ViewShadowNode.cpp
+	modified:   node_modules/react-native/ReactCommon/react/renderer/components/view/YogaLayoutableShadowNode.cpp
+	modified:   node_modules/react-native/ReactCommon/react/renderer/components/view/YogaLayoutableShadowNode.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/components/view/YogaStylableProps.cpp
+	modified:   node_modules/react-native/ReactCommon/react/renderer/components/view/conversions.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/components/view/platform/android/react/renderer/components/view/HostPlatformViewProps.cpp
+	modified:   node_modules/react-native/ReactCommon/react/renderer/components/view/platform/android/react/renderer/components/view/HostPlatformViewProps.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/components/view/platform/android/react/renderer/components/view/HostPlatformViewTraitsInitializer.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/components/view/platform/android/react/renderer/components/view/NativeDrawable.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/components/view/platform/cxx/react/renderer/components/view/HostPlatformViewTraitsInitializer.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/components/view/propsConversions.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/components/view/tests/ViewTest.cpp
+	modified:   node_modules/react-native/ReactCommon/react/renderer/consistency/CMakeLists.txt
+	modified:   node_modules/react-native/ReactCommon/react/renderer/consistency/React-rendererconsistency.podspec
+	modified:   node_modules/react-native/ReactCommon/react/renderer/core/CMakeLists.txt
+	modified:   node_modules/react-native/ReactCommon/react/renderer/core/ComponentDescriptor.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/core/ConcreteComponentDescriptor.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/core/ConcreteShadowNode.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/core/ConcreteState.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/core/EventEmitter.cpp
+	modified:   node_modules/react-native/ReactCommon/react/renderer/core/EventEmitter.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/core/EventLogger.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/core/EventPayload.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/core/EventQueue.cpp
+	modified:   node_modules/react-native/ReactCommon/react/renderer/core/EventQueueProcessor.cpp
+	modified:   node_modules/react-native/ReactCommon/react/renderer/core/LayoutableShadowNode.cpp
+	modified:   node_modules/react-native/ReactCommon/react/renderer/core/LayoutableShadowNode.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/core/Props.cpp
+	modified:   node_modules/react-native/ReactCommon/react/renderer/core/Props.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/core/RawEvent.cpp
+	modified:   node_modules/react-native/ReactCommon/react/renderer/core/RawEvent.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/core/RawProps.cpp
+	modified:   node_modules/react-native/ReactCommon/react/renderer/core/RawProps.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/core/ReactEventPriority.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/core/ShadowNode.cpp
+	modified:   node_modules/react-native/ReactCommon/react/renderer/core/ShadowNode.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/core/ShadowNodeFamily.cpp
+	modified:   node_modules/react-native/ReactCommon/react/renderer/core/ShadowNodeFamily.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/core/ShadowNodeTraits.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/core/State.cpp
+	modified:   node_modules/react-native/ReactCommon/react/renderer/core/State.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/core/StateData.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/core/graphicsConversions.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/core/propsConversions.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/core/tests/ComponentDescriptorTest.cpp
+	modified:   node_modules/react-native/ReactCommon/react/renderer/core/tests/EventQueueProcessorTest.cpp
+	modified:   node_modules/react-native/ReactCommon/react/renderer/core/tests/LayoutableShadowNodeTest.cpp
+	modified:   node_modules/react-native/ReactCommon/react/renderer/core/tests/RawPropsTest.cpp
+	modified:   node_modules/react-native/ReactCommon/react/renderer/core/tests/ShadowNodeTest.cpp
+	modified:   node_modules/react-native/ReactCommon/react/renderer/core/tests/TestComponent.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/css/CMakeLists.txt
+	modified:   node_modules/react-native/ReactCommon/react/renderer/css/CSSTokenizer.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/css/React-renderercss.podspec
+	modified:   node_modules/react-native/ReactCommon/react/renderer/css/tests/CSSTokenizerTest.cpp
+	modified:   node_modules/react-native/ReactCommon/react/renderer/debug/CMakeLists.txt
+	modified:   node_modules/react-native/ReactCommon/react/renderer/debug/DebugStringConvertible.cpp
+	modified:   node_modules/react-native/ReactCommon/react/renderer/debug/DebugStringConvertible.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/debug/React-rendererdebug.podspec
+	modified:   node_modules/react-native/ReactCommon/react/renderer/debug/debugStringConvertibleUtils.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/dom/CMakeLists.txt
+	modified:   node_modules/react-native/ReactCommon/react/renderer/dom/DOM.cpp
+	modified:   node_modules/react-native/ReactCommon/react/renderer/dom/DOM.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/element/CMakeLists.txt
+	modified:   node_modules/react-native/ReactCommon/react/renderer/element/ComponentBuilder.cpp
+	modified:   node_modules/react-native/ReactCommon/react/renderer/element/ComponentBuilder.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/element/Element.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/element/ElementFragment.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/element/tests/ElementTest.cpp
+	modified:   node_modules/react-native/ReactCommon/react/renderer/graphics/BackgroundImage.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/graphics/BlendMode.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/graphics/CMakeLists.txt
+	modified:   node_modules/react-native/ReactCommon/react/renderer/graphics/Color.cpp
+	modified:   node_modules/react-native/ReactCommon/react/renderer/graphics/Color.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/graphics/Filter.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/graphics/LinearGradient.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/graphics/React-graphics.podspec
+	modified:   node_modules/react-native/ReactCommon/react/renderer/graphics/Transform.cpp
+	modified:   node_modules/react-native/ReactCommon/react/renderer/graphics/Transform.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/graphics/platform/android/react/renderer/graphics/HostPlatformColor.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/graphics/platform/cxx/react/renderer/graphics/HostPlatformColor.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/graphics/platform/ios/react/renderer/graphics/HostPlatformColor.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/graphics/platform/ios/react/renderer/graphics/HostPlatformColor.mm
+	modified:   node_modules/react-native/ReactCommon/react/renderer/graphics/platform/ios/react/renderer/graphics/RCTPlatformColorUtils.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/imagemanager/CMakeLists.txt
+	modified:   node_modules/react-native/ReactCommon/react/renderer/imagemanager/ImageRequest.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/imagemanager/ImageResponseObserverCoordinator.cpp
+	modified:   node_modules/react-native/ReactCommon/react/renderer/imagemanager/platform/android/react/renderer/imagemanager/ImageManager.cpp
+	modified:   node_modules/react-native/ReactCommon/react/renderer/imagemanager/platform/ios/React-ImageManager.podspec
+	modified:   node_modules/react-native/ReactCommon/react/renderer/imagemanager/platform/ios/react/renderer/imagemanager/RCTImagePrimitivesConversions.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/imagemanager/primitives.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/leakchecker/CMakeLists.txt
+	modified:   node_modules/react-native/ReactCommon/react/renderer/mapbuffer/CMakeLists.txt
+	modified:   node_modules/react-native/ReactCommon/react/renderer/mapbuffer/MapBuffer.cpp
+	modified:   node_modules/react-native/ReactCommon/react/renderer/mapbuffer/MapBufferBuilder.cpp
+	modified:   node_modules/react-native/ReactCommon/react/renderer/mounting/CMakeLists.txt
+	modified:   node_modules/react-native/ReactCommon/react/renderer/mounting/Differentiator.cpp
+	modified:   node_modules/react-native/ReactCommon/react/renderer/mounting/MountingCoordinator.cpp
+	modified:   node_modules/react-native/ReactCommon/react/renderer/mounting/MountingCoordinator.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/mounting/ShadowTree.cpp
+	modified:   node_modules/react-native/ReactCommon/react/renderer/mounting/ShadowTree.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/mounting/ShadowTreeDelegate.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/mounting/internal/CullingContext.cpp
+	modified:   node_modules/react-native/ReactCommon/react/renderer/mounting/internal/sliceChildShadowNodeViewPairs.cpp
+	modified:   node_modules/react-native/ReactCommon/react/renderer/mounting/stubs/StubViewTree.cpp
+	modified:   node_modules/react-native/ReactCommon/react/renderer/mounting/tests/OrderIndexTest.cpp
+	modified:   node_modules/react-native/ReactCommon/react/renderer/mounting/tests/ShadowTreeLifeCycleTest.cpp
+	modified:   node_modules/react-native/ReactCommon/react/renderer/mounting/tests/StackingContextTest.cpp
+	modified:   node_modules/react-native/ReactCommon/react/renderer/mounting/tests/StateReconciliationTest.cpp
+	modified:   node_modules/react-native/ReactCommon/react/renderer/mounting/updateMountedFlag.cpp
+	modified:   node_modules/react-native/ReactCommon/react/renderer/mounting/updateMountedFlag.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/observers/events/CMakeLists.txt
+	modified:   node_modules/react-native/ReactCommon/react/renderer/observers/events/EventPerformanceLogger.cpp
+	modified:   node_modules/react-native/ReactCommon/react/renderer/observers/events/EventPerformanceLogger.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/observers/intersection/IntersectionObserver.cpp
+	modified:   node_modules/react-native/ReactCommon/react/renderer/observers/intersection/IntersectionObserver.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/observers/intersection/IntersectionObserverManager.cpp
+	modified:   node_modules/react-native/ReactCommon/react/renderer/observers/intersection/IntersectionObserverManager.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/observers/mutation/MutationObserver.cpp
+	modified:   node_modules/react-native/ReactCommon/react/renderer/observers/mutation/MutationObserver.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/observers/mutation/MutationObserverManager.cpp
+	modified:   node_modules/react-native/ReactCommon/react/renderer/observers/mutation/MutationObserverManager.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/runtimescheduler/CMakeLists.txt
+	modified:   node_modules/react-native/ReactCommon/react/renderer/runtimescheduler/React-runtimescheduler.podspec
+	modified:   node_modules/react-native/ReactCommon/react/renderer/runtimescheduler/RuntimeScheduler.cpp
+	modified:   node_modules/react-native/ReactCommon/react/renderer/runtimescheduler/RuntimeScheduler.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/runtimescheduler/RuntimeSchedulerBinding.cpp
+	modified:   node_modules/react-native/ReactCommon/react/renderer/runtimescheduler/RuntimeSchedulerCallInvoker.h
+	deleted:    node_modules/react-native/ReactCommon/react/renderer/runtimescheduler/RuntimeSchedulerClock.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/runtimescheduler/RuntimeScheduler_Legacy.cpp
+	modified:   node_modules/react-native/ReactCommon/react/renderer/runtimescheduler/RuntimeScheduler_Legacy.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/runtimescheduler/RuntimeScheduler_Modern.cpp
+	modified:   node_modules/react-native/ReactCommon/react/renderer/runtimescheduler/RuntimeScheduler_Modern.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/runtimescheduler/SchedulerPriorityUtils.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/runtimescheduler/Task.cpp
+	modified:   node_modules/react-native/ReactCommon/react/renderer/runtimescheduler/Task.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/runtimescheduler/tests/RuntimeSchedulerTest.cpp
+	modified:   node_modules/react-native/ReactCommon/react/renderer/runtimescheduler/tests/StubClock.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/scheduler/CMakeLists.txt
+	modified:   node_modules/react-native/ReactCommon/react/renderer/scheduler/Scheduler.cpp
+	modified:   node_modules/react-native/ReactCommon/react/renderer/scheduler/Scheduler.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/scheduler/SchedulerDelegate.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/scheduler/SurfaceHandler.cpp
+	modified:   node_modules/react-native/ReactCommon/react/renderer/scheduler/SurfaceHandler.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/telemetry/CMakeLists.txt
+	modified:   node_modules/react-native/ReactCommon/react/renderer/textlayoutmanager/CMakeLists.txt
+	modified:   node_modules/react-native/ReactCommon/react/renderer/textlayoutmanager/TextLayoutContext.h
+	deleted:    node_modules/react-native/ReactCommon/react/renderer/textlayoutmanager/TextLayoutManager.cpp
+	deleted:    node_modules/react-native/ReactCommon/react/renderer/textlayoutmanager/TextLayoutManager.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/textlayoutmanager/TextMeasureCache.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/textlayoutmanager/platform/android/react/renderer/textlayoutmanager/TextLayoutManager.cpp
+	deleted:    node_modules/react-native/ReactCommon/react/renderer/textlayoutmanager/platform/cxx/TextLayoutManager.cpp
+	modified:   node_modules/react-native/ReactCommon/react/renderer/textlayoutmanager/platform/ios/react/renderer/textlayoutmanager/RCTAttributedTextUtils.mm
+	modified:   node_modules/react-native/ReactCommon/react/renderer/textlayoutmanager/platform/ios/react/renderer/textlayoutmanager/RCTTextLayoutManager.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/textlayoutmanager/platform/ios/react/renderer/textlayoutmanager/RCTTextLayoutManager.mm
+	modified:   node_modules/react-native/ReactCommon/react/renderer/textlayoutmanager/platform/ios/react/renderer/textlayoutmanager/TextLayoutManager.mm
+	modified:   node_modules/react-native/ReactCommon/react/renderer/uimanager/CMakeLists.txt
+	modified:   node_modules/react-native/ReactCommon/react/renderer/uimanager/PointerEventsProcessor.cpp
+	modified:   node_modules/react-native/ReactCommon/react/renderer/uimanager/PointerEventsProcessor.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/uimanager/PointerHoverTracker.cpp
+	modified:   node_modules/react-native/ReactCommon/react/renderer/uimanager/PointerHoverTracker.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/uimanager/UIManager.cpp
+	modified:   node_modules/react-native/ReactCommon/react/renderer/uimanager/UIManager.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/uimanager/UIManagerBinding.cpp
+	modified:   node_modules/react-native/ReactCommon/react/renderer/uimanager/UIManagerCommitHook.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/uimanager/UIManagerDelegate.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/uimanager/UIManagerMountHook.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/uimanager/consistency/CMakeLists.txt
+	deleted:    node_modules/react-native/ReactCommon/react/renderer/uimanager/consistency/LatestShadowTreeRevisionProvider.cpp
+	deleted:    node_modules/react-native/ReactCommon/react/renderer/uimanager/consistency/LatestShadowTreeRevisionProvider.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/uimanager/consistency/tests/LazyShadowTreeRevisionConsistencyManagerTest.cpp
+	modified:   node_modules/react-native/ReactCommon/react/renderer/uimanager/primitives.h
+	modified:   node_modules/react-native/ReactCommon/react/renderer/uimanager/tests/PointerEventsProcessorTest.cpp
+	modified:   node_modules/react-native/ReactCommon/react/runtime/BridgelessNativeMethodCallInvoker.h
+	modified:   node_modules/react-native/ReactCommon/react/runtime/BufferedRuntimeExecutor.h
+	modified:   node_modules/react-native/ReactCommon/react/runtime/CMakeLists.txt
+	modified:   node_modules/react-native/ReactCommon/react/runtime/React-RuntimeCore.podspec
+	modified:   node_modules/react-native/ReactCommon/react/runtime/React-RuntimeHermes.podspec
+	modified:   node_modules/react-native/ReactCommon/react/runtime/ReactInstance.cpp
+	modified:   node_modules/react-native/ReactCommon/react/runtime/ReactInstance.h
+	modified:   node_modules/react-native/ReactCommon/react/runtime/TimerManager.cpp
+	modified:   node_modules/react-native/ReactCommon/react/runtime/TimerManager.h
+	modified:   node_modules/react-native/ReactCommon/react/runtime/hermes/CMakeLists.txt
+	modified:   node_modules/react-native/ReactCommon/react/runtime/iostests/RCTHostTests.mm
+	modified:   node_modules/react-native/ReactCommon/react/runtime/nativeviewconfig/CMakeLists.txt
+	modified:   node_modules/react-native/ReactCommon/react/runtime/platform/ios/React-RuntimeApple.podspec
+	modified:   node_modules/react-native/ReactCommon/react/runtime/platform/ios/ReactCommon/RCTHost.h
+	modified:   node_modules/react-native/ReactCommon/react/runtime/platform/ios/ReactCommon/RCTHost.mm
+	modified:   node_modules/react-native/ReactCommon/react/runtime/platform/ios/ReactCommon/RCTInstance.h
+	modified:   node_modules/react-native/ReactCommon/react/runtime/platform/ios/ReactCommon/RCTInstance.mm
+	modified:   node_modules/react-native/ReactCommon/react/runtime/platform/ios/ReactCommon/RCTLegacyUIManagerConstantsProvider.mm
+	modified:   node_modules/react-native/ReactCommon/react/runtime/tests/cxx/ReactInstanceTest.cpp
+	modified:   node_modules/react-native/ReactCommon/react/test_utils/shadowTreeGeneration.h
+	modified:   node_modules/react-native/ReactCommon/react/timing/CMakeLists.txt
+	modified:   node_modules/react-native/ReactCommon/react/timing/React-timing.podspec
+	modified:   node_modules/react-native/ReactCommon/react/timing/primitives.h
+	modified:   node_modules/react-native/ReactCommon/react/timing/tests/PrimitivesTest.cpp
+	modified:   node_modules/react-native/ReactCommon/react/utils/CMakeLists.txt
+	modified:   node_modules/react-native/ReactCommon/react/utils/FloatComparison.h
+	modified:   node_modules/react-native/ReactCommon/react/utils/ManagedObjectWrapper.mm
+	modified:   node_modules/react-native/ReactCommon/react/utils/OnScopeExit.h
+	modified:   node_modules/react-native/ReactCommon/react/utils/PackTraits.h
+	modified:   node_modules/react-native/ReactCommon/react/utils/React-utils.podspec
+	modified:   node_modules/react-native/ReactCommon/react/utils/SimpleThreadSafeCache.h
+	modified:   node_modules/react-native/ReactCommon/react/utils/iequals.h
+	modified:   node_modules/react-native/ReactCommon/reactperflogger/CMakeLists.txt
+	modified:   node_modules/react-native/ReactCommon/reactperflogger/React-perflogger.podspec
+	modified:   node_modules/react-native/ReactCommon/reactperflogger/reactperflogger/BridgeNativeModulePerfLogger.cpp
+	modified:   node_modules/react-native/ReactCommon/reactperflogger/reactperflogger/BridgeNativeModulePerfLogger.h
+	modified:   node_modules/react-native/ReactCommon/reactperflogger/reactperflogger/FuseboxPerfettoDataSource.cpp
+	modified:   node_modules/react-native/ReactCommon/reactperflogger/reactperflogger/HermesPerfettoDataSource.cpp
+	modified:   node_modules/react-native/ReactCommon/reactperflogger/reactperflogger/NativeModulePerfLogger.h
+	modified:   node_modules/react-native/ReactCommon/reactperflogger/reactperflogger/ReactPerfetto.cpp
+	modified:   node_modules/react-native/ReactCommon/reactperflogger/reactperflogger/ReactPerfetto.h
+	modified:   node_modules/react-native/ReactCommon/reactperflogger/reactperflogger/ReactPerfettoLogger.cpp
+	modified:   node_modules/react-native/ReactCommon/reactperflogger/reactperflogger/ReactPerfettoLogger.h
+	modified:   node_modules/react-native/ReactCommon/runtimeexecutor/CMakeLists.txt
+	modified:   node_modules/react-native/ReactCommon/runtimeexecutor/React-runtimeexecutor.podspec
+	modified:   node_modules/react-native/ReactCommon/runtimeexecutor/ReactCommon/RuntimeExecutor.h
+	modified:   node_modules/react-native/ReactCommon/yoga/Yoga.podspec
+	modified:   node_modules/react-native/ReactCommon/yoga/cmake/project-defaults.cmake
+	modified:   node_modules/react-native/ReactCommon/yoga/yoga/YGNodeLayout.cpp
+	modified:   node_modules/react-native/ReactCommon/yoga/yoga/YGNodeLayout.h
+	modified:   node_modules/react-native/ReactCommon/yoga/yoga/YGValue.h
+	modified:   node_modules/react-native/ReactCommon/yoga/yoga/algorithm/CalculateLayout.cpp
+	modified:   node_modules/react-native/ReactCommon/yoga/yoga/algorithm/PixelGrid.cpp
+	modified:   node_modules/react-native/ReactCommon/yoga/yoga/debug/AssertFatal.cpp
+	modified:   node_modules/react-native/ReactCommon/yoga/yoga/event/event.h
+	modified:   node_modules/react-native/ReactCommon/yoga/yoga/node/LayoutResults.h
+	modified:   node_modules/react-native/ReactCommon/yoga/yoga/node/Node.cpp
+	modified:   node_modules/react-native/ReactCommon/yoga/yoga/node/Node.h
+	deleted:    node_modules/react-native/android/README.md
+	modified:   node_modules/react-native/cli.js
+	modified:   node_modules/react-native/flow/global.js
+	deleted:    node_modules/react-native/flow/jest.js
+	modified:   node_modules/react-native/gradle/libs.versions.toml
+	modified:   node_modules/react-native/index.js
+	modified:   node_modules/react-native/interface.js
+	modified:   node_modules/react-native/jest-preset.js
+	modified:   node_modules/react-native/jest/MockNativeMethods.js
+	deleted:    node_modules/react-native/jest/__tests__/setup-test.js
+	modified:   node_modules/react-native/jest/assetFileTransformer.js
+	modified:   node_modules/react-native/jest/local-setup.js
+	modified:   node_modules/react-native/jest/mockComponent.js
+	deleted:    node_modules/react-native/jest/mockModal.js
+	modified:   node_modules/react-native/jest/mockNativeComponent.js
+	deleted:    node_modules/react-native/jest/mockScrollView.js
+	modified:   node_modules/react-native/jest/react-native-env.js
+	modified:   node_modules/react-native/jest/renderer.js
+	modified:   node_modules/react-native/jest/setup.js
+	modified:   node_modules/react-native/package.json
+	modified:   node_modules/react-native/react-native.config.js
+	modified:   node_modules/react-native/scripts/bundle.js
+	modified:   node_modules/react-native/scripts/cocoapods/autolinking.rb
+	modified:   node_modules/react-native/scripts/cocoapods/codegen_utils.rb
+	modified:   node_modules/react-native/scripts/cocoapods/fabric.rb
+	modified:   node_modules/react-native/scripts/cocoapods/helpers.rb
+	modified:   node_modules/react-native/scripts/cocoapods/jsengine.rb
+	modified:   node_modules/react-native/scripts/cocoapods/new_architecture.rb
+	modified:   node_modules/react-native/scripts/cocoapods/utils.rb
+	modified:   node_modules/react-native/scripts/codegen/codegen-utils.js
+	deleted:    node_modules/react-native/scripts/codegen/generate-artifacts-executor.js
+	modified:   node_modules/react-native/scripts/codegen/generate-specs-cli-executor.js
+	modified:   node_modules/react-native/scripts/codegen/templates/RCTAppDependencyProviderMM.template
+	modified:   node_modules/react-native/scripts/codegen/templates/ReactCodegen.podspec.template
+	modified:   node_modules/react-native/scripts/compose-source-maps.js
+	modified:   node_modules/react-native/scripts/generate-codegen-artifacts.js
+	modified:   node_modules/react-native/scripts/generate-provider-cli.js
+	modified:   node_modules/react-native/scripts/generate-specs-cli.js
+	modified:   node_modules/react-native/scripts/hermes/hermes-utils.js
+	modified:   node_modules/react-native/scripts/hermes/prepare-hermes-for-build.js
+	modified:   node_modules/react-native/scripts/packager-reporter.js
+	modified:   node_modules/react-native/scripts/react-native-xcode.sh
+	modified:   node_modules/react-native/scripts/react_native_pods.rb
+	modified:   node_modules/react-native/scripts/xcode/with-environment.sh
+	modified:   node_modules/react-native/sdks/.hermesversion
+	modified:   node_modules/react-native/sdks/hermes-engine/hermes-utils.rb
+	modified:   node_modules/react-native/sdks/hermes-engine/utils/build-apple-framework.sh
+	modified:   node_modules/react-native/sdks/hermes-engine/utils/build-hermes-xcode.sh
+	modified:   node_modules/react-native/sdks/hermes-engine/utils/build-hermesc-xcode.sh
+	modified:   node_modules/react-native/sdks/hermes-engine/utils/replace_hermes_version.js
+	modified:   node_modules/react-native/sdks/hermesc/osx-bin/hermes
+	modified:   node_modules/react-native/sdks/hermesc/osx-bin/hermesc
+	modified:   node_modules/react-native/sdks/hermesc/win64-bin/hermesc.exe
+	modified:   node_modules/react-native/sdks/hermesc/win64-bin/msvcp140.dll
+	modified:   node_modules/react-native/sdks/hermesc/win64-bin/vcruntime140.dll
+	modified:   node_modules/react-native/sdks/hermesc/win64-bin/vcruntime140_1.dll
+	modified:   node_modules/react-native/src/private/animated/NativeAnimatedHelper.js
+	modified:   node_modules/react-native/src/private/animated/createAnimatedPropsHook.js
+	modified:   node_modules/react-native/src/private/animated/createAnimatedPropsMemoHook.js
+	deleted:    node_modules/react-native/src/private/components/HScrollViewNativeComponents.js
+	deleted:    node_modules/react-native/src/private/components/SafeAreaView_INTERNAL_DO_NOT_USE.js
+	deleted:    node_modules/react-native/src/private/components/VScrollViewNativeComponents.js
+	deleted:    node_modules/react-native/src/private/debugging/FuseboxSessionObserver.js
+	deleted:    node_modules/react-native/src/private/debugging/ReactDevToolsSettingsManager.android.js
+	deleted:    node_modules/react-native/src/private/debugging/ReactDevToolsSettingsManager.ios.js
+	deleted:    node_modules/react-native/src/private/debugging/ReactDevToolsSettingsManager.js.flow
+	deleted:    node_modules/react-native/src/private/debugging/setUpFuseboxReactDevToolsDispatcher.js
+	deleted:    node_modules/react-native/src/private/devmenu/DevMenu.d.ts
+	deleted:    node_modules/react-native/src/private/devmenu/DevMenu.js
+	deleted:    node_modules/react-native/src/private/featureflags/README.md
+	modified:   node_modules/react-native/src/private/featureflags/ReactNativeFeatureFlags.js
+	modified:   node_modules/react-native/src/private/featureflags/ReactNativeFeatureFlagsBase.js
+	modified:   node_modules/react-native/src/private/featureflags/specs/NativeReactNativeFeatureFlags.js
+	deleted:    node_modules/react-native/src/private/fusebox/specs/NativeReactDevToolsRuntimeSettingsModule.js
+	deleted:    node_modules/react-native/src/private/inspector/BorderBox.js
+	deleted:    node_modules/react-native/src/private/inspector/BoxInspector.js
+	deleted:    node_modules/react-native/src/private/inspector/ElementBox.js
+	deleted:    node_modules/react-native/src/private/inspector/ElementProperties.js
+	deleted:    node_modules/react-native/src/private/inspector/Inspector.js
+	deleted:    node_modules/react-native/src/private/inspector/InspectorOverlay.js
+	deleted:    node_modules/react-native/src/private/inspector/InspectorPanel.js
+	deleted:    node_modules/react-native/src/private/inspector/NetworkOverlay.js
+	deleted:    node_modules/react-native/src/private/inspector/PerformanceOverlay.js
+	deleted:    node_modules/react-native/src/private/inspector/ReactDevToolsOverlay.js
+	deleted:    node_modules/react-native/src/private/inspector/StyleInspector.js
+	deleted:    node_modules/react-native/src/private/inspector/XHRInterceptor.js
+	deleted:    node_modules/react-native/src/private/inspector/getInspectorDataForViewAtPoint.js
+	deleted:    node_modules/react-native/src/private/inspector/resolveBoxStyle.js
+	modified:   node_modules/react-native/src/private/renderer/errorhandling/ErrorHandlers.js
+	modified:   node_modules/react-native/src/private/setup/setUpPerformanceObserver.js
+	deleted:    node_modules/react-native/src/private/specs_DEPRECATED/README.md
+	modified:   node_modules/react-native/src/private/specs_DEPRECATED/components/ActivityIndicatorViewNativeComponent.js
+	modified:   node_modules/react-native/src/private/specs_DEPRECATED/components/AndroidDrawerLayoutNativeComponent.js
+	modified:   node_modules/react-native/src/private/specs_DEPRECATED/components/AndroidHorizontalScrollContentViewNativeComponent.js
+	modified:   node_modules/react-native/src/private/specs_DEPRECATED/components/AndroidSwipeRefreshLayoutNativeComponent.js
+	modified:   node_modules/react-native/src/private/specs_DEPRECATED/components/AndroidSwitchNativeComponent.js
+	modified:   node_modules/react-native/src/private/specs_DEPRECATED/components/DebuggingOverlayNativeComponent.js
+	modified:   node_modules/react-native/src/private/specs_DEPRECATED/components/ProgressBarAndroidNativeComponent.js
+	modified:   node_modules/react-native/src/private/specs_DEPRECATED/components/PullToRefreshViewNativeComponent.js
+	modified:   node_modules/react-native/src/private/specs_DEPRECATED/components/RCTInputAccessoryViewNativeComponent.js
+	modified:   node_modules/react-native/src/private/specs_DEPRECATED/components/RCTModalHostViewNativeComponent.js
+	modified:   node_modules/react-native/src/private/specs_DEPRECATED/components/RCTSafeAreaViewNativeComponent.js
+	modified:   node_modules/react-native/src/private/specs_DEPRECATED/components/SwitchNativeComponent.js
+	modified:   node_modules/react-native/src/private/specs_DEPRECATED/components/UnimplementedNativeViewNativeComponent.js
+	modified:   node_modules/react-native/src/private/specs_DEPRECATED/modules/NativeAnimatedModule.js
+	modified:   node_modules/react-native/src/private/specs_DEPRECATED/modules/NativeAnimatedTurboModule.js
+	deleted:    node_modules/react-native/src/private/specs_DEPRECATED/modules/NativeBugReporting.js
+	deleted:    node_modules/react-native/src/private/specs_DEPRECATED/modules/NativeDevMenu.js
+	modified:   node_modules/react-native/src/private/specs_DEPRECATED/modules/NativeDeviceInfo.js
+	modified:   node_modules/react-native/src/private/specs_DEPRECATED/modules/NativeFrameRateLogger.js
+	modified:   node_modules/react-native/src/private/specs_DEPRECATED/modules/NativePermissionsAndroid.js
+	modified:   node_modules/react-native/src/private/specs_DEPRECATED/modules/NativePushNotificationManagerIOS.js
+	deleted:    node_modules/react-native/src/private/specs_DEPRECATED/modules/NativeReactDevToolsSettingsManager.js
+	modified:   node_modules/react-native/src/private/specs_DEPRECATED/modules/NativeSampleTurboModule.js
+	modified:   node_modules/react-native/src/private/specs_DEPRECATED/modules/NativeUIManager.js
+	modified:   node_modules/react-native/src/private/styles/composeStyles.js
+	modified:   node_modules/react-native/src/private/types/HostComponent.js
+	modified:   node_modules/react-native/src/private/types/HostInstance.js
+	deleted:    node_modules/react-native/src/private/utilities/ensureInstance.js
+	modified:   node_modules/react-native/src/private/webapis/dom/events/Event.js
+	modified:   node_modules/react-native/src/private/webapis/dom/events/EventTarget.js
+	modified:   node_modules/react-native/src/private/webapis/dom/nodes/ReactNativeDocument.js
+	modified:   node_modules/react-native/src/private/webapis/dom/nodes/ReactNativeElement.js
+	modified:   node_modules/react-native/src/private/webapis/dom/nodes/ReadOnlyCharacterData.js
+	modified:   node_modules/react-native/src/private/webapis/dom/nodes/ReadOnlyElement.js
+	modified:   node_modules/react-native/src/private/webapis/dom/nodes/ReadOnlyNode.js
+	modified:   node_modules/react-native/src/private/webapis/dom/nodes/ReadOnlyText.js
+	modified:   node_modules/react-native/src/private/webapis/dom/nodes/internals/NodeInternals.js
+	modified:   node_modules/react-native/src/private/webapis/dom/nodes/internals/ReactNativeDocumentElementInstanceHandle.js
+	modified:   node_modules/react-native/src/private/webapis/dom/nodes/internals/ReactNativeDocumentInstanceHandle.js
+	modified:   node_modules/react-native/src/private/webapis/dom/nodes/internals/Traversal.js
+	modified:   node_modules/react-native/src/private/webapis/dom/nodes/specs/NativeDOM.js
+	modified:   node_modules/react-native/src/private/webapis/dom/oldstylecollections/HTMLCollection.js
+	modified:   node_modules/react-native/src/private/webapis/dom/oldstylecollections/HTMLCollection.js.flow
+	modified:   node_modules/react-native/src/private/webapis/dom/oldstylecollections/NodeList.js
+	modified:   node_modules/react-native/src/private/webapis/dom/oldstylecollections/NodeList.js.flow
+	modified:   node_modules/react-native/src/private/webapis/geometry/DOMRect.js
+	modified:   node_modules/react-native/src/private/webapis/geometry/DOMRectList.js
+	modified:   node_modules/react-native/src/private/webapis/geometry/DOMRectList.js.flow
+	modified:   node_modules/react-native/src/private/webapis/geometry/DOMRectReadOnly.js
+	modified:   node_modules/react-native/src/private/webapis/idlecallbacks/specs/NativeIdleCallbacks.js
+	modified:   node_modules/react-native/src/private/webapis/intersectionobserver/IntersectionObserver.js
+	modified:   node_modules/react-native/src/private/webapis/intersectionobserver/IntersectionObserverEntry.js
+	modified:   node_modules/react-native/src/private/webapis/intersectionobserver/internals/IntersectionObserverManager.js
+	modified:   node_modules/react-native/src/private/webapis/intersectionobserver/specs/NativeIntersectionObserver.js
+	modified:   node_modules/react-native/src/private/webapis/mutationobserver/MutationObserver.js
+	modified:   node_modules/react-native/src/private/webapis/mutationobserver/MutationRecord.js
+	modified:   node_modules/react-native/src/private/webapis/mutationobserver/internals/MutationObserverManager.js
+	modified:   node_modules/react-native/src/private/webapis/mutationobserver/specs/NativeMutationObserver.js
+	modified:   node_modules/react-native/src/private/webapis/performance/EventTiming.js
+	modified:   node_modules/react-native/src/private/webapis/performance/LongTasks.js
+	modified:   node_modules/react-native/src/private/webapis/performance/MemoryInfo.js
+	modified:   node_modules/react-native/src/private/webapis/performance/Performance.js
+	modified:   node_modules/react-native/src/private/webapis/performance/PerformanceEntry.js
+	modified:   node_modules/react-native/src/private/webapis/performance/PerformanceObserver.js
+	modified:   node_modules/react-native/src/private/webapis/performance/ReactNativeStartupTiming.js
+	modified:   node_modules/react-native/src/private/webapis/performance/UserTiming.js
+	modified:   node_modules/react-native/src/private/webapis/performance/internals/RawPerformanceEntry.js
+	modified:   node_modules/react-native/src/private/webapis/performance/internals/Utilities.js
+	modified:   node_modules/react-native/src/private/webapis/performance/specs/NativePerformance.js
+	deleted:    node_modules/react-native/src/private/webapis/performance/specs/__mocks__/NativePerformanceMock.js
+	modified:   node_modules/react-native/src/private/webapis/utils/ArrayLikeUtils.js
+	deleted:    node_modules/react-native/src/types/bom.js.flow
+	deleted:    node_modules/react-native/src/types/dom.js.flow
+	modified:   node_modules/react-native/src/types/globals.d.ts
+	modified:   node_modules/react-native/third-party-podspecs/RCT-Folly.podspec
+	modified:   node_modules/react-native/third-party-podspecs/fast_float.podspec
+	modified:   node_modules/react-native/types/index.d.ts
+	modified:   node_modules/react-native/types/modules/Devtools.d.ts
+	deleted:    node_modules/react-native/types/modules/LaunchScreen.d.ts
+	modified:   node_modules/react-native/types/public/ReactNativeTypes.d.ts
+	deleted:    node_modules/react-native/types/tslint.json
+	deleted:    node_modules/react-test-renderer/LICENSE
+	deleted:    node_modules/react-test-renderer/README.md
+	deleted:    node_modules/react-test-renderer/cjs/react-test-renderer.development.js
+	deleted:    node_modules/react-test-renderer/cjs/react-test-renderer.production.js
+	deleted:    node_modules/react-test-renderer/index.js
+	deleted:    node_modules/react-test-renderer/node_modules/react-is/LICENSE
+	deleted:    node_modules/react-test-renderer/node_modules/react-is/README.md
+	deleted:    node_modules/react-test-renderer/node_modules/react-is/cjs/react-is.development.js
+	deleted:    node_modules/react-test-renderer/node_modules/react-is/cjs/react-is.production.js
+	deleted:    node_modules/react-test-renderer/node_modules/react-is/index.js
+	deleted:    node_modules/react-test-renderer/node_modules/react-is/package.json
+	deleted:    node_modules/react-test-renderer/package.json
+	deleted:    node_modules/react-test-renderer/shallow.js
+	modified:   node_modules/react/cjs/react-jsx-dev-runtime.development.js
+	modified:   node_modules/react/cjs/react-jsx-dev-runtime.react-server.development.js
+	modified:   node_modules/react/cjs/react-jsx-runtime.development.js
+	modified:   node_modules/react/cjs/react-jsx-runtime.react-server.development.js
+	modified:   node_modules/react/cjs/react.development.js
+	modified:   node_modules/react/cjs/react.production.js
+	modified:   node_modules/react/cjs/react.react-server.development.js
+	modified:   node_modules/react/cjs/react.react-server.production.js
+	modified:   node_modules/react/package.json
+	deleted:    node_modules/readable-stream/CONTRIBUTING.md
+	deleted:    node_modules/readable-stream/GOVERNANCE.md
+	deleted:    node_modules/readable-stream/LICENSE
+	deleted:    node_modules/readable-stream/README.md
+	deleted:    node_modules/readable-stream/errors-browser.js
+	deleted:    node_modules/readable-stream/errors.js
+	deleted:    node_modules/readable-stream/experimentalWarning.js
+	deleted:    node_modules/readable-stream/lib/_stream_duplex.js
+	deleted:    node_modules/readable-stream/lib/_stream_passthrough.js
+	deleted:    node_modules/readable-stream/lib/_stream_readable.js
+	deleted:    node_modules/readable-stream/lib/_stream_transform.js
+	deleted:    node_modules/readable-stream/lib/_stream_writable.js
+	deleted:    node_modules/readable-stream/lib/internal/streams/async_iterator.js
+	deleted:    node_modules/readable-stream/lib/internal/streams/buffer_list.js
+	deleted:    node_modules/readable-stream/lib/internal/streams/destroy.js
+	deleted:    node_modules/readable-stream/lib/internal/streams/end-of-stream.js
+	deleted:    node_modules/readable-stream/lib/internal/streams/from-browser.js
+	deleted:    node_modules/readable-stream/lib/internal/streams/from.js
+	deleted:    node_modules/readable-stream/lib/internal/streams/pipeline.js
+	deleted:    node_modules/readable-stream/lib/internal/streams/state.js
+	deleted:    node_modules/readable-stream/lib/internal/streams/stream-browser.js
+	deleted:    node_modules/readable-stream/lib/internal/streams/stream.js
+	deleted:    node_modules/readable-stream/package.json
+	deleted:    node_modules/readable-stream/readable-browser.js
+	deleted:    node_modules/readable-stream/readable.js
+	deleted:    node_modules/require-main-filename/CHANGELOG.md
+	deleted:    node_modules/require-main-filename/LICENSE.txt
+	deleted:    node_modules/require-main-filename/README.md
+	deleted:    node_modules/require-main-filename/index.js
+	deleted:    node_modules/require-main-filename/package.json
+	deleted:    node_modules/resolve-cwd/index.d.ts
+	deleted:    node_modules/resolve-cwd/index.js
+	deleted:    node_modules/resolve-cwd/license
+	deleted:    node_modules/resolve-cwd/package.json
+	deleted:    node_modules/resolve-cwd/readme.md
+	deleted:    node_modules/safer-buffer/LICENSE
+	deleted:    node_modules/safer-buffer/Porting-Buffer.md
+	deleted:    node_modules/safer-buffer/Readme.md
+	deleted:    node_modules/safer-buffer/dangerous.js
+	deleted:    node_modules/safer-buffer/package.json
+	deleted:    node_modules/safer-buffer/safer.js
+	deleted:    node_modules/safer-buffer/tests.js
+	modified:   node_modules/scheduler/LICENSE
+	modified:   node_modules/scheduler/cjs/scheduler-unstable_mock.development.js
+	modified:   node_modules/scheduler/cjs/scheduler-unstable_post_task.development.js
+	modified:   node_modules/scheduler/cjs/scheduler.development.js
+	modified:   node_modules/scheduler/index.js
+	modified:   node_modules/scheduler/package.json
+	modified:   node_modules/scheduler/unstable_mock.js
+	modified:   node_modules/scheduler/unstable_post_task.js
+	deleted:    node_modules/set-blocking/CHANGELOG.md
+	deleted:    node_modules/set-blocking/LICENSE.txt
+	deleted:    node_modules/set-blocking/README.md
+	deleted:    node_modules/set-blocking/index.js
+	deleted:    node_modules/set-blocking/package.json
+	deleted:    node_modules/simple-swizzle/node_modules/is-arrayish/LICENSE
+	deleted:    node_modules/simple-swizzle/node_modules/is-arrayish/README.md
+	deleted:    node_modules/simple-swizzle/node_modules/is-arrayish/index.js
+	deleted:    node_modules/simple-swizzle/node_modules/is-arrayish/package.json
+	deleted:    node_modules/slice-ansi/index.js
+	deleted:    node_modules/slice-ansi/license
+	deleted:    node_modules/slice-ansi/node_modules/ansi-styles/index.js
+	deleted:    node_modules/slice-ansi/node_modules/ansi-styles/license
+	deleted:    node_modules/slice-ansi/node_modules/ansi-styles/package.json
+	deleted:    node_modules/slice-ansi/node_modules/ansi-styles/readme.md
+	deleted:    node_modules/slice-ansi/node_modules/is-fullwidth-code-point/index.js
+	deleted:    node_modules/slice-ansi/node_modules/is-fullwidth-code-point/license
+	deleted:    node_modules/slice-ansi/node_modules/is-fullwidth-code-point/package.json
+	deleted:    node_modules/slice-ansi/node_modules/is-fullwidth-code-point/readme.md
+	deleted:    node_modules/slice-ansi/package.json
+	deleted:    node_modules/slice-ansi/readme.md
+	deleted:    node_modules/string-length/index.d.ts
+	deleted:    node_modules/string-length/index.js
+	deleted:    node_modules/string-length/license
+	deleted:    node_modules/string-length/package.json
+	deleted:    node_modules/string-length/readme.md
+	deleted:    node_modules/string-natural-compare/LICENSE.txt
+	deleted:    node_modules/string-natural-compare/README.md
+	deleted:    node_modules/string-natural-compare/natural-compare.js
+	deleted:    node_modules/string-natural-compare/package.json
+	deleted:    node_modules/string_decoder/LICENSE
+	deleted:    node_modules/string_decoder/README.md
+	deleted:    node_modules/string_decoder/lib/string_decoder.js
+	deleted:    node_modules/string_decoder/package.json
+	deleted:    node_modules/strip-final-newline/index.js
+	deleted:    node_modules/strip-final-newline/license
+	deleted:    node_modules/strip-final-newline/package.json
+	deleted:    node_modules/strip-final-newline/readme.md
+	deleted:    node_modules/strnum/.vscode/launch.json
+	deleted:    node_modules/strnum/CHANGELOG.md
+	deleted:    node_modules/strnum/LICENSE
+	deleted:    node_modules/strnum/README.md
+	deleted:    node_modules/strnum/package.json
+	deleted:    node_modules/strnum/strnum.js
+	deleted:    node_modules/strnum/strnum.test.js
+	modified:   node_modules/ts-api-utils/README.md
+	modified:   node_modules/ts-api-utils/lib/index.cjs
+	modified:   node_modules/ts-api-utils/lib/index.d.cts
+	modified:   node_modules/ts-api-utils/lib/index.d.ts
+	modified:   node_modules/ts-api-utils/lib/index.js
+	modified:   node_modules/ts-api-utils/node_modules/.bin/tsc
+	modified:   node_modules/ts-api-utils/node_modules/.bin/tsserver
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/LICENSE.txt
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/README.md
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/SECURITY.md
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/ThirdPartyNoticeText.txt
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/bin/tsc
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/bin/tsserver
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/lib/README.md
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/lib/cancellationToken.js
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/lib/cs/diagnosticMessages.generated.json
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/lib/de/diagnosticMessages.generated.json
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/lib/es/diagnosticMessages.generated.json
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/lib/fr/diagnosticMessages.generated.json
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/lib/it/diagnosticMessages.generated.json
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/lib/ja/diagnosticMessages.generated.json
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/lib/ko/diagnosticMessages.generated.json
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/lib/lib.d.ts
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/lib/lib.decorators.d.ts
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/lib/lib.decorators.legacy.d.ts
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/lib/lib.dom.d.ts
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/lib/lib.dom.iterable.d.ts
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/lib/lib.es2015.collection.d.ts
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/lib/lib.es2015.core.d.ts
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/lib/lib.es2015.d.ts
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/lib/lib.es2015.generator.d.ts
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/lib/lib.es2015.iterable.d.ts
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/lib/lib.es2015.promise.d.ts
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/lib/lib.es2015.proxy.d.ts
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/lib/lib.es2015.reflect.d.ts
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/lib/lib.es2015.symbol.d.ts
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/lib/lib.es2015.symbol.wellknown.d.ts
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/lib/lib.es2016.array.include.d.ts
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/lib/lib.es2016.d.ts
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/lib/lib.es2016.full.d.ts
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/lib/lib.es2017.d.ts
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/lib/lib.es2017.full.d.ts
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/lib/lib.es2017.intl.d.ts
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/lib/lib.es2017.object.d.ts
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/lib/lib.es2017.sharedmemory.d.ts
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/lib/lib.es2017.string.d.ts
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/lib/lib.es2017.typedarrays.d.ts
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/lib/lib.es2018.asyncgenerator.d.ts
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/lib/lib.es2018.asynciterable.d.ts
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/lib/lib.es2018.d.ts
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/lib/lib.es2018.full.d.ts
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/lib/lib.es2018.intl.d.ts
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/lib/lib.es2018.promise.d.ts
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/lib/lib.es2018.regexp.d.ts
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/lib/lib.es2019.array.d.ts
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/lib/lib.es2019.d.ts
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/lib/lib.es2019.full.d.ts
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/lib/lib.es2019.intl.d.ts
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/lib/lib.es2019.object.d.ts
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/lib/lib.es2019.string.d.ts
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/lib/lib.es2019.symbol.d.ts
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/lib/lib.es2020.bigint.d.ts
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/lib/lib.es2020.d.ts
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/lib/lib.es2020.date.d.ts
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/lib/lib.es2020.full.d.ts
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/lib/lib.es2020.intl.d.ts
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/lib/lib.es2020.number.d.ts
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/lib/lib.es2020.promise.d.ts
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/lib/lib.es2020.sharedmemory.d.ts
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/lib/lib.es2020.string.d.ts
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/lib/lib.es2020.symbol.wellknown.d.ts
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/lib/lib.es2021.d.ts
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/lib/lib.es2021.full.d.ts
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/lib/lib.es2021.intl.d.ts
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/lib/lib.es2021.promise.d.ts
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/lib/lib.es2021.string.d.ts
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/lib/lib.es2021.weakref.d.ts
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/lib/lib.es2022.array.d.ts
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/lib/lib.es2022.d.ts
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/lib/lib.es2022.error.d.ts
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/lib/lib.es2022.full.d.ts
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/lib/lib.es2022.intl.d.ts
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/lib/lib.es2022.object.d.ts
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/lib/lib.es2022.regexp.d.ts
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/lib/lib.es2022.sharedmemory.d.ts
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/lib/lib.es2022.string.d.ts
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/lib/lib.es2023.array.d.ts
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/lib/lib.es2023.d.ts
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/lib/lib.es2023.full.d.ts
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/lib/lib.es5.d.ts
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/lib/lib.es6.d.ts
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/lib/lib.esnext.d.ts
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/lib/lib.esnext.full.d.ts
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/lib/lib.esnext.intl.d.ts
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/lib/lib.scripthost.d.ts
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/lib/lib.webworker.d.ts
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/lib/lib.webworker.importscripts.d.ts
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/lib/lib.webworker.iterable.d.ts
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/lib/pl/diagnosticMessages.generated.json
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/lib/pt-br/diagnosticMessages.generated.json
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/lib/ru/diagnosticMessages.generated.json
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/lib/tr/diagnosticMessages.generated.json
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/lib/tsc.js
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/lib/tsserver.js
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/lib/tsserverlibrary.d.ts
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/lib/tsserverlibrary.js
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/lib/typesMap.json
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/lib/typescript.d.ts
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/lib/typescript.js
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/lib/typingsInstaller.js
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/lib/watchGuard.js
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/lib/zh-cn/diagnosticMessages.generated.json
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/lib/zh-tw/diagnosticMessages.generated.json
+	deleted:    node_modules/ts-api-utils/node_modules/typescript/package.json
+	modified:   node_modules/ts-api-utils/package.json
+	deleted:    node_modules/tsutils/CHANGELOG.md
+	deleted:    node_modules/tsutils/LICENSE
+	deleted:    node_modules/tsutils/README.md
+	deleted:    node_modules/tsutils/index.d.ts
+	deleted:    node_modules/tsutils/index.js
+	deleted:    node_modules/tsutils/index.js.map
+	deleted:    node_modules/tsutils/node_modules/.bin/tsc
+	deleted:    node_modules/tsutils/node_modules/.bin/tsserver
+	deleted:    node_modules/tsutils/node_modules/tslib/CopyrightNotice.txt
+	deleted:    node_modules/tsutils/node_modules/tslib/LICENSE.txt
+	deleted:    node_modules/tsutils/node_modules/tslib/README.md
+	deleted:    node_modules/tsutils/node_modules/tslib/modules/index.js
+	deleted:    node_modules/tsutils/node_modules/tslib/modules/package.json
+	deleted:    node_modules/tsutils/node_modules/tslib/package.json
+	deleted:    node_modules/tsutils/node_modules/tslib/test/validateModuleExportsMatchCommonJS/index.js
+	deleted:    node_modules/tsutils/node_modules/tslib/test/validateModuleExportsMatchCommonJS/package.json
+	deleted:    node_modules/tsutils/node_modules/tslib/tslib.d.ts
+	deleted:    node_modules/tsutils/node_modules/tslib/tslib.es6.html
+	deleted:    node_modules/tsutils/node_modules/tslib/tslib.es6.js
+	deleted:    node_modules/tsutils/node_modules/tslib/tslib.html
+	deleted:    node_modules/tsutils/node_modules/tslib/tslib.js
+	deleted:    node_modules/tsutils/node_modules/typescript/LICENSE.txt
+	deleted:    node_modules/tsutils/node_modules/typescript/README.md
+	deleted:    node_modules/tsutils/node_modules/typescript/SECURITY.md
+	deleted:    node_modules/tsutils/node_modules/typescript/ThirdPartyNoticeText.txt
+	deleted:    node_modules/tsutils/node_modules/typescript/bin/tsc
+	deleted:    node_modules/tsutils/node_modules/typescript/bin/tsserver
+	deleted:    node_modules/tsutils/node_modules/typescript/lib/README.md
+	deleted:    node_modules/tsutils/node_modules/typescript/lib/cancellationToken.js
+	deleted:    node_modules/tsutils/node_modules/typescript/lib/cs/diagnosticMessages.generated.json
+	deleted:    node_modules/tsutils/node_modules/typescript/lib/de/diagnosticMessages.generated.json
+	deleted:    node_modules/tsutils/node_modules/typescript/lib/es/diagnosticMessages.generated.json
+	deleted:    node_modules/tsutils/node_modules/typescript/lib/fr/diagnosticMessages.generated.json
+	deleted:    node_modules/tsutils/node_modules/typescript/lib/it/diagnosticMessages.generated.json
+	deleted:    node_modules/tsutils/node_modules/typescript/lib/ja/diagnosticMessages.generated.json
+	deleted:    node_modules/tsutils/node_modules/typescript/lib/ko/diagnosticMessages.generated.json
+	deleted:    node_modules/tsutils/node_modules/typescript/lib/lib.d.ts
+	deleted:    node_modules/tsutils/node_modules/typescript/lib/lib.decorators.d.ts
+	deleted:    node_modules/tsutils/node_modules/typescript/lib/lib.decorators.legacy.d.ts
+	deleted:    node_modules/tsutils/node_modules/typescript/lib/lib.dom.d.ts
+	deleted:    node_modules/tsutils/node_modules/typescript/lib/lib.dom.iterable.d.ts
+	deleted:    node_modules/tsutils/node_modules/typescript/lib/lib.es2015.collection.d.ts
+	deleted:    node_modules/tsutils/node_modules/typescript/lib/lib.es2015.core.d.ts
+	deleted:    node_modules/tsutils/node_modules/typescript/lib/lib.es2015.d.ts
+	deleted:    node_modules/tsutils/node_modules/typescript/lib/lib.es2015.generator.d.ts
+	deleted:    node_modules/tsutils/node_modules/typescript/lib/lib.es2015.iterable.d.ts
+	deleted:    node_modules/tsutils/node_modules/typescript/lib/lib.es2015.promise.d.ts
+	deleted:    node_modules/tsutils/node_modules/typescript/lib/lib.es2015.proxy.d.ts
+	deleted:    node_modules/tsutils/node_modules/typescript/lib/lib.es2015.reflect.d.ts
+	deleted:    node_modules/tsutils/node_modules/typescript/lib/lib.es2015.symbol.d.ts
+	deleted:    node_modules/tsutils/node_modules/typescript/lib/lib.es2015.symbol.wellknown.d.ts
+	deleted:    node_modules/tsutils/node_modules/typescript/lib/lib.es2016.array.include.d.ts
+	deleted:    node_modules/tsutils/node_modules/typescript/lib/lib.es2016.d.ts
+	deleted:    node_modules/tsutils/node_modules/typescript/lib/lib.es2016.full.d.ts
+	deleted:    node_modules/tsutils/node_modules/typescript/lib/lib.es2017.d.ts
+	deleted:    node_modules/tsutils/node_modules/typescript/lib/lib.es2017.full.d.ts
+	deleted:    node_modules/tsutils/node_modules/typescript/lib/lib.es2017.intl.d.ts
+	deleted:    node_modules/tsutils/node_modules/typescript/lib/lib.es2017.object.d.ts
+	deleted:    node_modules/tsutils/node_modules/typescript/lib/lib.es2017.sharedmemory.d.ts
+	deleted:    node_modules/tsutils/node_modules/typescript/lib/lib.es2017.string.d.ts
+	deleted:    node_modules/tsutils/node_modules/typescript/lib/lib.es2017.typedarrays.d.ts
+	deleted:    node_modules/tsutils/node_modules/typescript/lib/lib.es2018.asyncgenerator.d.ts
+	deleted:    node_modules/tsutils/node_modules/typescript/lib/lib.es2018.asynciterable.d.ts
+	deleted:    node_modules/tsutils/node_modules/typescript/lib/lib.es2018.d.ts
+	deleted:    node_modules/tsutils/node_modules/typescript/lib/lib.es2018.full.d.ts
+	deleted:    node_modules/tsutils/node_modules/typescript/lib/lib.es2018.intl.d.ts
+	deleted:    node_modules/tsutils/node_modules/typescript/lib/lib.es2018.promise.d.ts
+	deleted:    node_modules/tsutils/node_modules/typescript/lib/lib.es2018.regexp.d.ts
+	deleted:    node_modules/tsutils/node_modules/typescript/lib/lib.es2019.array.d.ts
+	deleted:    node_modules/tsutils/node_modules/typescript/lib/lib.es2019.d.ts
+	deleted:    node_modules/tsutils/node_modules/typescript/lib/lib.es2019.full.d.ts
+	deleted:    node_modules/tsutils/node_modules/typescript/lib/lib.es2019.intl.d.ts
+	deleted:    node_modules/tsutils/node_modules/typescript/lib/lib.es2019.object.d.ts
+	deleted:    node_modules/tsutils/node_modules/typescript/lib/lib.es2019.string.d.ts
+	deleted:    node_modules/tsutils/node_modules/typescript/lib/lib.es2019.symbol.d.ts
+	deleted:    node_modules/tsutils/node_modules/typescript/lib/lib.es2020.bigint.d.ts
+	deleted:    node_modules/tsutils/node_modules/typescript/lib/lib.es2020.d.ts
+	deleted:    node_modules/tsutils/node_modules/typescript/lib/lib.es2020.date.d.ts
+	deleted:    node_modules/tsutils/node_modules/typescript/lib/lib.es2020.full.d.ts
+	deleted:    node_modules/tsutils/node_modules/typescript/lib/lib.es2020.intl.d.ts
+	deleted:    node_modules/tsutils/node_modules/typescript/lib/lib.es2020.number.d.ts
+	deleted:    node_modules/tsutils/node_modules/typescript/lib/lib.es2020.promise.d.ts
+	deleted:    node_modules/tsutils/node_modules/typescript/lib/lib.es2020.sharedmemory.d.ts
+	deleted:    node_modules/tsutils/node_modules/typescript/lib/lib.es2020.string.d.ts
+	deleted:    node_modules/tsutils/node_modules/typescript/lib/lib.es2020.symbol.wellknown.d.ts
+	deleted:    node_modules/tsutils/node_modules/typescript/lib/lib.es2021.d.ts
+	deleted:    node_modules/tsutils/node_modules/typescript/lib/lib.es2021.full.d.ts
+	deleted:    node_modules/tsutils/node_modules/typescript/lib/lib.es2021.intl.d.ts
+	deleted:    node_modules/tsutils/node_modules/typescript/lib/lib.es2021.promise.d.ts
+	deleted:    node_modules/tsutils/node_modules/typescript/lib/lib.es2021.string.d.ts
+	deleted:    node_modules/tsutils/node_modules/typescript/lib/lib.es2021.weakref.d.ts
+	deleted:    node_modules/tsutils/node_modules/typescript/lib/lib.es2022.array.d.ts
+	deleted:    node_modules/tsutils/node_modules/typescript/lib/lib.es2022.d.ts
+	deleted:    node_modules/tsutils/node_modules/typescript/lib/lib.es2022.error.d.ts
+	deleted:    node_modules/tsutils/node_modules/typescript/lib/lib.es2022.full.d.ts
+	deleted:    node_modules/tsutils/node_modules/typescript/lib/lib.es2022.intl.d.ts
+	deleted:    node_modules/tsutils/node_modules/typescript/lib/lib.es2022.object.d.ts
+	deleted:    node_modules/tsutils/node_modules/typescript/lib/lib.es2022.regexp.d.ts
+	deleted:    node_modules/tsutils/node_modules/typescript/lib/lib.es2022.sharedmemory.d.ts
+	deleted:    node_modules/tsutils/node_modules/typescript/lib/lib.es2022.string.d.ts
+	deleted:    node_modules/tsutils/node_modules/typescript/lib/lib.es2023.array.d.ts
+	deleted:    node_modules/tsutils/node_modules/typescript/lib/lib.es2023.d.ts
+	deleted:    node_modules/tsutils/node_modules/typescript/lib/lib.es2023.full.d.ts
+	deleted:    node_modules/tsutils/node_modules/typescript/lib/lib.es5.d.ts
+	deleted:    node_modules/tsutils/node_modules/typescript/lib/lib.es6.d.ts
+	deleted:    node_modules/tsutils/node_modules/typescript/lib/lib.esnext.d.ts
+	deleted:    node_modules/tsutils/node_modules/typescript/lib/lib.esnext.full.d.ts
+	deleted:    node_modules/tsutils/node_modules/typescript/lib/lib.esnext.intl.d.ts
+	deleted:    node_modules/tsutils/node_modules/typescript/lib/lib.scripthost.d.ts
+	deleted:    node_modules/tsutils/node_modules/typescript/lib/lib.webworker.d.ts
+	deleted:    node_modules/tsutils/node_modules/typescript/lib/lib.webworker.importscripts.d.ts
+	deleted:    node_modules/tsutils/node_modules/typescript/lib/lib.webworker.iterable.d.ts
+	deleted:    node_modules/tsutils/node_modules/typescript/lib/pl/diagnosticMessages.generated.json
+	deleted:    node_modules/tsutils/node_modules/typescript/lib/pt-br/diagnosticMessages.generated.json
+	deleted:    node_modules/tsutils/node_modules/typescript/lib/ru/diagnosticMessages.generated.json
+	deleted:    node_modules/tsutils/node_modules/typescript/lib/tr/diagnosticMessages.generated.json
+	deleted:    node_modules/tsutils/node_modules/typescript/lib/tsc.js
+	deleted:    node_modules/tsutils/node_modules/typescript/lib/tsserver.js
+	deleted:    node_modules/tsutils/node_modules/typescript/lib/tsserverlibrary.d.ts
+	deleted:    node_modules/tsutils/node_modules/typescript/lib/tsserverlibrary.js
+	deleted:    node_modules/tsutils/node_modules/typescript/lib/typesMap.json
+	deleted:    node_modules/tsutils/node_modules/typescript/lib/typescript.d.ts
+	deleted:    node_modules/tsutils/node_modules/typescript/lib/typescript.js
+	deleted:    node_modules/tsutils/node_modules/typescript/lib/typingsInstaller.js
+	deleted:    node_modules/tsutils/node_modules/typescript/lib/watchGuard.js
+	deleted:    node_modules/tsutils/node_modules/typescript/lib/zh-cn/diagnosticMessages.generated.json
+	deleted:    node_modules/tsutils/node_modules/typescript/lib/zh-tw/diagnosticMessages.generated.json
+	deleted:    node_modules/tsutils/node_modules/typescript/package.json
+	deleted:    node_modules/tsutils/package.json
+	deleted:    node_modules/tsutils/typeguard/2.8/index.d.ts
+	deleted:    node_modules/tsutils/typeguard/2.8/index.js
+	deleted:    node_modules/tsutils/typeguard/2.8/index.js.map
+	deleted:    node_modules/tsutils/typeguard/2.8/node.d.ts
+	deleted:    node_modules/tsutils/typeguard/2.8/node.js
+	deleted:    node_modules/tsutils/typeguard/2.8/node.js.map
+	deleted:    node_modules/tsutils/typeguard/2.8/type.d.ts
+	deleted:    node_modules/tsutils/typeguard/2.8/type.js
+	deleted:    node_modules/tsutils/typeguard/2.8/type.js.map
+	deleted:    node_modules/tsutils/typeguard/2.9/index.d.ts
+	deleted:    node_modules/tsutils/typeguard/2.9/index.js
+	deleted:    node_modules/tsutils/typeguard/2.9/index.js.map
+	deleted:    node_modules/tsutils/typeguard/2.9/node.d.ts
+	deleted:    node_modules/tsutils/typeguard/2.9/node.js
+	deleted:    node_modules/tsutils/typeguard/2.9/node.js.map
+	deleted:    node_modules/tsutils/typeguard/2.9/type.d.ts
+	deleted:    node_modules/tsutils/typeguard/2.9/type.js
+	deleted:    node_modules/tsutils/typeguard/2.9/type.js.map
+	deleted:    node_modules/tsutils/typeguard/3.0/index.d.ts
+	deleted:    node_modules/tsutils/typeguard/3.0/index.js
+	deleted:    node_modules/tsutils/typeguard/3.0/index.js.map
+	deleted:    node_modules/tsutils/typeguard/3.0/node.d.ts
+	deleted:    node_modules/tsutils/typeguard/3.0/node.js
+	deleted:    node_modules/tsutils/typeguard/3.0/node.js.map
+	deleted:    node_modules/tsutils/typeguard/3.0/type.d.ts
+	deleted:    node_modules/tsutils/typeguard/3.0/type.js
+	deleted:    node_modules/tsutils/typeguard/3.0/type.js.map
+	deleted:    node_modules/tsutils/typeguard/3.2/index.d.ts
+	deleted:    node_modules/tsutils/typeguard/3.2/index.js
+	deleted:    node_modules/tsutils/typeguard/3.2/index.js.map
+	deleted:    node_modules/tsutils/typeguard/3.2/node.d.ts
+	deleted:    node_modules/tsutils/typeguard/3.2/node.js
+	deleted:    node_modules/tsutils/typeguard/3.2/node.js.map
+	deleted:    node_modules/tsutils/typeguard/3.2/type.d.ts
+	deleted:    node_modules/tsutils/typeguard/3.2/type.js
+	deleted:    node_modules/tsutils/typeguard/3.2/type.js.map
+	deleted:    node_modules/tsutils/typeguard/index.d.ts
+	deleted:    node_modules/tsutils/typeguard/index.js
+	deleted:    node_modules/tsutils/typeguard/index.js.map
+	deleted:    node_modules/tsutils/typeguard/next/index.d.ts
+	deleted:    node_modules/tsutils/typeguard/next/index.js
+	deleted:    node_modules/tsutils/typeguard/next/index.js.map
+	deleted:    node_modules/tsutils/typeguard/next/node.d.ts
+	deleted:    node_modules/tsutils/typeguard/next/node.js
+	deleted:    node_modules/tsutils/typeguard/next/node.js.map
+	deleted:    node_modules/tsutils/typeguard/next/type.d.ts
+	deleted:    node_modules/tsutils/typeguard/next/type.js
+	deleted:    node_modules/tsutils/typeguard/next/type.js.map
+	deleted:    node_modules/tsutils/typeguard/node.d.ts
+	deleted:    node_modules/tsutils/typeguard/node.js
+	deleted:    node_modules/tsutils/typeguard/node.js.map
+	deleted:    node_modules/tsutils/typeguard/type.d.ts
+	deleted:    node_modules/tsutils/typeguard/type.js
+	deleted:    node_modules/tsutils/typeguard/type.js.map
+	deleted:    node_modules/tsutils/util/control-flow.d.ts
+	deleted:    node_modules/tsutils/util/control-flow.js
+	deleted:    node_modules/tsutils/util/control-flow.js.map
+	deleted:    node_modules/tsutils/util/convert-ast.d.ts
+	deleted:    node_modules/tsutils/util/convert-ast.js
+	deleted:    node_modules/tsutils/util/convert-ast.js.map
+	deleted:    node_modules/tsutils/util/index.d.ts
+	deleted:    node_modules/tsutils/util/index.js
+	deleted:    node_modules/tsutils/util/index.js.map
+	deleted:    node_modules/tsutils/util/type.d.ts
+	deleted:    node_modules/tsutils/util/type.js
+	deleted:    node_modules/tsutils/util/type.js.map
+	deleted:    node_modules/tsutils/util/usage.d.ts
+	deleted:    node_modules/tsutils/util/usage.js
+	deleted:    node_modules/tsutils/util/usage.js.map
+	deleted:    node_modules/tsutils/util/util.d.ts
+	deleted:    node_modules/tsutils/util/util.js
+	deleted:    node_modules/tsutils/util/util.js.map
+	deleted:    node_modules/type-is/HISTORY.md
+	deleted:    node_modules/type-is/LICENSE
+	deleted:    node_modules/type-is/README.md
+	deleted:    node_modules/type-is/index.js
+	deleted:    node_modules/type-is/package.json
+	deleted:    node_modules/universalify/LICENSE
+	deleted:    node_modules/universalify/README.md
+	deleted:    node_modules/universalify/index.js
+	deleted:    node_modules/universalify/package.json
+	deleted:    node_modules/util-deprecate/History.md
+	deleted:    node_modules/util-deprecate/LICENSE
+	deleted:    node_modules/util-deprecate/README.md
+	deleted:    node_modules/util-deprecate/browser.js
+	deleted:    node_modules/util-deprecate/node.js
+	deleted:    node_modules/util-deprecate/package.json
+	deleted:    node_modules/v8-to-istanbul/CHANGELOG.md
+	deleted:    node_modules/v8-to-istanbul/LICENSE.txt
+	deleted:    node_modules/v8-to-istanbul/README.md
+	deleted:    node_modules/v8-to-istanbul/index.d.ts
+	deleted:    node_modules/v8-to-istanbul/index.js
+	deleted:    node_modules/v8-to-istanbul/lib/branch.js
+	deleted:    node_modules/v8-to-istanbul/lib/function.js
+	deleted:    node_modules/v8-to-istanbul/lib/line.js
+	deleted:    node_modules/v8-to-istanbul/lib/range.js
+	deleted:    node_modules/v8-to-istanbul/lib/source.js
+	deleted:    node_modules/v8-to-istanbul/lib/v8-to-istanbul.js
+	deleted:    node_modules/v8-to-istanbul/package.json
+	deleted:    node_modules/which-module/LICENSE
+	deleted:    node_modules/which-module/README.md
+	deleted:    node_modules/which-module/index.js
+	deleted:    node_modules/which-module/package.json
+	deleted:    node_modules/yallist/LICENSE
+	modified:   node_modules/yallist/README.md
+	deleted:    node_modules/yallist/iterator.js
+	modified:   node_modules/yallist/package.json
+	deleted:    node_modules/yallist/yallist.js
+	modified:   yarn.lock
+
+
+```
+
+---
+
+
+
+---
+
+Unstaging node_modules from the rebase:
+
+
+---
+
+Tool use: **run_terminal_cmd**
+
+```bash
+git reset HEAD
+```
+
+---
+
+Tool use: **run_terminal_cmd**
+
+```bash
+git add .gitignore apps/mobile/App.tsx apps/mobile/app.json apps/mobile/package.json apps/mobile/.babelrc apps/mobile/README.md yarn.lock apps/mobile/src components/*.tsx apps/mobile/src/screens/*.tsx
+```
+
+---
+
+
+
+---
+
+Checking current state:
+
+
+---
+
+Tool use: **run_terminal_cmd**
+
+```bash
+git log --oneline -5
+```
+
+```
+2fbc2abd rebase
+8545fb88 Remove node_modules from source control
+afd2eaf7 rm DS_STORE
+2a2763b9 Update spec files with branch organization
+21366a46 updated tasks
+
+```
+
+---
+
+
+
+---
+
+Unstaging node_modules and keeping only the app files.
+
 
 ---
 
@@ -815,4 +3553,47 @@ Tool use: **run_terminal_cmd**
 
 ---
 
+_**User (2025-10-27 21:43Z)**_
+
+ error in the simulator 
+
 ---
+
+_**Assistant (default)**_
+
+
+
+---
+
+
+
+---
+
+
+
+---
+
+
+
+---
+
+
+
+---
+
+
+
+---
+
+
+
+---
+
+Tool use: **run_terminal_cmd**
+
+---
+
+
+
+---
+
