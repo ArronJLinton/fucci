@@ -6,24 +6,12 @@
  */
 
 import React from 'react';
-<<<<<<< HEAD
-import { NavigationContainer } from '@react-navigation/native';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { StatusBar } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
-import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
-=======
 import {NavigationContainer} from '@react-navigation/native';
-const NavigationContainerComponent = NavigationContainer as any;
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {StatusBar} from 'react-native';
-import Icon from 'react-native-vector-icons/Ionicons';
-const IconComponent = Icon as any;
+import {Ionicons} from '@expo/vector-icons';
 import {SafeAreaProvider, SafeAreaView} from 'react-native-safe-area-context';
-const SafeAreaViewComponent = SafeAreaView as any;
->>>>>>> f0663344 (migrating to expo ...)
 
 // Screens
 import HomeScreen from './src/screens/HomeScreen';
@@ -32,7 +20,7 @@ import CameraPreviewScreen from './src/screens/CameraPreviewScreen';
 import NewsWebViewScreen from './src/screens/NewsWebViewScreen';
 
 // Types
-import type { RootStackParamList } from './src/types/navigation';
+import type {RootStackParamList} from './src/types/navigation';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -73,11 +61,7 @@ const HomeStack = () => {
 
 const MainStack = () => {
   return (
-<<<<<<< HEAD
-    <SafeAreaView style={{ flex: 1, backgroundColor: '#fff' }}>
-=======
-    <SafeAreaViewComponent style={{flex: 1, backgroundColor: '#fff'}}>
->>>>>>> f0663344 (migrating to expo ...)
+    <SafeAreaView style={{flex: 1, backgroundColor: '#fff'}}>
       <StatusBar barStyle="dark-content" backgroundColor="#fff" />
       <TabNavigator
         screenOptions={{
@@ -103,55 +87,32 @@ const MainStack = () => {
           headerTitleStyle: {
             fontWeight: '600',
           },
-<<<<<<< HEAD
-        }}
-      >
-        <Tab.Screen
-=======
         }}>
-        <TabScreen
->>>>>>> f0663344 (migrating to expo ...)
+        <Tab.Screen
           name="Home"
           component={HomeStack}
           options={{
             headerShown: false,
-<<<<<<< HEAD
-            tabBarIcon: ({ color, size }) => (
-              <Ionicons name="football-outline" size={size} color={color} />
-=======
             tabBarIcon: ({color, size}) => (
-              <IconComponent
-                name="football-outline"
-                size={size}
-                color={color}
-              />
->>>>>>> f0663344 (migrating to expo ...)
+              <Ionicons name="football-outline" size={size} color={color} />
             ),
             tabBarLabel: () => null,
             title: '',
           }}
         />
       </TabNavigator>
-    </SafeAreaViewComponent>
+    </SafeAreaView>
   );
 };
 
 function App(): React.JSX.Element {
   return (
     <SafeAreaProvider>
-<<<<<<< HEAD
       <NavigationContainer>
-        <Stack.Navigator screenOptions={{ headerShown: false }}>
+        <Stack.Navigator screenOptions={{headerShown: false}}>
           <Stack.Screen name="Main" component={MainStack} />
-          <Stack.Group screenOptions={{ presentation: 'fullScreenModal' }}>
+          <Stack.Group screenOptions={{presentation: 'fullScreenModal'}}>
             <Stack.Screen
-=======
-      <NavigationContainerComponent>
-        <StackNavigator screenOptions={{headerShown: false}}>
-          <StackScreen name="Main" component={MainStack} />
-          <StackGroup screenOptions={{presentation: 'fullScreenModal'}}>
-            <StackScreen
->>>>>>> f0663344 (migrating to expo ...)
               name="CameraPreview"
               component={CameraPreviewScreen}
               options={{
@@ -166,9 +127,9 @@ function App(): React.JSX.Element {
                 animation: 'slide_from_bottom',
               }}
             />
-          </StackGroup>
-        </StackNavigator>
-      </NavigationContainerComponent>
+          </Stack.Group>
+        </Stack.Navigator>
+      </NavigationContainer>
     </SafeAreaProvider>
   );
 }
