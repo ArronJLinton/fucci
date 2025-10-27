@@ -1,6 +1,7 @@
 # Tasks: Football Community Platform
 
 **Feature**: Football Community Platform  
+**Branch**: `001-football-community`  
 **Date**: 2025-01-23  
 **Generated from**: spec.md, data-model.md, contracts/api.yaml, plan.md
 
@@ -13,27 +14,16 @@ This task list implements a global fan and grassroots football community platfor
 **MVP Scope**: User Story 1 (Live Match Following) - 18 tasks  
 **Full Implementation**: All 4 user stories - 67 tasks
 
-## Branch Organization
-
-Each phase is implemented under its own branch for better organization and parallel development:
-
-1. **`001-setup-foundational`**: Phase 1-2 - Setup & Foundational (blocking prerequisites)
-2. **`002-live-match-following`**: Phase 3 - User Story 1 - Live Match Following (P1) - **MVP**
-3. **`003-ai-debate-engagement`**: Phase 4 - User Story 2 - AI-Powered Debate Engagement (P2)
-4. **`004-community-team-management`**: Phase 5 - User Story 3 - Community Team Management (P3)
-5. **`005-media-driven-engagement`**: Phase 6 - User Story 4 - Media-Driven Engagement (P4)
-6. **`006-polish-cross-cutting`**: Phase 7 - Polish & Cross-Cutting Concerns
-
 ## Dependencies
 
 **Story Completion Order**:
 
-1. **Phase 1-2**: Setup & Foundational (blocking prerequisites) - **Branch**: `001-setup-foundational`
-2. **Phase 3**: User Story 1 - Live Match Following (P1) - **MVP** - **Branch**: `002-live-match-following`
-3. **Phase 4**: User Story 2 - AI-Powered Debate Engagement (P2) - **Branch**: `003-ai-debate-engagement`
-4. **Phase 5**: User Story 3 - Community Team Management (P3) - **Branch**: `004-community-team-management`
-5. **Phase 6**: User Story 4 - Media-Driven Engagement (P4) - **Branch**: `005-media-driven-engagement`
-6. **Phase 7**: Polish & Cross-Cutting Concerns - **Branch**: `006-polish-cross-cutting`
+1. **Phase 1-2**: Setup & Foundational (blocking prerequisites)
+2. **Phase 3**: User Story 1 - Live Match Following (P1) - **MVP**
+3. **Phase 4**: User Story 2 - AI-Powered Debate Engagement (P2)
+4. **Phase 5**: User Story 3 - Community Team Management (P3)
+5. **Phase 6**: User Story 4 - Media-Driven Engagement (P4)
+6. **Phase 7**: Polish & Cross-Cutting Concerns
 
 **Parallel Opportunities**: Each user story can be developed independently once foundational tasks are complete. Within each story, models, services, and endpoints can be developed in parallel.
 
@@ -54,7 +44,6 @@ Each phase is implemented under its own branch for better organization and paral
 
 ## Phase 1: Setup (Project Initialization)
 
-**Branch**: `001-setup-foundational`  
 **Goal**: Initialize project structure and development environment
 
 **Independent Test**: Development environment can be set up and basic services can start
@@ -69,48 +58,46 @@ Each phase is implemented under its own branch for better organization and paral
 - [x] T006 [P] Set up API client package in packages/api-client/src/
 - [x] T007 [P] Configure mobile app environment in apps/mobile/src/config/
 - [x] T008 [P] Set up testing infrastructure for Go backend in services/api/
-- [x] T009 [P] Set up testing infrastructure for React Native in apps/mobile/
+- [ ] T009 [P] Set up testing infrastructure for React Native in apps/mobile/
 
 ---
 
 ## Phase 2: Foundational (Blocking Prerequisites)
 
-**Branch**: `001-setup-foundational` (continued)  
 **Goal**: Implement core infrastructure required by all user stories
 
 **Independent Test**: Authentication, database, and basic API structure work
 
 ### Database & Models
 
-- [ ] T010 Create User model and database schema in services/api/internal/database/models.go
-- [ ] T011 Create Team model and database schema in services/api/internal/database/models.go
-- [ ] T012 Create Player model and database schema in services/api/internal/database/models.go
+- [x] T010 Create User model and database schema in services/api/internal/database/models.go
+- [x] T011 Create Team model and database schema in services/api/internal/database/models.go
+- [x] T012 Create Player model and database schema in services/api/internal/database/models.go
 - [ ] T013 Create Match model and database schema in services/api/internal/database/models.go
 - [ ] T014 Create UserFollows model and database schema in services/api/internal/database/models.go
 - [ ] T015 Create database indexes for performance in services/api/sql/schema/
-- [ ] T016 Set up database migrations for core entities in services/api/sql/migrations/
+- [x] T016 Set up database migrations for core entities in services/api/sql/migrations/
 
 ### Authentication & Authorization
 
 - [ ] T017 Implement JWT authentication middleware in services/api/internal/auth/
-- [ ] T018 Create user registration endpoint in services/api/internal/api/users.go
+- [x] T018 Create user registration endpoint in services/api/internal/api/users.go
 - [ ] T019 Create user login endpoint in services/api/internal/api/users.go
 - [ ] T020 Implement role-based access control in services/api/internal/auth/
 - [ ] T021 Create user profile management endpoints in services/api/internal/api/users.go
 
 ### Core Services
 
-- [ ] T022 Implement user service layer in services/api/internal/services/user_service.go
-- [ ] T023 Implement team service layer in services/api/internal/services/team_service.go
-- [ ] T024 Implement match service layer in services/api/internal/services/match_service.go
-- [ ] T025 Set up Redis caching for user data in services/api/internal/cache/
-- [ ] T026 Implement API-Football integration for match data in services/api/internal/services/external_api.go
+- [x] T022 Implement user service layer in services/api/internal/api/users.go
+- [x] T023 Implement team service layer in services/api/internal/api/teams.go
+- [x] T024 Implement match service layer in services/api/internal/api/futbol.go
+- [x] T025 Set up Redis caching for user data in services/api/internal/cache/
+- [x] T026 Implement API-Football integration for match data in services/api/internal/api/futbol.go
 
 ---
 
 ## Phase 3: User Story 1 - Live Match Following (P1) - MVP
 
-**Branch**: `002-live-match-following`  
 **Goal**: Football fans can follow live professional and community matches with real-time updates, scores, and match insights.
 
 **Independent Test**: Can follow a single match from start to finish, receiving live updates, and viewing match statistics without any other features.
@@ -149,26 +136,25 @@ Each phase is implemented under its own branch for better organization and paral
 
 ## Phase 4: User Story 2 - AI-Powered Debate Engagement (P2)
 
-**Branch**: `003-ai-debate-engagement`  
 **Goal**: Users can participate in AI-generated debates about matches, players, and teams, with intelligent prompts that encourage discussion and learning.
 
 **Independent Test**: Can view AI-generated debate topics for a completed match and participate in discussions without needing to follow live matches.
 
 ### AI Integration & Debate Generation
 
-- [ ] T045 [US2] Create Debate model and database schema in services/api/internal/database/models.go
-- [ ] T046 [US2] Create DebateResponse model and database schema in services/api/internal/database/models.go
-- [ ] T047 [US2] Implement OpenAI integration for debate generation in services/api/internal/ai/debate_generator.go
+- [x] T045 [US2] Create Debate model and database schema in services/api/internal/database/models.go
+- [x] T046 [US2] Create DebateResponse model and database schema in services/api/internal/database/models.go
+- [x] T047 [US2] Implement OpenAI integration for debate generation in services/api/internal/ai/debate_generator.go
 - [ ] T048 [US2] Implement AI content guidelines and bias detection in services/api/internal/ai/content_moderator.go
-- [ ] T049 [US2] Create debate generation service in services/api/internal/services/debate_service.go
+- [x] T049 [US2] Create debate generation service in services/api/internal/api/debates.go
 - [ ] T050 [US2] Implement community feedback system for AI content in services/api/internal/services/feedback_service.go
 
 ### Debate API & Services
 
-- [ ] T051 [US2] Create debate API endpoints in services/api/internal/api/debates.go
-- [ ] T052 [US2] Create debate response API endpoints in services/api/internal/api/debates.go
-- [ ] T053 [US2] Implement debate voting system in services/api/internal/services/debate_service.go
-- [ ] T054 [US2] Set up Redis caching for debate data in services/api/internal/cache/redis.go
+- [x] T051 [US2] Create debate API endpoints in services/api/internal/api/debates.go
+- [x] T052 [US2] Create debate response API endpoints in services/api/internal/api/debates.go
+- [x] T053 [US2] Implement debate voting system in services/api/internal/api/debates.go
+- [x] T054 [US2] Set up Redis caching for debate data in services/api/internal/cache/redis.go
 
 ### Mobile App - Debate Features
 
@@ -183,7 +169,6 @@ Each phase is implemented under its own branch for better organization and paral
 
 ## Phase 5: User Story 3 - Community Team Management (P3)
 
-**Branch**: `004-community-team-management`  
 **Goal**: Community team managers can create and manage digital profiles for their teams, players, and content to build their local football community presence.
 
 **Independent Test**: Can create a team profile, add players, and manage team information without needing live match data or debates.
@@ -209,7 +194,6 @@ Each phase is implemented under its own branch for better organization and paral
 
 ## Phase 6: User Story 4 - Media-Driven Engagement (P4)
 
-**Branch**: `005-media-driven-engagement`  
 **Goal**: Users can view and share dynamic match stories, news, and lineups in a social media-style format that encourages community interaction.
 
 **Independent Test**: Can browse match stories, view team lineups, and share content without participating in debates or managing teams.
@@ -243,7 +227,6 @@ Each phase is implemented under its own branch for better organization and paral
 
 ## Phase 7: Polish & Cross-Cutting Concerns
 
-**Branch**: `006-polish-cross-cutting`  
 **Goal**: Implement cross-cutting features and polish the application
 
 **Independent Test**: All features work together seamlessly with proper error handling and performance
@@ -314,8 +297,7 @@ Developer C: T081-T087 (Mobile App - Social Features)
 
 ## MVP Scope Recommendation
 
-**Start with User Story 1 (Live Match Following)** - Tasks T027-T044 (18 tasks)  
-**Branch**: `002-live-match-following`
+**Start with User Story 1 (Live Match Following)** - Tasks T027-T044 (18 tasks)
 
 This provides:
 
@@ -331,15 +313,6 @@ This provides:
 - Match details and events display correctly
 - External API integration functions
 - Mobile app provides smooth user experience
-
-## Branch Workflow
-
-1. **Create feature branch**: `git checkout -b 002-live-match-following`
-2. **Implement tasks**: Complete all tasks T027-T044 for the phase
-3. **Test independently**: Ensure the phase meets its independent test criteria
-4. **Create PR**: Submit pull request for review
-5. **Merge to main**: After approval, merge to main branch
-6. **Repeat**: Move to next phase branch
 
 ## Task Validation
 
