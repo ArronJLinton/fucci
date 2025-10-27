@@ -6,12 +6,24 @@
  */
 
 import React from 'react';
+<<<<<<< HEAD
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { StatusBar } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
+=======
+import {NavigationContainer} from '@react-navigation/native';
+const NavigationContainerComponent = NavigationContainer as any;
+import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
+import {createNativeStackNavigator} from '@react-navigation/native-stack';
+import {StatusBar} from 'react-native';
+import Icon from 'react-native-vector-icons/Ionicons';
+const IconComponent = Icon as any;
+import {SafeAreaProvider, SafeAreaView} from 'react-native-safe-area-context';
+const SafeAreaViewComponent = SafeAreaView as any;
+>>>>>>> f0663344 (migrating to expo ...)
 
 // Screens
 import HomeScreen from './src/screens/HomeScreen';
@@ -25,10 +37,17 @@ import type { RootStackParamList } from './src/types/navigation';
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
+// Type assertions to fix React version compatibility
+const TabNavigator = Tab.Navigator as any;
+const TabScreen = Tab.Screen as any;
+const StackNavigator = Stack.Navigator as any;
+const StackScreen = Stack.Screen as any;
+const StackGroup = Stack.Group as any;
+
 const HomeStack = () => {
   return (
-    <Stack.Navigator>
-      <Stack.Screen
+    <StackNavigator>
+      <StackScreen
         name="HomeTab"
         component={HomeScreen}
         options={{
@@ -36,7 +55,7 @@ const HomeStack = () => {
           title: '',
         }}
       />
-      <Stack.Screen
+      <StackScreen
         name="MatchDetails"
         component={MatchDetailsScreen}
         options={{
@@ -48,15 +67,19 @@ const HomeStack = () => {
           headerTintColor: '#007AFF',
         }}
       />
-    </Stack.Navigator>
+    </StackNavigator>
   );
 };
 
 const MainStack = () => {
   return (
+<<<<<<< HEAD
     <SafeAreaView style={{ flex: 1, backgroundColor: '#fff' }}>
+=======
+    <SafeAreaViewComponent style={{flex: 1, backgroundColor: '#fff'}}>
+>>>>>>> f0663344 (migrating to expo ...)
       <StatusBar barStyle="dark-content" backgroundColor="#fff" />
-      <Tab.Navigator
+      <TabNavigator
         screenOptions={{
           tabBarActiveTintColor: '#007AFF',
           tabBarInactiveTintColor: '#666',
@@ -80,40 +103,62 @@ const MainStack = () => {
           headerTitleStyle: {
             fontWeight: '600',
           },
+<<<<<<< HEAD
         }}
       >
         <Tab.Screen
+=======
+        }}>
+        <TabScreen
+>>>>>>> f0663344 (migrating to expo ...)
           name="Home"
           component={HomeStack}
           options={{
             headerShown: false,
+<<<<<<< HEAD
             tabBarIcon: ({ color, size }) => (
               <Ionicons name="football-outline" size={size} color={color} />
+=======
+            tabBarIcon: ({color, size}) => (
+              <IconComponent
+                name="football-outline"
+                size={size}
+                color={color}
+              />
+>>>>>>> f0663344 (migrating to expo ...)
             ),
             tabBarLabel: () => null,
             title: '',
           }}
         />
-      </Tab.Navigator>
-    </SafeAreaView>
+      </TabNavigator>
+    </SafeAreaViewComponent>
   );
 };
 
 function App(): React.JSX.Element {
   return (
     <SafeAreaProvider>
+<<<<<<< HEAD
       <NavigationContainer>
         <Stack.Navigator screenOptions={{ headerShown: false }}>
           <Stack.Screen name="Main" component={MainStack} />
           <Stack.Group screenOptions={{ presentation: 'fullScreenModal' }}>
             <Stack.Screen
+=======
+      <NavigationContainerComponent>
+        <StackNavigator screenOptions={{headerShown: false}}>
+          <StackScreen name="Main" component={MainStack} />
+          <StackGroup screenOptions={{presentation: 'fullScreenModal'}}>
+            <StackScreen
+>>>>>>> f0663344 (migrating to expo ...)
               name="CameraPreview"
               component={CameraPreviewScreen}
               options={{
                 animation: 'slide_from_bottom',
               }}
             />
-            <Stack.Screen
+            <StackScreen
               name="NewsWebView"
               component={NewsWebViewScreen}
               options={{
@@ -121,9 +166,9 @@ function App(): React.JSX.Element {
                 animation: 'slide_from_bottom',
               }}
             />
-          </Stack.Group>
-        </Stack.Navigator>
-      </NavigationContainer>
+          </StackGroup>
+        </StackNavigator>
+      </NavigationContainerComponent>
     </SafeAreaProvider>
   );
 }

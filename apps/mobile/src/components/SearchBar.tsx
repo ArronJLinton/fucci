@@ -8,7 +8,12 @@ import {
   Animated,
   Dimensions,
 } from 'react-native';
+<<<<<<< HEAD
 import { Ionicons } from '@expo/vector-icons';
+=======
+import IconComponent from 'react-native-vector-icons/Ionicons';
+const IconComponentComponent = IconComponent as any;
+>>>>>>> f0663344 (migrating to expo ...)
 
 interface SearchBarProps {
   value: string;
@@ -65,7 +70,11 @@ const SearchBar: React.FC<SearchBarProps> = ({
       ]}
     >
       <View style={styles.searchContainer}>
+<<<<<<< HEAD
         <Ionicons
+=======
+        <IconComponent
+>>>>>>> f0663344 (migrating to expo ...)
           name="search-outline"
           size={20}
           color="#666"
@@ -86,6 +95,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
         {value.length > 0 ? (
           <TouchableOpacity
             onPress={() => onChangeText('')}
+<<<<<<< HEAD
             style={styles.clearButton}
           >
             <Ionicons name="close-circle" size={20} color="#666" />
@@ -93,6 +103,14 @@ const SearchBar: React.FC<SearchBarProps> = ({
         ) : (
           <TouchableOpacity onPress={onClose} style={styles.clearButton}>
             <Ionicons name="close" size={20} color="#666" />
+=======
+            style={styles.clearButton}>
+            <IconComponent name="close-circle" size={20} color="#666" />
+          </TouchableOpacity>
+        ) : (
+          <TouchableOpacity onPress={onClose} style={styles.clearButton}>
+            <IconComponent name="close" size={20} color="#666" />
+>>>>>>> f0663344 (migrating to expo ...)
           </TouchableOpacity>
         )}
       </View>

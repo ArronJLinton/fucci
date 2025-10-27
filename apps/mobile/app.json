@@ -2,11 +2,18 @@
   "expo": {
     "name": "Fucci",
     "slug": "fucci",
+<<<<<<< HEAD
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
+=======
+    "version": "0.0.1",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+>>>>>>> f0663344 (migrating to expo ...)
     "splash": {
       "image": "./assets/splash-icon.png",
       "resizeMode": "contain",
@@ -14,20 +21,31 @@
     },
     "ios": {
       "supportsTablet": true,
+<<<<<<< HEAD
       "bundleIdentifier": "com.magistridev.fucci"
+=======
+      "bundleIdentifier": "com.fucci.app"
+>>>>>>> f0663344 (migrating to expo ...)
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
+<<<<<<< HEAD
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,
       "package": "com.magistridev.fucci"
+=======
+      "package": "com.fucci.app",
+      "edgeToEdgeEnabled": true,
+      "predictiveBackGestureEnabled": false
+>>>>>>> f0663344 (migrating to expo ...)
     },
     "web": {
       "favicon": "./assets/favicon.png"
     },
+<<<<<<< HEAD
     "plugins": [
       [
         "expo-camera",
@@ -45,3 +63,11 @@
     }
   }
 }
+=======
+    "packagerOpts": {
+      "config": "metro.config.js"
+    },
+    "plugins": ["expo-video"]
+  }
+}
+>>>>>>> f0663344 (migrating to expo ...)

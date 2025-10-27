@@ -1,3 +1,8 @@
 {
+<<<<<<< HEAD
   "presets": ["babel-preset-expo"]
+=======
+  "presets": ["babel-preset-expo"],
+  "plugins": ["react-native-reanimated/plugin"]
+>>>>>>> f0663344 (migrating to expo ...)
 }

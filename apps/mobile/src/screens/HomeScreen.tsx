@@ -5,10 +5,18 @@ import {
   TouchableOpacity,
   StyleSheet,
 } from 'react-native';
+<<<<<<< HEAD
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import type { NavigationState } from '@react-navigation/native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
+=======
+import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
+import type {NavigationState} from '@react-navigation/native';
+import {useNavigation, useRoute} from '@react-navigation/native';
+import Icon from 'react-native-vector-icons/Ionicons';
+const IconComponent = Icon as any;
+>>>>>>> f0663344 (migrating to expo ...)
 import DateScreen from './DateScreen';
 import SearchBar from '../components/SearchBar';
 import { fetchMatches } from '../services/api';
@@ -18,6 +26,8 @@ type RootTabParamList = {
 };
 
 const Tab = createMaterialTopTabNavigator<RootTabParamList>();
+const TabNavigator = Tab.Navigator as any;
+const TabScreen = Tab.Screen as any;
 
 const getTabLabel = (date: Date) => {
   const today = new Date();
@@ -142,12 +152,17 @@ const HomeScreen = () => {
       <View style={styles.header}>
         <TouchableOpacity
           style={styles.searchButton}
+<<<<<<< HEAD
           onPress={() => setIsSearchVisible(true)}
         >
           <Ionicons name="search-outline" size={24} color="#007AFF" />
+=======
+          onPress={() => setIsSearchVisible(true)}>
+          <IconComponent name="search-outline" size={24} color="#007AFF" />
+>>>>>>> f0663344 (migrating to expo ...)
         </TouchableOpacity>
       </View>
-      <Tab.Navigator
+      <TabNavigator
         initialRouteName={initialRoute}
         screenOptions={{
           tabBarScrollEnabled: true,
@@ -173,7 +188,7 @@ const HomeScreen = () => {
           const screenKey = `date-${dateString}`;
 
           return (
-            <Tab.Screen
+            <TabScreen
               key={screenKey}
               name={screenKey}
               options={{
@@ -183,10 +198,10 @@ const HomeScreen = () => {
               }}
             >
               {() => <DateTabScreen date={date} searchQuery={searchQuery} />}
-            </Tab.Screen>
+            </TabScreen>
           );
         })}
-      </Tab.Navigator>
+      </TabNavigator>
     </View>
   );
 };
