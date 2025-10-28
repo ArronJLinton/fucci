@@ -24,13 +24,16 @@ func (c *Config) getMatches(w http.ResponseWriter, r *http.Request) {
 	// Step 1: Get date from query parameters
 	queryParams := r.URL.Query()
 	date := queryParams.Get("date")
+
 	if date == "" {
+		log.Printf("ERROR: date parameter is missing")
 		respondWithError(w, http.StatusBadRequest, "date parameter is required")
 		return
 	}
 
 	// Generate cache key
 	cacheKey := fmt.Sprintf("matches:%s", date)
+	log.Printf("Cache key: %s\n", cacheKey)
 
 	// Try to get from cache first
 	var data GetMatchesAPIResponse
@@ -40,12 +43,21 @@ func (c *Config) getMatches(w http.ResponseWriter, r *http.Request) {
 	} else if exists {
 		err = c.Cache.Get(ctx, cacheKey, &data)
 		if err == nil {
+			log.Printf("Cache HIT: Returning cached data\n")
 			respondWithJSON(w, http.StatusOK, data)
 			return
 		}
 		log.Printf("Cache get error: %v\n", err)
+	} else {
+		log.Printf("Cache MISS: Fetching from API\n")
 	}
 
+	footballAPIKey := c.FootballAPIKey
+	if footballAPIKey == "" {
+		log.Printf("ERROR: Football API key is missing")
+		respondWithError(w, http.StatusBadRequest, "Football API key is required")
+		return
+	}
 	// If not in cache or error occurred, fetch from API
 	url := fmt.Sprintf("https://api-football-v1.p.rapidapi.com/v3/fixtures?date=%s", date)
 	headers := map[string]string{
@@ -55,6 +67,7 @@ func (c *Config) getMatches(w http.ResponseWriter, r *http.Request) {
 
 	resp, err := HTTPRequest("GET", url, headers, nil)
 	if err != nil {
+		log.Printf("ERROR: HTTPRequest failed: %v\n", err)
 		respondWithError(w, http.StatusBadRequest, fmt.Sprintf("Error creating http request: %s", err))
 		return
 	}
@@ -63,14 +76,34 @@ func (c *Config) getMatches(w http.ResponseWriter, r *http.Request) {
 	// Read the raw response body for debugging
 	rawBody, err := io.ReadAll(resp.Body)
 	if err != nil {
+		log.Printf("ERROR: Failed to read response body: %v\n", err)
 		respondWithError(w, http.StatusInternalServerError, fmt.Sprintf("Failed to read response body: %s", err))
 		return
+	}
+
+	// Show preview of response (first 500 chars)
+	if len(rawBody) > 0 {
+		previewLength := 500
+		if len(rawBody) < previewLength {
+			previewLength = len(rawBody)
+		}
+		log.Printf("Response body preview: %s\n", string(rawBody[:previewLength]))
 	}
 
 	// Create a new reader from the raw body for JSON decoding
 	err = json.Unmarshal(rawBody, &data)
 	if err != nil {
+		log.Printf("ERROR: JSON unmarshal failed: %v\n", err)
+		log.Printf("Full raw response: %s\n", string(rawBody))
 		respondWithError(w, http.StatusBadRequest, fmt.Sprintf("Failed to parse response from football api service: %s", err))
+		return
+	}
+
+	// Check if response is empty or invalid before caching
+	if data.Results == 0 || len(data.Response) == 0 {
+		log.Printf("WARNING: API returned empty response (results=%d, response items=%d), skipping cache\n", data.Results, len(data.Response))
+		log.Printf("Response data: get=%s, errors=%v\n", data.Get, data.Errors)
+		respondWithJSON(w, http.StatusOK, data)
 		return
 	}
 
@@ -88,10 +121,12 @@ func (c *Config) getMatches(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	// Store in cache with determined TTL
+	// Store in cache with determined TTL (only if we have valid data)
 	err = c.Cache.Set(ctx, cacheKey, data, ttl)
 	if err != nil {
 		log.Printf("Cache set error: %v\n", err)
+	} else {
+		log.Printf("Cached data with TTL: %v (results=%d)\n", ttl, data.Results)
 	}
 
 	respondWithJSON(w, http.StatusOK, data)

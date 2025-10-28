@@ -9,4 +9,5 @@ type Config struct {
 	OPENAI_BASE_URL  string
 	PORT             string
 	ENVIRONMENT      string
+	JWT_SECRET       string
 }

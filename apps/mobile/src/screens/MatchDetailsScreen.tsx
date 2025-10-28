@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect, useRef} from 'react';
 import {
   View,
   Text,
@@ -27,6 +27,14 @@ const MatchDetailsScreen = () => {
   const match = route.params.match;
   const [homeLogoError, setHomeLogoError] = useState(false);
   const [awayLogoError, setAwayLogoError] = useState(false);
+  const isMountedRef = useRef(true);
+
+  useEffect(() => {
+    // Track if component is mounted
+    return () => {
+      isMountedRef.current = false;
+    };
+  }, []);
 
   const MatchHeader = () => (
     <View style={styles.headerContainer}>
@@ -37,7 +45,11 @@ const MatchDetailsScreen = () => {
               source={{uri: match.teams.home.logo}}
               style={styles.teamLogo}
               resizeMode="contain"
-              onError={() => setHomeLogoError(true)}
+              onError={() => {
+                if (isMountedRef.current) {
+                  setHomeLogoError(true);
+                }
+              }}
             />
           ) : (
             <View style={[styles.teamLogo, styles.placeholderLogo]} />
@@ -55,7 +67,11 @@ const MatchDetailsScreen = () => {
               source={{uri: match.teams.away.logo}}
               style={styles.teamLogo}
               resizeMode="contain"
-              onError={() => setAwayLogoError(true)}
+              onError={() => {
+                if (isMountedRef.current) {
+                  setAwayLogoError(true);
+                }
+              }}
             />
           ) : (
             <View style={[styles.teamLogo, styles.placeholderLogo]} />

@@ -1,6 +1,7 @@
 package config
 
 import (
+	"os"
 	"strings"
 
 	"github.com/spf13/viper"
@@ -10,16 +11,35 @@ import (
 
 // InitConfig initializes the application configuration
 func InitConfig(logger *otelzap.Logger) Config {
-	viper.SetConfigName(".env")         // name of config file (without extension)
-	viper.SetConfigType("env")          // REQUIRED if the config file does not have the extension in the name
-	viper.AddConfigPath("../../../../") // look for config in the project root directory
+	viper.SetConfigName(".env") // name of config file (without extension)
+	viper.SetConfigType("env")  // REQUIRED if the config file does not have the extension in the name
+
+	// Add multiple search paths to find .env file
+	// Paths are relative to where the command is executed
+	cwd, _ := os.Getwd()
+	logger.Info("Searching for .env file", zap.String("current_dir", cwd))
+
+	// Try common locations relative to current working directory
+	viper.AddConfigPath(".")      // Current directory
+	viper.AddConfigPath("../")    // Parent directory
+	viper.AddConfigPath("../../") // Two levels up
+
+	// Try absolute paths based on common project structure
+	// When running from services/api/, go up one level
+	if cwd != "" {
+		logger.Info("Searching via absolute paths", zap.String("current_dir", cwd))
+
+		viper.AddConfigPath(cwd)
+		viper.AddConfigPath(cwd + "/..")
+		viper.AddConfigPath(cwd + "/../..")
+	}
 
 	// Set up environment variables
 	viper.AutomaticEnv()
 	viper.SetEnvKeyReplacer(strings.NewReplacer(`.`, `_`))
 
 	// Set defaults
-	viper.SetDefault("db_url", "postgres://username:password@localhost:5432/fucci?sslmode=disable")
+	viper.SetDefault("db_url", "")
 	viper.SetDefault("redis_url", "redis://localhost:6379")
 	viper.SetDefault("openai_base_url", "https://api.openai.com/v1")
 	viper.SetDefault("port", "8080")
@@ -31,6 +51,8 @@ func InitConfig(logger *otelzap.Logger) Config {
 		} else {
 			logger.Error("Error reading config file", zap.Error(err))
 		}
+	} else {
+		logger.Info("Found .env file", zap.String("file", viper.ConfigFileUsed()))
 	}
 
 	return Config{
@@ -42,5 +64,6 @@ func InitConfig(logger *otelzap.Logger) Config {
 		OPENAI_BASE_URL:  viper.GetString("openai_base_url"),
 		PORT:             viper.GetString("port"),
 		ENVIRONMENT:      viper.GetString("environment"),
+		JWT_SECRET:       viper.GetString("jwt_secret"),
 	}
 }

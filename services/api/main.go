@@ -40,6 +40,12 @@ func main() {
 
 	// Initialize the configuration
 	c := config.InitConfig(logger)
+
+	// Initialize JWT authentication
+	if err := api.InitJWT(c.JWT_SECRET); err != nil {
+		log.Printf("Warning: Failed to initialize JWT auth: %v (auth features may not work)\n", err)
+	}
+
 	conn, err := sql.Open("postgres", c.DB_URL)
 	if err != nil {
 		log.Fatal("Failed to connect to Database - ", err)

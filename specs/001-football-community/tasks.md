@@ -73,18 +73,18 @@ This task list implements a global fan and grassroots football community platfor
 - [x] T010 Create User model and database schema in services/api/internal/database/models.go
 - [x] T011 Create Team model and database schema in services/api/internal/database/models.go
 - [x] T012 Create Player model and database schema in services/api/internal/database/models.go
-- [ ] T013 Create Match model and database schema in services/api/internal/database/models.go
-- [ ] T014 Create UserFollows model and database schema in services/api/internal/database/models.go
-- [ ] T015 Create database indexes for performance in services/api/sql/schema/
+- [x] T013 Create Match model and database schema in services/api/sql/schema/012_create_matches.sql
+- [x] T014 Create UserFollows model and database schema in services/api/sql/schema/014_create_user_follows.sql
+- [x] T015 Create database indexes for performance in services/api/sql/schema/015_create_indexes.sql
 - [x] T016 Set up database migrations for core entities in services/api/sql/migrations/
 
 ### Authentication & Authorization
 
-- [ ] T017 Implement JWT authentication middleware in services/api/internal/auth/
+- [x] T017 Implement JWT authentication middleware in services/api/internal/auth/jwt.go
 - [x] T018 Create user registration endpoint in services/api/internal/api/users.go
-- [ ] T019 Create user login endpoint in services/api/internal/api/users.go
-- [ ] T020 Implement role-based access control in services/api/internal/auth/
-- [ ] T021 Create user profile management endpoints in services/api/internal/api/users.go
+- [x] T019 Create user login endpoint in services/api/internal/api/auth.go
+- [x] T020 Implement role-based access control in services/api/internal/auth/jwt.go
+- [x] T021 Create user profile management endpoints in services/api/internal/api/auth.go
 
 ### Core Services
 
