@@ -44,7 +44,6 @@ func (c *Config) getMatches(w http.ResponseWriter, r *http.Request) {
 		err = c.Cache.Get(ctx, cacheKey, &data)
 		if err == nil {
 			log.Printf("Cache HIT: Returning cached data\n")
-			log.Printf("Cached data: %v\n", data)
 			respondWithJSON(w, http.StatusOK, data)
 			return
 		}

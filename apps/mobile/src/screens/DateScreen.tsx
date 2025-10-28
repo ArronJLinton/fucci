@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect, useRef} from 'react';
 import {
   Text,
   StyleSheet,
@@ -48,9 +48,19 @@ const getScoreDisplay = (goals: Match['goals']) => {
 
 const MatchCard: React.FC<{match: Match}> = ({match}) => {
   const navigation = useNavigation<NavigationProp>();
+  const isMountedRef = useRef(true);
+
+  useEffect(() => {
+    // Track if component is mounted
+    return () => {
+      isMountedRef.current = false;
+    };
+  }, []);
 
   const handlePress = () => {
-    navigation.navigate('MatchDetails', {match});
+    if (isMountedRef.current) {
+      navigation.navigate('MatchDetails', {match});
+    }
   };
 
   return (
@@ -133,8 +143,8 @@ const DateScreen: React.FC<DateScreenProps> = ({
       );
     }
 
-    return matches.map(match => (
-      <MatchCard key={match.fixture.id} match={match} />
+    return matches.map((match, index) => (
+      <MatchCard key={`${match.fixture.id}-${index}`} match={match} />
     ));
   };
 
