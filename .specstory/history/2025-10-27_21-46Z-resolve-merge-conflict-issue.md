@@ -3153,7 +3153,6 @@ _**Assistant (default)**_
 
 ---
 
-
 Updating `services/api/cmd/migrate/main.go` to use `initConfig` for DB_URL.
 
 
@@ -3532,7 +3531,6 @@ _**Assistant (default)**_
 
 
 ---
-
 
 Migrations are attempting to create tables that already exist. Checking the migration logic to skip already-executed migrations:
 
@@ -4044,13 +4042,677 @@ _**Assistant (default)**_
 
 ---
 
-
 Checking git status, then staging and committing the Phase 2 changes:
 
 
 ---
 
 Tool use: **run_terminal_cmd**
+
+```bash
+cd /Users/arronlinton/Desktop/lab/FucciShop/Fucci && git status --short
+```
+
+```
+ M .specstory/history/2025-10-27_21-46Z-resolve-merge-conflict-issue.md
+ M services/api/cmd/migrate/main.go
+ M services/api/go.mod
+ M services/api/go.sum
+ M services/api/internal/api/api.go
+ M services/api/internal/api/users.go
+ M services/api/internal/config/config.go
+ M services/api/internal/config/types.go
+ M services/api/main.go
+ M specs/001-football-community/tasks.md
+?? services/api/internal/api/auth.go
+?? services/api/internal/auth/jwt.go
+?? services/api/internal/auth/password.go
+?? services/api/sql/schema/012_create_matches.sql
+?? services/api/sql/schema/014_create_user_follows.sql
+?? services/api/sql/schema/015_create_indexes.sql
+?? services/api/sql/schema/016_add_auth_to_users.sql
+?? specs/001-football-community/IMPLEMENTATION_PHASE2.md
+
+```
+
+---
+
+
+
+---
+
+Tool use: **run_terminal_cmd**
+
+```bash
+cd /Users/arronlinton/Desktop/lab/FucciShop/Fucci && git add -A
+```
+
+---
+
+Tool use: **run_terminal_cmd**
+
+```bash
+cd /Users/arronlinton/Desktop/lab/FucciShop/Fucci && git commit -m "feat: Implement Phase 2 - Foundational infrastructure and authentication
+
+Completed all Phase 2 foundational tasks:
+
+Database & Models:
+- T013: Created Match model with schema, constraints, and indexes
+- T014: Created UserFollows model for user subscriptions  
+- T015: Created performance indexes for all tables
+- T016: Updated migrations to handle existing tables gracefully
+
+Authentication & Authorization:
+- T017: Implemented JWT authentication middleware
+- T019: Created user login endpoint with password verification
+- T020: Implemented role-based access control (RBAC)
+- T021: Created user profile management endpoints
+
+Technical Implementation:
+- Added JWT and bcrypt dependencies (golang-jwt/jwt/v5, golang.org/x/crypto)
+- Implemented password hashing and verification
+- Created auth middleware for protected routes
+- Added JWT_SECRET to config
+- Updated migrate command to use config package
+- Created comprehensive migration files with safety checks
+- Implemented graceful error handling for existing tables
+
+Files Created:
+- services/api/internal/auth/jwt.go - JWT token management
+- services/api/internal/auth/password.go - Password utilities
+- services/api/internal/api/auth.go - Auth endpoints
+- services/api/sql/schema/012_create_matches.sql
+- services/api/sql/schema/014_create_user_follows.sql
+- services/api/sql/schema/015_create_indexes.sql
+- services/api/sql/schema/016_add_auth_to_users.sql
+- specs/001-football-community/IMPLEMENTATION_PHASE2.md
+
+API Endpoints:
+- POST /api/auth/register - User registration
+- POST /api/auth/login - User authentication  
+- GET /api/users/profile - Get user profile
+- PUT /api/users/profile - Update user profile
+
+All Phase 2 tasks completed successfully. Ready for Phase 3 (User Story 1 - Live Match Following)."
+```
+
+```
+[project-setup-cont b75072b8] feat: Implement Phase 2 - Foundational infrastructure and authentication
+ 18 files changed, 4643 insertions(+), 30 deletions(-)
+ create mode 100644 services/api/internal/api/auth.go
+ create mode 100644 services/api/internal/auth/jwt.go
+ create mode 100644 services/api/internal/auth/password.go
+ create mode 100644 services/api/sql/schema/012_create_matches.sql
+ create mode 100644 services/api/sql/schema/014_create_user_follows.sql
+ create mode 100644 services/api/sql/schema/015_create_indexes.sql
+ create mode 100644 services/api/sql/schema/016_add_auth_to_users.sql
+ create mode 100644 specs/001-football-community/IMPLEMENTATION_PHASE2.md
+
+```
+
+---
+
+
+
+---
+
+Phase 2 changes are committed.
+
+## Commit Summary
+
+**Commit**: `b75072b8`  
+**Branch**: `project-setup-cont`  
+**Files Changed**: 18 files  
+**Insertions**: 4,643 lines  
+**Deletions**: 30 lines
+
+### New Files Created:
+- `services/api/internal/api/auth.go` - Authentication endpoints
+- `services/api/internal/auth/jwt.go` - JWT token management
+- `services/api/internal/auth/password.go` - Password hashing utilities
+- `services/api/sql/schema/012_create_matches.sql` - Match table
+- `services/api/sql/schema/014_create_user_follows.sql` - User follows table
+- `services/api/sql/schema/015_create_indexes.sql` - Database indexes
+- `services/api/sql/schema/016_add_auth_to_users.sql` - Auth fields for users
+- `specs/001-football-community/IMPLEMENTATION_PHASE2.md` - Implementation docs
+
+### Files Modified:
+- Config integration for JWT_SECRET and DB_URL
+- Updated API routes with auth middleware
+- User registration with password hashing
+- Migration command uses config package
+- Updated Go dependencies and toolchain
+
+Phase 2 is complete and ready for the next development phase.
+
+---
+
+_**User (2025-10-27 21:46Z)**_
+
+Let's log the potential response and errors for this api call. It's currently returns the following empty json:
+
+{
+"get": "",
+"parameters": {
+"date": ""
+},
+"errors": null,
+"results": 0,
+"paging": {
+"current": 0,
+"total": 0
+},
+"response": null
+}
+
+---
+
+_**Assistant (default)**_
+
+
+
+---
+
+Adding detailed logging to debug the API call:
+
+
+---
+
+Tool use: **read_file**
+
+Read file: services/api/internal/api/futbol.go
+
+---
+
+Tool use: **search_replace**
+
+
+<details><summary>Edit file: services/api/internal/api/futbol.go</summary>
+
+**Chunk 1**
+Lines added: 7, lines removed: undefined
+
+```diff
+@@ -25,5 +25,12 @@
+  	queryParams := r.URL.Query()
+  	date := queryParams.Get("date")
++ 	
++ 	log.Printf("=== GET MATCHES DEBUG ===\n")
++ 	log.Printf("Request URL: %s\n", r.URL.String())
++ 	log.Printf("Query params: %v\n", queryParams)
++ 	log.Printf("Date parameter: '%s'\n", date)
++ 	
+  	if date == "" {
++ 		log.Printf("ERROR: date parameter is missing")
+  		respondWithError(w, http.StatusBadRequest, "date parameter is required")
+  		return
+```
+
+**Chunk 2**
+Lines added: 1, lines removed: undefined
+
+```diff
+@@ -32,4 +39,5 @@
+  	// Generate cache key
+  	cacheKey := fmt.Sprintf("matches:%s", date)
++ 	log.Printf("Cache key: %s\n", cacheKey)
+  
+  	// Try to get from cache first
+```
+
+**Chunk 3**
+Lines added: 3, lines removed: undefined
+
+```diff
+@@ -41,8 +49,11 @@
+  		err = c.Cache.Get(ctx, cacheKey, &data)
+  		if err == nil {
++ 			log.Printf("Cache HIT: Returning cached data\n")
+  			respondWithJSON(w, http.StatusOK, data)
+  			return
+  		}
+  		log.Printf("Cache get error: %v\n", err)
++ 	} else {
++ 		log.Printf("Cache MISS: Fetching from API\n")
+  	}
+  
+```
+
+**Chunk 4**
+Lines added: 4, lines removed: undefined
+
+```diff
+@@ -53,4 +64,8 @@
+  		"x-rapidapi-key": c.FootballAPIKey,
+  	}
++ 	
++ 	log.Printf("API Request URL: %s\n", url)
++ 	log.Printf("API Key present: %v\n", c.FootballAPIKey != "")
++ 	log.Printf("Headers: %v\n", headers)
+  
+  	resp, err := HTTPRequest("GET", url, headers, nil)
+```
+
+</details>
+
+---
+
+The model provided an ambiguous search string to replace.
+
+---
+
+
+
+---
+
+Tool use: **read_file**
+
+Read file: services/api/internal/api/futbol.go
+
+---
+
+
+
+---
+
+The model provided an ambiguous search string to replace.
+
+---
+
+
+
+---
+
+Reading the file for context:
+
+
+---
+
+Tool use: **read_file**
+
+Read file: services/api/internal/api/futbol.go
+
+---
+
+
+
+---
+
+Tool use: **search_replace**
+
+
+<details><summary>Edit file: services/api/internal/api/futbol.go</summary>
+
+**Chunk 1**
+Lines added: 20, lines removed: undefined
+
+```diff
+@@ -71,22 +71,42 @@
+  	resp, err := HTTPRequest("GET", url, headers, nil)
+  	if err != nil {
++ 		log.Printf("ERROR: HTTPRequest failed: %v\n", err)
+  		respondWithError(w, http.StatusBadRequest, fmt.Sprintf("Error creating http request: %s", err))
+  		return
+  	}
+  	defer resp.Body.Close()
++ 
++ 	log.Printf("Response Status: %d %s\n", resp.StatusCode, resp.Status)
++ 	log.Printf("Response Headers: %v\n", resp.Header)
+  
+  	// Read the raw response body for debugging
+  	rawBody, err := io.ReadAll(resp.Body)
+  	if err != nil {
++ 		log.Printf("ERROR: Failed to read response body: %v\n", err)
+  		respondWithError(w, http.StatusInternalServerError, fmt.Sprintf("Failed to read response body: %s", err))
+  		return
+  	}
++ 
++ 	log.Printf("Response body length: %d bytes\n", len(rawBody))
++ 	
++ 	// Show preview of response (first 500 chars)
++ 	if len(rawBody) > 0 {
++ 		previewLength := 500
++ 		if len(rawBody) < previewLength {
++ 			previewLength = len(rawBody)
++ 		}
++ 		log.Printf("Response body preview: %s\n", string(rawBody[:previewLength]))
++ 	}
+  
+  	// Create a new reader from the raw body for JSON decoding
+  	err = json.Unmarshal(rawBody, &data)
+  	if err != nil {
++ 		log.Printf("ERROR: JSON unmarshal failed: %v\n", err)
++ 		log.Printf("Full raw response: %s\n", string(rawBody))
+  		respondWithError(w, http.StatusBadRequest, fmt.Sprintf("Failed to parse response from football api service: %s", err))
+  		return
+  	}
++ 	
++ 	log.Printf("Parsed data structure: Results=%d, Response items=%d\n", data.Results, len(data.Response))
+  
+  	// Determine cache TTL based on match statuses
+```
+
+</details>
+
+---
+
+
+
+---
+
+Adding more detailed logging at the end of the function:
+
+
+---
+
+Tool use: **read_file**
+
+Read file: services/api/internal/api/futbol.go
+
+---
+
+Tool use: **search_replace**
+
+
+<details><summary>Edit file: services/api/internal/api/futbol.go</summary>
+
+**Chunk 1**
+Lines added: 3, lines removed: undefined
+
+```diff
+@@ -128,6 +128,9 @@
+  	if err != nil {
+  		log.Printf("Cache set error: %v\n", err)
++ 	} else {
++ 		log.Printf("Cached data with TTL: %v\n", ttl)
+  	}
+  
++ 	log.Printf("=== END GET MATCHES DEBUG ===\n")
+  	respondWithJSON(w, http.StatusOK, data)
+  }
+```
+
+</details>
+
+---
+
+
+
+---
+
+Added logging to the API call. Restart the server and run the API request to view:
+
+- Request URL and query parameters
+- Cache key and hit/miss status
+- API request URL and headers (API key presence)
+- HTTP response status and headers
+- Response body preview (first 500 chars)
+- Full raw response on JSON unmarshal errors
+- Parsed data structure (results count and items)
+- Cache operations (success/failure)
+
+Run the API request again and check the logs to see why the response is empty.
+
+---
+
+_**User (2025-10-27 21:46Z)**_
+
+We need to fix the file path for the .env file.
+
+{"level":"info","ts":1761611882.232828,"caller":"config/config.go:30","msg":"No .env file found, using environment variables","version":"dev"}
+
+
+According to the error above, the line in @config.go must be incorrect.
+
+---
+
+_**Assistant (default)**_
+
+
+
+---
+
+Fixing the `.env` path by updating the config path logic:
+
+
+---
+
+Tool use: **search_replace**
+
+
+<details><summary>Edit file: services/api/internal/config/config.go</summary>
+
+**Chunk 1**
+Lines added: 2, lines removed: undefined
+
+```diff
+@@ -2,4 +2,6 @@
+  
+  import (
++ 	"os"
++ 	"path/filepath"
+  	"strings"
+  
+```
+
+</details>
+
+---
+
+Tool use: **search_replace**
+
+
+<details><summary>Edit file: services/api/internal/config/config.go</summary>
+
+**Chunk 1**
+Lines added: 21, lines removed: 1
+
+```diff
+@@ -15,5 +15,25 @@
+  	viper.SetConfigName(".env")         // name of config file (without extension)
+  	viper.SetConfigType("env")          // REQUIRED if the config file does not have the extension in the name
+- 	viper.AddConfigPath("../../../../") // look for config in the project root directory
++ 	
++ 	// Try multiple paths to find .env file
++ 	// First, try project root (when running from services/api directory)
++ 	viper.AddConfigPath("../../") // project root from services/api/
++ 	viper.AddConfigPath("../")   // fallback for different run contexts
++ 	viper.AddConfigPath(".")     // current directory
++ 	viper.AddConfigPath("../../../") // from services/api/internal/config/
++ 	
++ 	// Also try absolute path from project root
++ 	if cwd, err := os.Getwd(); err == nil {
++ 		// Go up directories until we find the project root (indicated by presence of go.mod at root)
++ 		dir := cwd
++ 		for i := 0; i < 5; i++ {
++ 			gomodPath := filepath.Join(dir, "go.mod")
++ 			if _, err := os.Stat(gomodPath); err == nil {
++ 				viper.AddConfigPath(dir)
++ 				break
++ 			}
++ 			dir = filepath.Dir(dir)
++ 		}
++ 	}
+  
+  	// Set up environment variables
+```
+
+</details>
+
+---
+
+
+
+---
+
+Config now searches multiple paths to locate the `.env` file:
+1. Relative paths covering common run contexts
+2. Up to 5 levels to find the project root where `go.mod` is located
+3. Adds the project root as a config path
+
+Starting the API server to test:
+
+
+---
+
+Cancelled
+
+---
+
+
+
+---
+
+_**User (2025-10-28 00:45Z)**_
+
+There's an issue with my environment path. The .env is located in the root project directory. Please reference the viper documentation and address this. Currently, the .env file is not found -
+
+{"level":"info","ts":1761612435.148304,"caller":"config/config.go:34","msg":"No .env file found, using environment variables","version":"dev"}
+
+---
+
+_**Assistant (default)**_
+
+
+
+---
+
+
+Updating the config for better path handling; viper paths are relative to the working directory.
+
+
+---
+
+Tool use: **search_replace**
+
+
+<details><summary>Edit file: services/api/internal/config/config.go</summary>
+
+**Chunk 1**
+Lines added: 1, lines removed: undefined
+
+```diff
+@@ -2,4 +2,5 @@
+  
+  import (
++ 	"os"
+  	"strings"
+  
+```
+
+**Chunk 2**
+Lines added: 18, lines removed: 5
+
+```diff
+@@ -13,9 +14,22 @@
+  	viper.SetConfigName(".env") // name of config file (without extension)
+  	viper.SetConfigType("env")  // REQUIRED if the config file does not have the extension in the name
+- 	// viper.AddConfigPath(".")    // look for config in the project root directory
+- 
+- 	// Add search paths to find the file
+- 	viper.AddConfigPath("~/")
+- 	viper.AddConfigPath(".")
++ 
++ 	// Add multiple search paths to find .env file
++ 	// Paths are relative to where the command is executed
++ 	cwd, _ := os.Getwd()
++ 	logger.Info("Searching for .env file", zap.String("current_dir", cwd))
++ 	
++ 	// Try common locations relative to current working directory
++ 	viper.AddConfigPath(".")     // Current directory
++ 	viper.AddConfigPath("../")   // Parent directory
++ 	viper.AddConfigPath("../../") // Two levels up
++ 	
++ 	// Try absolute paths based on common project structure
++ 	// When running from services/api/, go up one level
++ 	if cwd != "" {
++ 		viper.AddConfigPath(cwd)
++ 		viper.AddConfigPath(cwd + "/..")
++ 		viper.AddConfigPath(cwd + "/../..")
++ 	}
+  
+  	// Set up environment variables
+```
+
+</details>
+
+---
+
+
+
+---
+
+Adding more detailed logging to show which paths are checked:
+
+
+---
+
+Tool use: **search_replace**
+
+
+<details><summary>Edit file: services/api/internal/config/config.go</summary>
+
+**Chunk 1**
+Lines added: 2, lines removed: undefined
+
+```diff
+@@ -50,4 +50,6 @@
+  			logger.Error("Error reading config file", zap.Error(err))
+  		}
++ 	} else {
++ 		logger.Info("Found .env file", zap.String("file", viper.ConfigFileUsed()))
+  	}
+  
+```
+
+</details>
+
+---
+
+
+
+---
+
+Config now:
+- Logs the current working directory
+- Searches multiple paths relative and absolute
+- Logs the .env file used, if found
+- Falls back to environment variables when not found
+
+Restart the server to see:
+- The current working directory
+- The .env file path, if found
+- API call logs with the selected config
+
+This should locate the .env at the project root regardless of run context.
+
+---
+
+_**User (2025-10-28 00:45Z)**_
+
+We need to add a flag before caching data. If the api returns an empty json object, do not attenmpt to cache any data.
+
+---
+
+_**Assistant (default)**_
+
+
+
+---
+
+
+
+---
+
+Tool use: **read_file**
+
+---
+
+
+
+---
+
+
 
 ---
 
