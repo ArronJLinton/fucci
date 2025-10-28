@@ -2,14 +2,21 @@ package api
 
 import (
 	"database/sql"
+	"fmt"
 	"net/http"
 
 	"github.com/ArronJLinton/fucci-api/internal/ai"
+	"github.com/ArronJLinton/fucci-api/internal/auth"
 	"github.com/ArronJLinton/fucci-api/internal/cache"
 	"github.com/ArronJLinton/fucci-api/internal/database"
 	"github.com/go-chi/chi"
 	"github.com/google/uuid"
 )
+
+// InitJWT initializes JWT authentication with the provided secret
+func InitJWT(secret string) error {
+	return auth.InitJWTAuth(secret)
+}
 
 type Config struct {
 	DB                 *database.Queries
@@ -43,9 +50,19 @@ func New(c Config) http.Handler {
 	router.Get("/health/redis", c.HandleRedisHealth)
 	router.Get("/health/cache-stats", c.HandleCacheStats)
 
+	// Auth routes (no authentication required)
+	authRouter := chi.NewRouter()
+	authRouter.Post("/register", c.handleCreateUser)
+	authRouter.Post("/login", c.handleLogin)
+
+	// User routes (authentication required)
 	userRouter := chi.NewRouter()
-	userRouter.Post("/create", c.handleCreateUser)
-	userRouter.Get("/all", c.handleListAllUsers) // TEMP: List all users
+	userRouter.Use(auth.RequireAuth)
+	userRouter.Get("/profile", c.handleGetProfile)
+	userRouter.Put("/profile", c.handleUpdateProfile)
+
+	// Temp route for listing all users
+	userRouter.Get("/all", c.handleListAllUsers)
 
 	futbolRouter := chi.NewRouter()
 	futbolRouter.Get("/matches", c.getMatches)
@@ -113,6 +130,7 @@ func New(c Config) http.Handler {
 	verificationsRouter.Delete("/{id}", verificationsService.RemoveVerification)
 	verificationsRouter.Get("/player/{playerId}", verificationsService.ListVerifications)
 
+	router.Mount("/auth", authRouter)
 	router.Mount("/users", userRouter)
 	router.Mount("/futbol", futbolRouter)
 	router.Mount("/google", googleRouter)
@@ -126,10 +144,13 @@ func New(c Config) http.Handler {
 	return router
 }
 
-// getUserIDFromContext extracts user ID from request context
-// This is a placeholder - in a real app, this would extract from JWT token or session
+// getUserIDFromContext extracts user ID from request context (set by auth middleware)
 func getUserIDFromContext(r *http.Request) uuid.UUID {
-	// For now, return a default UUID
-	// In a real implementation, this would extract from JWT token or session
-	return uuid.MustParse("00000000-0000-0000-0000-000000000001")
+	userID, ok := r.Context().Value("user_id").(int32)
+	if !ok {
+		// Return default UUID if no user ID in context (for backward compatibility)
+		return uuid.MustParse("00000000-0000-0000-0000-000000000001")
+	}
+	// Convert int32 to UUID by creating a zero-padded UUID
+	return uuid.MustParse(fmt.Sprintf("00000000-0000-0000-0000-%012d", userID))
 }

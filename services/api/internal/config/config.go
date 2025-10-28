@@ -19,7 +19,7 @@ func InitConfig(logger *otelzap.Logger) Config {
 	viper.SetEnvKeyReplacer(strings.NewReplacer(`.`, `_`))
 
 	// Set defaults
-	viper.SetDefault("db_url", "postgres://username:password@localhost:5432/fucci?sslmode=disable")
+	viper.SetDefault("db_url", "postgres://arronlinton@localhost:5431/joga_bonito?sslmode=disable")
 	viper.SetDefault("redis_url", "redis://localhost:6379")
 	viper.SetDefault("openai_base_url", "https://api.openai.com/v1")
 	viper.SetDefault("port", "8080")
@@ -42,5 +42,6 @@ func InitConfig(logger *otelzap.Logger) Config {
 		OPENAI_BASE_URL:  viper.GetString("openai_base_url"),
 		PORT:             viper.GetString("port"),
 		ENVIRONMENT:      viper.GetString("environment"),
+		JWT_SECRET:       viper.GetString("jwt_secret"),
 	}
 }
