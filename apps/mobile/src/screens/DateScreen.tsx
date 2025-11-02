@@ -1,9 +1,9 @@
-import React from 'react';
+import React, {useEffect, useRef, useState, useCallback} from 'react';
 import {
   Text,
   StyleSheet,
   View,
-  ScrollView,
+  FlatList,
   Image,
   ActivityIndicator,
   TouchableOpacity,
@@ -18,6 +18,8 @@ interface DateScreenProps {
   matches: Match[];
   isLoading?: boolean;
 }
+
+const ITEMS_PER_PAGE = 10;
 
 const getMatchStatus = (
   status: Match['fixture']['status'],
@@ -48,9 +50,19 @@ const getScoreDisplay = (goals: Match['goals']) => {
 
 const MatchCard: React.FC<{match: Match}> = ({match}) => {
   const navigation = useNavigation<NavigationProp>();
+  const isMountedRef = useRef(true);
+
+  useEffect(() => {
+    // Track if component is mounted
+    return () => {
+      isMountedRef.current = false;
+    };
+  }, []);
 
   const handlePress = () => {
-    navigation.navigate('MatchDetails', {match});
+    if (isMountedRef.current) {
+      navigation.navigate('MatchDetails', {match});
+    }
   };
 
   return (
@@ -108,7 +120,58 @@ const DateScreen: React.FC<DateScreenProps> = ({
   matches = [],
   isLoading = false,
 }) => {
-  const renderContent = () => {
+  const [displayedCount, setDisplayedCount] = useState(ITEMS_PER_PAGE);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const previousMatchesRef = useRef<Match[]>([]);
+
+  // Reset displayed count when matches change (new data or filter)
+  useEffect(() => {
+    // Check if matches array has actually changed (different items or count)
+    const matchesChanged =
+      previousMatchesRef.current.length !== matches.length ||
+      previousMatchesRef.current.some(
+        (prev, index) => prev.fixture.id !== matches[index]?.fixture.id,
+      );
+
+    if (matchesChanged) {
+      setDisplayedCount(ITEMS_PER_PAGE);
+      previousMatchesRef.current = matches;
+    }
+  }, [matches]);
+
+  const displayedMatches = matches.slice(0, displayedCount);
+  const hasMore = displayedCount < matches.length;
+
+  const loadMore = useCallback(() => {
+    if (hasMore && !isLoadingMore && !isLoading) {
+      setIsLoadingMore(true);
+      // Simulate loading delay for smooth UX
+      setTimeout(() => {
+        setDisplayedCount(prev =>
+          Math.min(prev + ITEMS_PER_PAGE, matches.length),
+        );
+        setIsLoadingMore(false);
+      }, 300);
+    }
+  }, [hasMore, isLoadingMore, isLoading, matches.length]);
+
+  const renderItem = useCallback(
+    ({item}: {item: Match}) => <MatchCard match={item} />,
+    [],
+  );
+
+  const renderFooter = () => {
+    if (!hasMore || isLoading || matches.length === 0) {
+      return null;
+    }
+    return (
+      <View style={styles.footerLoader}>
+        {isLoadingMore && <ActivityIndicator size="small" color="#1976d2" />}
+      </View>
+    );
+  };
+
+  const renderEmpty = () => {
     if (isLoading) {
       return (
         <View style={styles.loadingContainer}>
@@ -118,34 +181,45 @@ const DateScreen: React.FC<DateScreenProps> = ({
       );
     }
 
-    if (matches.length === 0) {
-      return (
-        <View style={styles.noMatchesContainer}>
-          <Text style={styles.noMatchesText}>
-            {isLoading ? 'Loading matches...' : 'No matches found'}
-          </Text>
-          <Text style={styles.noMatchesSubText}>
-            {isLoading
-              ? 'Please wait while we fetch the matches'
-              : 'Try adjusting your search or check another date'}
-          </Text>
-        </View>
-      );
-    }
-
-    return matches.map(match => (
-      <MatchCard key={match.fixture.id} match={match} />
-    ));
+    return (
+      <View style={styles.noMatchesContainer}>
+        <Text style={styles.noMatchesText}>No matches found</Text>
+        <Text style={styles.noMatchesSubText}>
+          Try adjusting your search or check another date
+        </Text>
+      </View>
+    );
   };
 
-  return <ScrollView style={styles.container}>{renderContent()}</ScrollView>;
+  const keyExtractor = useCallback(
+    (item: Match, index: number) => `${item.fixture.id}-${index}`,
+    [],
+  );
+
+  return (
+    <FlatList
+      data={displayedMatches}
+      renderItem={renderItem}
+      keyExtractor={keyExtractor}
+      ListEmptyComponent={renderEmpty}
+      ListFooterComponent={renderFooter}
+      onEndReached={loadMore}
+      onEndReachedThreshold={0.5}
+      contentContainerStyle={styles.container}
+      style={styles.listContainer}
+      showsVerticalScrollIndicator={true}
+    />
+  );
 };
 
 const styles = StyleSheet.create({
-  container: {
+  listContainer: {
     flex: 1,
     backgroundColor: '#f5f5f5',
+  },
+  container: {
     padding: 16,
+    flexGrow: 1,
   },
   card: {
     backgroundColor: '#fff',
@@ -282,6 +356,11 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#999',
     textAlign: 'center',
+  },
+  footerLoader: {
+    paddingVertical: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });
 

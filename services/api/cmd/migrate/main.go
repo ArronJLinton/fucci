@@ -8,12 +8,14 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
-	"os"
 	"path/filepath"
 	"sort"
 	"strings"
 
-	_ "github.com/lib/pq"
+	"github.com/ArronJLinton/fucci-api/internal/config"
+	"github.com/lib/pq"
+	"github.com/uptrace/opentelemetry-go-extra/otelzap"
+	"go.uber.org/zap"
 )
 
 type Migration struct {
@@ -24,10 +26,19 @@ type Migration struct {
 }
 
 func main() {
-	// Get database URL from environment
-	dbURL := os.Getenv("DATABASE_URL")
+	// Initialize logger
+	zlog, _ := zap.NewProduction()
+	defer func() {
+		_ = zlog.Sync()
+	}()
+	logger := otelzap.New(zlog)
+
+	// Initialize config
+	cfg := config.InitConfig(logger)
+	log.Println(" DB_URL:", cfg.DB_URL)
+	dbURL := cfg.DB_URL
 	if dbURL == "" {
-		log.Fatal("DATABASE_URL environment variable is required")
+		log.Fatal("DB_URL environment variable is required")
 	}
 
 	// Connect to database
@@ -83,7 +94,21 @@ func main() {
 
 		// Execute migration
 		if _, err := db.Exec(upMigration); err != nil {
-			log.Fatalf("Migration %s failed: %v", migration.Name, err)
+			// Check for PostgreSQL error codes indicating object already exists
+			if pqErr, ok := err.(*pq.Error); ok {
+				switch pqErr.Code {
+				case "42P07", // duplicate_table
+					"42710", // duplicate_object
+					"42723": // duplicate_function
+					log.Printf("Warning: Migration %s skipped (object already exists: %s)\n", migration.Name, pqErr.Code)
+					// Still record as executed to prevent future attempts
+				default:
+					log.Fatalf("Migration %s failed: %v (PostgreSQL error code: %s)", migration.Name, err, pqErr.Code)
+				}
+			} else {
+				// Fallback for non-PostgreSQL errors
+				log.Fatalf("Migration %s failed: %v", migration.Name, err)
+			}
 		}
 
 		// Record migration as executed

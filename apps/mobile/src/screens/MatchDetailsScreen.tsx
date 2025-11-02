@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect, useRef} from 'react';
 import {
   View,
   Text,
@@ -10,10 +10,10 @@ import {
 import {useRoute, RouteProp} from '@react-navigation/native';
 import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
 import type {RootStackParamList} from '../types/navigation';
-import StoryScreen from './StoryScreen';
+// import StoryScreen from './StoryScreen';
 import LineupScreen from './LineupScreen';
 import NewsScreen from './NewsScreen';
-import DebateScreen from './DebateScreen';
+// import DebateScreen from './DebateScreen';
 import {TableScreen} from './TableScreen';
 
 type MatchDetailsRouteProp = RouteProp<RootStackParamList, 'MatchDetails'>;
@@ -27,6 +27,14 @@ const MatchDetailsScreen = () => {
   const match = route.params.match;
   const [homeLogoError, setHomeLogoError] = useState(false);
   const [awayLogoError, setAwayLogoError] = useState(false);
+  const isMountedRef = useRef(true);
+
+  useEffect(() => {
+    // Track if component is mounted
+    return () => {
+      isMountedRef.current = false;
+    };
+  }, []);
 
   const MatchHeader = () => (
     <View style={styles.headerContainer}>
@@ -37,7 +45,11 @@ const MatchDetailsScreen = () => {
               source={{uri: match.teams.home.logo}}
               style={styles.teamLogo}
               resizeMode="contain"
-              onError={() => setHomeLogoError(true)}
+              onError={() => {
+                if (isMountedRef.current) {
+                  setHomeLogoError(true);
+                }
+              }}
             />
           ) : (
             <View style={[styles.teamLogo, styles.placeholderLogo]} />
@@ -55,7 +67,11 @@ const MatchDetailsScreen = () => {
               source={{uri: match.teams.away.logo}}
               style={styles.teamLogo}
               resizeMode="contain"
-              onError={() => setAwayLogoError(true)}
+              onError={() => {
+                if (isMountedRef.current) {
+                  setAwayLogoError(true);
+                }
+              }}
             />
           ) : (
             <View style={[styles.teamLogo, styles.placeholderLogo]} />
@@ -73,7 +89,9 @@ const MatchDetailsScreen = () => {
         screenOptions={{
           tabBarScrollEnabled: true,
           tabBarItemStyle: {
-            width: width / 5,
+            width: width / 3,
+            alignItems: 'center',
+            justifyContent: 'center',
           },
           tabBarStyle: {
             backgroundColor: '#fff',
@@ -87,13 +105,13 @@ const MatchDetailsScreen = () => {
           tabBarPressColor: '#E3F2FD',
           tabBarPressOpacity: 0.8,
         }}>
-        <TabScreen
+        {/* <TabScreen
           name="Story"
           component={StoryScreen}
           options={{
             tabBarLabel: 'Story',
           }}
-        />
+        /> */}
         <TabScreen
           name="Lineup"
           options={{
@@ -115,13 +133,13 @@ const MatchDetailsScreen = () => {
           }}>
           {() => <NewsScreen match={match} />}
         </TabScreen>
-        <TabScreen
+        {/* <TabScreen
           name="Debate"
           options={{
             tabBarLabel: 'Debate',
           }}>
           {() => <DebateScreen match={match} />}
-        </TabScreen>
+        </TabScreen> */}
       </TabNavigator>
     </SafeAreaView>
   );
