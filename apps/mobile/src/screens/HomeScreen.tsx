@@ -61,19 +61,42 @@ const DateTabScreen: React.FC<DateTabScreenProps> = ({date, searchQuery}) => {
   const isSelected = route.name === currentRoute;
   const [matches, setMatches] = React.useState<any[]>([]);
   const [isLoading, setIsLoading] = React.useState(false);
+  const hasLoadedRef = React.useRef(false);
+  const isLoadingRef = React.useRef(false);
+
+  // Reset cache when date changes
+  React.useEffect(() => {
+    hasLoadedRef.current = false;
+    setMatches([]);
+  }, [date]);
 
   React.useEffect(() => {
-    if (isSelected) {
+    // Only fetch if tab is selected, hasn't been loaded before, and not currently loading
+    if (isSelected && !hasLoadedRef.current && !isLoadingRef.current) {
+      isLoadingRef.current = true;
       setIsLoading(true);
-      fetchMatches(date)
-        .then(data => {
-          if (data) {
-            setMatches(data);
-          }
-        })
-        .finally(() => {
-          setIsLoading(false);
-        });
+
+      // Small delay to allow for smooth tab transitions
+      const timeoutId = setTimeout(() => {
+        fetchMatches(date)
+          .then(data => {
+            if (data) {
+              setMatches(data);
+              hasLoadedRef.current = true;
+            }
+          })
+          .catch(error => {
+            console.error('Error loading matches:', error);
+          })
+          .finally(() => {
+            isLoadingRef.current = false;
+            setIsLoading(false);
+          });
+      }, 100);
+
+      return () => {
+        clearTimeout(timeoutId);
+      };
     }
   }, [isSelected, date]);
 
