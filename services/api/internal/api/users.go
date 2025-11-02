@@ -47,7 +47,7 @@ func (config *Config) handleCreateUser(w http.ResponseWriter, r *http.Request) {
 	// Insert user with password hash
 	query := `INSERT INTO users (firstname, lastname, email, password_hash, display_name, role) 
 			  VALUES ($1, $2, $3, $4, $5, 'fan') 
-			  RETURNING id, firstname, lastname, email, created_at, updated_at, is_admin`
+			  RETURNING id, firstname, lastname, email, created_at, updated_at, role`
 
 	var user struct {
 		ID        int32  `json:"id"`
@@ -56,11 +56,11 @@ func (config *Config) handleCreateUser(w http.ResponseWriter, r *http.Request) {
 		Email     string `json:"email"`
 		CreatedAt string `json:"created_at"`
 		UpdatedAt string `json:"updated_at"`
-		IsAdmin   bool   `json:"is_admin"`
+		Role      string `json:"role"`
 	}
 
 	err = config.DBConn.QueryRow(query, req.Firstname, req.Lastname, req.Email, passwordHash, displayName).Scan(
-		&user.ID, &user.Firstname, &user.Lastname, &user.Email, &user.CreatedAt, &user.UpdatedAt, &user.IsAdmin,
+		&user.ID, &user.Firstname, &user.Lastname, &user.Email, &user.CreatedAt, &user.UpdatedAt, &user.Role,
 	)
 	if err != nil {
 		respondWithError(w, http.StatusBadRequest, fmt.Sprintf("Error creating user: %s", err))
