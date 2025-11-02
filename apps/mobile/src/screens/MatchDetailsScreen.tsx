@@ -10,10 +10,10 @@ import {
 import {useRoute, RouteProp} from '@react-navigation/native';
 import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
 import type {RootStackParamList} from '../types/navigation';
-import StoryScreen from './StoryScreen';
+// import StoryScreen from './StoryScreen';
 import LineupScreen from './LineupScreen';
 import NewsScreen from './NewsScreen';
-import DebateScreen from './DebateScreen';
+// import DebateScreen from './DebateScreen';
 import {TableScreen} from './TableScreen';
 
 type MatchDetailsRouteProp = RouteProp<RootStackParamList, 'MatchDetails'>;
@@ -89,7 +89,9 @@ const MatchDetailsScreen = () => {
         screenOptions={{
           tabBarScrollEnabled: true,
           tabBarItemStyle: {
-            width: width / 5,
+            width: width / 3,
+            alignItems: 'center',
+            justifyContent: 'center',
           },
           tabBarStyle: {
             backgroundColor: '#fff',
@@ -103,13 +105,13 @@ const MatchDetailsScreen = () => {
           tabBarPressColor: '#E3F2FD',
           tabBarPressOpacity: 0.8,
         }}>
-        <TabScreen
+        {/* <TabScreen
           name="Story"
           component={StoryScreen}
           options={{
             tabBarLabel: 'Story',
           }}
-        />
+        /> */}
         <TabScreen
           name="Lineup"
           options={{
@@ -131,13 +133,13 @@ const MatchDetailsScreen = () => {
           }}>
           {() => <NewsScreen match={match} />}
         </TabScreen>
-        <TabScreen
+        {/* <TabScreen
           name="Debate"
           options={{
             tabBarLabel: 'Debate',
           }}>
           {() => <DebateScreen match={match} />}
-        </TabScreen>
+        </TabScreen> */}
       </TabNavigator>
     </SafeAreaView>
   );
