@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/ArronJLinton/fucci-api/internal/auth"
@@ -179,14 +180,18 @@ func (c *Config) handleUpdateProfile(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Add updated_at timestamp (direct SQL is safe for CURRENT_TIMESTAMP)
 	updates = append(updates, "updated_at = CURRENT_TIMESTAMP")
-	updates = append(updates, fmt.Sprintf("WHERE id = $%d", argPos))
-	args = append(args, userID)
 
-	query := fmt.Sprintf("UPDATE users SET %s", fmt.Sprintf("%s", updates[0]))
-	for i := 1; i < len(updates); i++ {
-		query += ", " + updates[i]
-	}
+	// Build SET clause with comma-separated updates
+	setClause := strings.Join(updates, ", ")
+
+	// Add WHERE clause with parameterized user ID
+	args = append(args, userID)
+	whereClause := fmt.Sprintf("WHERE id = $%d", argPos)
+
+	// Construct final query with proper separation of SET and WHERE clauses
+	query := fmt.Sprintf("UPDATE users SET %s %s", setClause, whereClause)
 
 	_, err := c.DBConn.Exec(query, args...)
 	if err != nil {

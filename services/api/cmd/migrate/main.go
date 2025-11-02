@@ -13,7 +13,7 @@ import (
 	"strings"
 
 	"github.com/ArronJLinton/fucci-api/internal/config"
-	_ "github.com/lib/pq"
+	"github.com/lib/pq"
 	"github.com/uptrace/opentelemetry-go-extra/otelzap"
 	"go.uber.org/zap"
 )
@@ -94,11 +94,19 @@ func main() {
 
 		// Execute migration
 		if _, err := db.Exec(upMigration); err != nil {
-			// Check if error is due to table already existing
-			if strings.Contains(err.Error(), "already exists") {
-				log.Printf("Warning: Migration %s skipped (tables already exist)\n", migration.Name)
-				// Still record as executed to prevent future attempts
+			// Check for PostgreSQL error codes indicating object already exists
+			if pqErr, ok := err.(*pq.Error); ok {
+				switch pqErr.Code {
+				case "42P07", // duplicate_table
+					"42710", // duplicate_object
+					"42723": // duplicate_function
+					log.Printf("Warning: Migration %s skipped (object already exists: %s)\n", migration.Name, pqErr.Code)
+					// Still record as executed to prevent future attempts
+				default:
+					log.Fatalf("Migration %s failed: %v (PostgreSQL error code: %s)", migration.Name, err, pqErr.Code)
+				}
 			} else {
+				// Fallback for non-PostgreSQL errors
 				log.Fatalf("Migration %s failed: %v", migration.Name, err)
 			}
 		}
