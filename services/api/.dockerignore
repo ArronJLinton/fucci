@@ -1,11 +1,60 @@
+# Git
 .git
 .gitignore
-.env
-.env.*
-README.md
+
+# Documentation
+*.md
+docs/
+
+# Tests
+*_test.go
+test_*.sh
+TESTING.md
+setup_local_testing.sh
+
+# Docker
 docker-compose.yml
 Dockerfile
-*.md
-tmp/
+.dockerignore
+
+# CI/CD
+.github/
+.gitlab-ci.yml
+
+# IDE
+.vscode/
 .idea/
-.vscode/ 
+*.swp
+*.swo
+*~
+
+# Environment files
+.env
+.env.*
+!.env.example
+
+# Build artifacts
+bin/
+dist/
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Temporary files
+*.tmp
+*.log
+tmp/
+temp/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Development files
+build.sh
+Procfile
+
+# SQL migrations (if not needed at runtime)
+# sql/migrations/
