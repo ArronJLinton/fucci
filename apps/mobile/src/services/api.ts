@@ -1,6 +1,6 @@
 // Import types
-import { DebateResponse } from '../types/debate';
-import { apiConfig } from '../config/environment';
+import {DebateResponse} from '../types/debate';
+import {apiConfig} from '../config/environment';
 
 // Types
 interface Standing {
@@ -64,11 +64,9 @@ interface LineupData {
 const makeApiRequest = async (
   endpoint: string,
   method: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH' = 'GET',
-  options: RequestInit = {}
+  options: RequestInit = {},
 ) => {
   const url = `${apiConfig.baseURL}${endpoint}`;
-  console.log('API URL:', url, 'Method:', method);
-
   try {
     const response = await fetch(url, {
       method,
@@ -79,10 +77,9 @@ const makeApiRequest = async (
       },
       ...options,
     });
-
     if (!response.ok) {
       throw new Error(
-        `API request failed: ${response.status} ${response.statusText}`
+        `API request failed: ${response.status} ${response.statusText}`,
       );
     }
 
@@ -94,16 +91,21 @@ const makeApiRequest = async (
 };
 
 // Futbol API Functions
-export const fetchMatches = async (date: Date): Promise<Match[] | null> => {
+export const fetchMatches = async (
+  date: Date,
+  leagueId?: number,
+): Promise<Match[] | null> => {
   try {
     const formattedDate = `${date.getFullYear()}-${String(
-      date.getMonth() + 1
+      date.getMonth() + 1,
     ).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
 
-    const data = await makeApiRequest(
-      `/futbol/matches?date=${formattedDate}`,
-      'GET'
-    );
+    let endpoint = `/futbol/matches?date=${formattedDate}`;
+    if (leagueId) {
+      endpoint += `&league_id=${leagueId}`;
+    }
+
+    const data = await makeApiRequest(endpoint, 'GET');
     return data.response;
   } catch (error) {
     console.error('Error fetching matches:', error);
@@ -112,12 +114,12 @@ export const fetchMatches = async (date: Date): Promise<Match[] | null> => {
 };
 
 export const fetchLineup = async (
-  matchId: number
+  matchId: number,
 ): Promise<LineupData | null> => {
   try {
     const data = await makeApiRequest(
       `/futbol/lineup?match_id=${matchId}`,
-      'GET'
+      'GET',
     );
 
     // Check for no lineup data message
@@ -143,7 +145,7 @@ export const fetchLineup = async (
     if (!lineupData.home || !lineupData.away) {
       console.warn(
         'Missing home or away team data in lineup response:',
-        lineupData
+        lineupData,
       );
       return null;
     }
@@ -179,12 +181,12 @@ export const fetchLineup = async (
 
 export const fetchDebate = async (
   matchId: number,
-  type: string = 'pre_match'
+  type: string = 'pre_match',
 ): Promise<DebateResponse | null> => {
   try {
     const data = await makeApiRequest(
       `/debates/generate?match_id=${matchId}&type=${type}`,
-      'POST'
+      'POST',
     );
 
     // Handle different response structures
@@ -206,12 +208,12 @@ export const fetchDebate = async (
 
 export const fetchStandings = async (
   leagueId: number,
-  seasonYear: number
+  seasonYear: number,
 ): Promise<Standing[][]> => {
   try {
     const data = await makeApiRequest(
       `/futbol/league_standings?league_id=${leagueId}&season=${seasonYear}`,
-      'GET'
+      'GET',
     );
     // Handle different response structures
     if (data.response && data.response[0] && data.response[0].league) {
@@ -245,7 +247,7 @@ export const createMatch = async (matchData: any): Promise<any> => {
 
 export const updateMatch = async (
   matchId: number,
-  matchData: any
+  matchData: any,
 ): Promise<any> => {
   try {
     const data = await makeApiRequest(`/futbol/matches/${matchId}`, 'PUT', {

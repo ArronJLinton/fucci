@@ -1,14 +1,17 @@
 package api
 
-import "time"
+import (
+	"encoding/json"
+	"time"
+)
 
 type GetMatchesAPIResponse struct {
 	Get        string `json:"get"`
 	Parameters struct {
 		Date string `json:"date"`
 	} `json:"parameters"`
-	Errors  []any `json:"errors"`
-	Results int   `json:"results"`
+	Errors  json.RawMessage `json:"errors"` // Can be array [] or object {}
+	Results int             `json:"results"`
 	Paging  struct {
 		Current int `json:"current"`
 		Total   int `json:"total"`

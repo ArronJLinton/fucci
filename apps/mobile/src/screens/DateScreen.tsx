@@ -21,24 +21,32 @@ interface DateScreenProps {
 
 const ITEMS_PER_PAGE = 10;
 
-const getMatchStatus = (
-  status: Match['fixture']['status'],
-  fixtureDate: string,
-) => {
-  if (status.elapsed > 0) {
-    return `${status.elapsed}'`;
-  }
-  if (status.short === 'PST') {
-    return 'Postponed';
-  }
-  if (status.short === 'FT') {
-    return 'Full Time';
-  }
+const getMatchTime = (fixtureDate: string): string => {
   const date = new Date(fixtureDate);
   return date.toLocaleTimeString('en-US', {
     hour: '2-digit',
     minute: '2-digit',
+    hour12: false,
   });
+};
+
+const getMatchDate = (fixtureDate: string): string => {
+  const date = new Date(fixtureDate);
+  const months = [
+    'JAN',
+    'FEB',
+    'MAR',
+    'APR',
+    'MAY',
+    'JUN',
+    'JUL',
+    'AUG',
+    'SEP',
+    'OCT',
+    'NOV',
+    'DEC',
+  ];
+  return `${date.getDate()} ${months[date.getMonth()]}`;
 };
 
 const getScoreDisplay = (goals: Match['goals']) => {
@@ -65,51 +73,51 @@ const MatchCard: React.FC<{match: Match}> = ({match}) => {
     }
   };
 
+  const matchTime = getMatchTime(match.fixture.date.toString());
+  const matchDate = getMatchDate(match.fixture.date.toString());
+  const venue = match.fixture.venue?.name || '';
+  const venueCity = match.fixture.venue?.city || '';
+
   return (
     <TouchableOpacity style={styles.matchCard} onPress={handlePress}>
-      <Text style={styles.competitionName}>{match.league.name}</Text>
       <View style={styles.matchInfo}>
+        {/* Home Team */}
         <View style={styles.teamContainer}>
           <Image
             source={{uri: match.teams.home.logo}}
-            style={[
-              styles.teamLogo,
-              match.teams.home.winner && styles.winnerTeam,
-            ]}
+            style={styles.teamLogo}
             resizeMode="contain"
           />
-          <Text
-            style={[
-              styles.teamName,
-              match.teams.home.winner && styles.winnerText,
-            ]}>
+          <Text style={styles.teamName} numberOfLines={1}>
             {match.teams.home.name}
           </Text>
         </View>
-        <View style={styles.scoreContainer}>
-          <Text style={styles.scoreText}>{getScoreDisplay(match.goals)}</Text>
-          <Text style={styles.matchStatus}>
-            {getMatchStatus(match.fixture.status, match.fixture.date)}
-          </Text>
+
+        {/* Center: Time and Date */}
+        <View style={styles.timeDateContainer}>
+          <Text style={styles.matchTime}>{matchTime}</Text>
+          <Text style={styles.matchDate}>{matchDate}</Text>
         </View>
+
+        {/* Away Team */}
         <View style={styles.teamContainer}>
           <Image
             source={{uri: match.teams.away.logo}}
-            style={[
-              styles.teamLogo,
-              match.teams.away.winner && styles.winnerTeam,
-            ]}
+            style={styles.teamLogo}
             resizeMode="contain"
           />
-          <Text
-            style={[
-              styles.teamName,
-              match.teams.away.winner && styles.winnerText,
-            ]}>
+          <Text style={styles.teamName} numberOfLines={1}>
             {match.teams.away.name}
           </Text>
         </View>
       </View>
+
+      {/* Venue Information */}
+      {(venue || venueCity) && (
+        <Text style={styles.venueText} numberOfLines={1}>
+          {[venue, venueCity].filter(Boolean).join(', ')}
+        </Text>
+      )}
     </TouchableOpacity>
   );
 };
@@ -278,54 +286,50 @@ const styles = StyleSheet.create({
     shadowRadius: 2,
     elevation: 2,
   },
-  competitionName: {
-    fontSize: 14,
-    color: '#666',
-    marginBottom: 12,
-    textAlign: 'center',
-  },
   matchInfo: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+    marginBottom: 8,
   },
   teamContainer: {
-    flex: 2,
-    alignItems: 'center',
-  },
-  scoreContainer: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
   },
   teamLogo: {
-    width: 40,
-    height: 40,
+    width: 48,
+    height: 48,
     marginBottom: 8,
-  },
-  winnerTeam: {
-    transform: [{scale: 1.1}],
   },
   teamName: {
     fontSize: 14,
     fontWeight: '500',
     textAlign: 'center',
     color: '#333',
+    maxWidth: 100,
   },
-  winnerText: {
-    color: '#2196f3',
-    fontWeight: '700',
+  timeDateContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginHorizontal: 16,
   },
-  scoreText: {
-    fontSize: 18,
+  matchTime: {
+    fontSize: 16,
     fontWeight: '700',
-    color: '#1976d2',
+    color: '#FF0000', // Red color for time
     marginBottom: 4,
   },
-  matchStatus: {
+  matchDate: {
+    fontSize: 12,
+    color: '#999', // Grey color for date
+    textAlign: 'center',
+  },
+  venueText: {
     fontSize: 12,
     color: '#666',
     textAlign: 'center',
+    marginTop: 4,
   },
   loadingContainer: {
     padding: 32,

@@ -22,14 +22,14 @@ const environments = {
     DEBUG: 'true',
   },
   staging: {
-    API_BASE_URL: 'https://staging-api.yourapp.com/v1/api',
+    API_BASE_URL: 'https://fucci-api.fly.dev/v1/api',
     APP_NAME: 'Fucci Staging',
     APP_VERSION: '1.0.0',
     NODE_ENV: 'development',
     DEBUG: 'true',
   },
   production: {
-    API_BASE_URL: 'https://api.yourapp.com/v1/api',
+    API_BASE_URL: 'https://fucci-api.fly.dev/v1/api',
     APP_NAME: 'Fucci',
     APP_VERSION: '1.0.0',
     NODE_ENV: 'production',
