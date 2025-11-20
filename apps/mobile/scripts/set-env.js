@@ -29,7 +29,7 @@ const environments = {
     DEBUG: 'true',
   },
   production: {
-    API_BASE_URL: 'https://api.yourapp.com/v1/api',
+    API_BASE_URL: 'http://localhost:8080/v1/api',
     APP_NAME: 'Fucci',
     APP_VERSION: '1.0.0',
     NODE_ENV: 'production',
