@@ -7089,3 +7089,75 @@ The app should stop crashing once `REDIS_URL` and `JWT_SECRET` are set.
 
 ---
 
+_**User (2025-11-20 14:25Z)**_
+
+This is the staging url - https://fucci-api.fly.dev/ , where does this belong on the frontend ?
+
+---
+
+_**Agent (model default, mode Agent)**_
+
+
+
+---
+
+
+Checking where the API URL is configured in the frontend:
+
+
+---
+
+<tool-use data-tool-type="read" data-tool-name="read_file">
+<details><summary>Tool use: **read_file** • Read file: /Users/arronlinton/Desktop/lab/FucciShop/Fucci/apps/mobile/src/config/environment.ts</summary>
+
+</details>
+</tool-use>
+
+---
+
+<tool-use data-tool-type="read" data-tool-name="read_file">
+<details><summary>Tool use: **read_file** • Read file: /Users/arronlinton/Desktop/lab/FucciShop/Fucci/apps/mobile/app.json</summary>
+
+</details>
+</tool-use>
+
+---
+
+<tool-use data-tool-type="search" data-tool-name="grep">
+<details>
+<summary>Tool use: **grep** • Grep for "API_BASE_URL|api.*url|base.*url" in "apps/mobile" • 18 matches</summary>
+
+Output mode: content
+
+
+| File | Content | Line |
+|------|------|------|
+| `apps/mobile/src/services/api.ts` | `const url = `$\{apiConfig.baseURL\}$\{endpoint\}`;` | L69 |
+| `apps/mobile/src/services/api.ts` | `console.error(`API request failed for $\{url\}:`, error);` | L89 |
+| `apps/mobile/src/config/environment.ts` | `API_BASE_URL: string;` | L8 |
+| `apps/mobile/src/config/environment.ts` | `// Get base URL from config or use default` | L25 |
+| `apps/mobile/src/config/environment.ts` | `let baseURL = extra.API_BASE_URL \|\| 'http://localhost:8080/v1/api';` | L26 |
+| `apps/mobile/src/config/environment.ts` | `if (baseURL.includes('localhost') && Platform.OS !== 'web') \{` | L32 |
+| `apps/mobile/src/config/environment.ts` | `baseURL = baseURL.replace('localhost', localHost);` | L34 |
+| `apps/mobile/src/config/environment.ts` | `API_BASE_URL: baseURL,` | L38 |
+| `apps/mobile/src/config/environment.ts` | `baseURL: environment.API_BASE_URL,` | L56 |
+| `apps/mobile/scripts/set-env.js` | `API_BASE_URL: 'http://localhost:8080/v1/api',` | L18 |
+| `apps/mobile/scripts/set-env.js` | `API_BASE_URL: 'https://staging-api.yourapp.com/v1/api',` | L25 |
+| `apps/mobile/scripts/set-env.js` | `API_BASE_URL: 'http://localhost:8080/v1/api',` | L32 |
+| `apps/mobile/app.json` | `"API_BASE_URL": "http://localhost:8080/v1/api",` | L44 |
+| `apps/mobile/src/__tests__/setup.ts` | `API_BASE_URL: 'http://localhost:8080/v1/api',` | L15 |
+| `apps/mobile/README.md` | `- `API_BASE_URL` - Backend API URL` | L196 |
+| `apps/mobile/src/screens/NewsScreen.tsx` | `const apiUrl = `https://fucci-api-staging.up.railway.app/v1/api/google/search?q=$\{encodedQuery\}&lr=en-US`;` | L58 |
+| `apps/mobile/src/screens/NewsScreen.tsx` | `console.log('API URL:', apiUrl);` | L61 |
+| `apps/mobile/src/screens/NewsScreen.tsx` | `const response = await fetch(apiUrl);` | L63 |
+
+
+</details>
+</tool-use>
+
+---
+
+
+
+---
+
