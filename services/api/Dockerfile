@@ -24,11 +24,17 @@ WORKDIR /app
 # Install ca-certificates for HTTPS requests
 RUN apk --no-cache add ca-certificates
 
+# Create a non-root user first (needed for chown)
+RUN adduser -D appuser
+
 # Copy the binary from builder
 COPY --from=builder /app/main .
 
-# Create a non-root user
-RUN adduser -D appuser
+# Copy static files (privacy policy, etc.)
+COPY --from=builder /app/static/ ./static/
+
+# Ensure appuser can read all files
+RUN chown -R appuser:appuser /app
 USER appuser
 
 # Expose port (Heroku will set PORT env var)
