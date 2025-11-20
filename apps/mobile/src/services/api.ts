@@ -92,16 +92,21 @@ const makeApiRequest = async (
 };
 
 // Futbol API Functions
-export const fetchMatches = async (date: Date): Promise<Match[] | null> => {
+export const fetchMatches = async (
+  date: Date,
+  leagueId?: number,
+): Promise<Match[] | null> => {
   try {
     const formattedDate = `${date.getFullYear()}-${String(
       date.getMonth() + 1,
     ).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
 
-    const data = await makeApiRequest(
-      `/futbol/matches?date=${formattedDate}`,
-      'GET',
-    );
+    let endpoint = `/futbol/matches?date=${formattedDate}`;
+    if (leagueId) {
+      endpoint += `&league_id=${leagueId}`;
+    }
+
+    const data = await makeApiRequest(endpoint, 'GET');
     return data.response;
   } catch (error) {
     console.error('Error fetching matches:', error);

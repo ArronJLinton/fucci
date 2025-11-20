@@ -7,6 +7,11 @@ export interface Match {
       short: string;
       elapsed: number;
     };
+    venue?: {
+      id: number;
+      name: string;
+      city: string;
+    };
   };
   league: {
     id: number;

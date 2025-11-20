@@ -21,9 +21,10 @@ type GetMatchesParams struct {
 func (c *Config) getMatches(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
-	// Step 1: Get date from query parameters
+	// Step 1: Get date and optional league_id from query parameters
 	queryParams := r.URL.Query()
 	date := queryParams.Get("date")
+	leagueID := queryParams.Get("league_id")
 
 	if date == "" {
 		log.Printf("ERROR: date parameter is missing")
@@ -31,8 +32,13 @@ func (c *Config) getMatches(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Generate cache key
-	cacheKey := fmt.Sprintf("matches:%s", date)
+	// Generate cache key (include league_id if provided)
+	var cacheKey string
+	if leagueID != "" {
+		cacheKey = fmt.Sprintf("matches:league:%s:date:%s", leagueID, date)
+	} else {
+		cacheKey = fmt.Sprintf("matches:date:%s", date)
+	}
 	log.Printf("Cache key: %s\n", cacheKey)
 
 	// Try to get from cache first
@@ -59,7 +65,22 @@ func (c *Config) getMatches(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	// If not in cache or error occurred, fetch from API
+	// Build URL with optional league filter
 	url := fmt.Sprintf("https://api-football-v1.p.rapidapi.com/v3/fixtures?date=%s", date)
+	if leagueID != "" {
+		// When filtering by league, RapidAPI requires a season parameter
+		// Extract year from date to determine season
+		dateTime, err := time.Parse("2006-01-02", date)
+		if err != nil {
+			log.Printf("ERROR: Invalid date format: %s\n", date)
+			respondWithError(w, http.StatusBadRequest, fmt.Sprintf("Invalid date format: %s. Expected YYYY-MM-DD", date))
+			return
+		}
+		season := dateTime.Year()
+		url = fmt.Sprintf("%s&league=%s&season=%d", url, leagueID, season)
+		log.Printf("URL: %s\n", url)
+		log.Printf("Filtering matches by league_id: %s, season: %d\n", leagueID, season)
+	}
 	headers := map[string]string{
 		"Content-Type":   "application/json",
 		"x-rapidapi-key": c.FootballAPIKey,
@@ -79,15 +100,6 @@ func (c *Config) getMatches(w http.ResponseWriter, r *http.Request) {
 		log.Printf("ERROR: Failed to read response body: %v\n", err)
 		respondWithError(w, http.StatusInternalServerError, fmt.Sprintf("Failed to read response body: %s", err))
 		return
-	}
-
-	// Show preview of response (first 500 chars)
-	if len(rawBody) > 0 {
-		previewLength := 500
-		if len(rawBody) < previewLength {
-			previewLength = len(rawBody)
-		}
-		log.Printf("Response body preview: %s\n", string(rawBody[:previewLength]))
 	}
 
 	// Create a new reader from the raw body for JSON decoding
