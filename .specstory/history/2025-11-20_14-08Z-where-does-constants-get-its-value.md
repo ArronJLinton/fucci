@@ -7161,3 +7161,177 @@ Output mode: content
 
 ---
 
+
+Updating the frontend configuration to use the staging URL. The API base URL is set in `app.json` and read via `environment.ts`. Updating it:
+
+
+---
+
+<tool-use data-tool-type="read" data-tool-name="read_file">
+<details><summary>Tool use: **read_file** • Read file: /Users/arronlinton/Desktop/lab/FucciShop/Fucci/apps/mobile/app.json</summary>
+
+</details>
+</tool-use>
+
+---
+
+<tool-use data-tool-type="write" data-tool-name="search_replace">
+
+<details><summary>Tool use: **code_edit** • Edit file: /Users/arronlinton/Desktop/lab/FucciShop/Fucci/apps/mobile/app.json</summary>
+
+**Chunk 1**
+Lines added: 1, lines removed: 1
+
+```diff
+@@ -42,5 +42,5 @@
+      ],
+      &quot;extra&quot;: {
+-       &quot;API_BASE_URL&quot;: &quot;http://localhost:8080/v1/api&quot;,
++       &quot;API_BASE_URL&quot;: &quot;https://fucci-api.fly.dev/v1/api&quot;,
+        &quot;APP_NAME&quot;: &quot;Fucci&quot;,
+        &quot;APP_VERSION&quot;: &quot;1.0.0&quot;,
+```
+
+</details>
+
+</tool-use>
+
+---
+
+<tool-use data-tool-type="read" data-tool-name="read_file">
+<details><summary>Tool use: **read_file** • Read file: /Users/arronlinton/Desktop/lab/FucciShop/Fucci/apps/mobile/scripts/set-env.js</summary>
+
+</details>
+</tool-use>
+
+---
+
+<tool-use data-tool-type="write" data-tool-name="search_replace">
+
+<details><summary>Tool use: **code_edit** • Edit file: /Users/arronlinton/Desktop/lab/FucciShop/Fucci/apps/mobile/scripts/set-env.js</summary>
+
+**Chunk 1**
+Lines added: 1, lines removed: 1
+
+```diff
+@@ -23,5 +23,5 @@
+    },
+    staging: {
+-     API_BASE_URL: &#39;https://staging-api.yourapp.com/v1/api&#39;,
++     API_BASE_URL: &#39;https://fucci-api.fly.dev/v1/api&#39;,
+      APP_NAME: &#39;Fucci Staging&#39;,
+      APP_VERSION: &#39;1.0.0&#39;,
+```
+
+</details>
+
+</tool-use>
+
+---
+
+
+
+---
+
+
+Updating `app.json` and the staging configuration to use the staging URL:
+
+
+---
+
+<tool-use data-tool-type="write" data-tool-name="search_replace">
+
+<details><summary>Tool use: **code_edit** • Edit file: /Users/arronlinton/Desktop/lab/FucciShop/Fucci/apps/mobile/scripts/set-env.js</summary>
+
+**Chunk 1**
+Lines added: 1, lines removed: 1
+
+```diff
+@@ -30,5 +30,5 @@
+    },
+    production: {
+-     API_BASE_URL: &#39;http://localhost:8080/v1/api&#39;,
++     API_BASE_URL: &#39;https://fucci-api.fly.dev/v1/api&#39;,
+      APP_NAME: &#39;Fucci&#39;,
+      APP_VERSION: &#39;1.0.0&#39;,
+```
+
+</details>
+
+</tool-use>
+
+---
+
+<tool-use data-tool-type="read" data-tool-name="read_file">
+<details><summary>Tool use: **read_file** • Read file: /Users/arronlinton/Desktop/lab/FucciShop/Fucci/apps/mobile/app.json</summary>
+
+</details>
+</tool-use>
+
+---
+
+<tool-use data-tool-type="read" data-tool-name="read_file">
+<details><summary>Tool use: **read_file** • Read file: /Users/arronlinton/Desktop/lab/FucciShop/Fucci/apps/mobile/src/config/environment.ts</summary>
+
+</details>
+</tool-use>
+
+---
+
+
+
+---
+
+
+Updated the staging URL. The API base URL is set in **`app.json`**.
+
+## Where the staging URL is configured
+
+**Primary location:**
+- **`apps/mobile/app.json`** (line 44) — `expo.extra.API_BASE_URL`
+  - Updated to: `"https://fucci-api.fly.dev/v1/api"`
+
+**How it flows:**
+1. `app.json` defines `API_BASE_URL` in the `extra` section
+2. `environment.ts` reads it via `Constants.expoConfig?.extra`
+3. `api.ts` uses `apiConfig.baseURL` from `environment.ts`
+
+**Other locations updated:**
+- **`apps/mobile/scripts/set-env.js`** — updated staging and production environments to use the Fly.io URL
+
+## How to switch environments
+
+You can use the `set-env.js` script to switch between environments:
+
+```bash
+cd apps/mobile
+
+# For development (localhost)
+node scripts/set-env.js development
+
+# For staging (Fly.io)
+node scripts/set-env.js staging
+
+# For production (Fly.io)
+node scripts/set-env.js production
+```
+
+## Current configuration
+
+The `app.json` file now has:
+```json
+"API_BASE_URL": "https://fucci-api.fly.dev/v1/api"
+```
+
+The frontend will use this URL to connect to your Fly.io backend.
+
+**Note:** After updating `app.json`, you may need to restart your Expo dev server for the changes to take effect:
+```bash
+# Stop and restart Expo
+npm start -- --clear
+```
+
+The staging URL is now configured and the mobile app will connect to `https://fucci-api.fly.dev/v1/api`.
+
+---
+

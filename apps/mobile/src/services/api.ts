@@ -77,12 +77,11 @@ const makeApiRequest = async (
       },
       ...options,
     });
-    console.log('API Response:', response);
-    // if (!response.ok) {
-    //   throw new Error(
-    //     `API request failed: ${response.status} ${response.statusText}`,
-    //   );
-    // }
+    if (!response.ok) {
+      throw new Error(
+        `API request failed: ${response.status} ${response.statusText}`,
+      );
+    }
 
     return response.json();
   } catch (error) {
