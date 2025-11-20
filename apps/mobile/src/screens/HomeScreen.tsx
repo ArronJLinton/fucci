@@ -73,41 +73,73 @@ const DateTabScreen: React.FC<DateTabScreenProps> = ({
   const hasLoadedRef = React.useRef(false);
   const isLoadingRef = React.useRef(false);
 
-  // Reset cache when date or league changes
-  React.useEffect(() => {
-    hasLoadedRef.current = false;
-    setMatches([]);
-  }, [date, selectedLeague?.id]);
+  // Create a cache key based on date and league
+  const cacheKey = React.useMemo(
+    () => `${date.toISOString()}-${selectedLeague?.id || 'all'}`,
+    [date, selectedLeague?.id],
+  );
+  const loadedCacheKeysRef = React.useRef<Set<string>>(new Set());
 
+  // Combined effect to handle both reset and fetch
   React.useEffect(() => {
-    // Only fetch if tab is selected, hasn't been loaded before, and not currently loading
-    if (isSelected && !hasLoadedRef.current && !isLoadingRef.current) {
+    // If cache key changed, reset state and clear from loaded set
+    if (!loadedCacheKeysRef.current.has(cacheKey)) {
+      hasLoadedRef.current = false;
+      setMatches([]);
+    }
+
+    // Fetch matches if tab is selected, league is selected, and this cache key hasn't been loaded
+    if (
+      isSelected &&
+      selectedLeague &&
+      !loadedCacheKeysRef.current.has(cacheKey) &&
+      !isLoadingRef.current
+    ) {
       isLoadingRef.current = true;
       setIsLoading(true);
 
+      const currentCacheKey = cacheKey;
+      const currentLeague = selectedLeague;
+
       // Small delay to allow for smooth tab transitions
       const timeoutId = setTimeout(() => {
-        fetchMatches(date, selectedLeague?.id)
-          .then(data => {
-            if (data) {
-              setMatches(data);
-              hasLoadedRef.current = true;
-            }
-          })
-          .catch(error => {
-            console.error('Error loading matches:', error);
-          })
-          .finally(() => {
-            isLoadingRef.current = false;
-            setIsLoading(false);
-          });
+        // Verify cache key still matches and we still need to fetch
+        if (
+          currentCacheKey === cacheKey &&
+          isSelected &&
+          !loadedCacheKeysRef.current.has(currentCacheKey)
+        ) {
+          fetchMatches(date, currentLeague.id)
+            .then(data => {
+              // Verify cache key still matches before setting results
+              if (currentCacheKey === cacheKey && data) {
+                setMatches(data);
+                loadedCacheKeysRef.current.add(currentCacheKey);
+                hasLoadedRef.current = true;
+              }
+            })
+            .catch(error => {
+              console.error('Error loading matches:', error);
+              // Don't mark as loaded on error so we can retry
+            })
+            .finally(() => {
+              if (currentCacheKey === cacheKey) {
+                isLoadingRef.current = false;
+                setIsLoading(false);
+              }
+            });
+        } else {
+          // Cache key changed or already loaded, reset flags
+          isLoadingRef.current = false;
+          setIsLoading(false);
+        }
       }, 100);
 
       return () => {
         clearTimeout(timeoutId);
       };
     }
-  }, [isSelected, date, selectedLeague?.id]);
+  }, [isSelected, date, selectedLeague, cacheKey]);
 
   const filteredMatches = React.useMemo(() => {
     if (!searchQuery) return matches;
