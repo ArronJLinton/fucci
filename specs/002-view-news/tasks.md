@@ -62,9 +62,9 @@ This task list implements a news feed feature that displays recent and historic 
 
 ### Foundational Tasks
 
-- [ ] T007 Create TypeScript types for news data in apps/mobile/src/types/news.ts
-- [ ] T008 Create utility function for relative time formatting in apps/mobile/src/utils/timeUtils.ts
-- [ ] T009 Create utility function for generating article ID from URL in services/api/internal/news/utils.go
+- [x] T007 Create TypeScript types for news data in apps/mobile/src/types/news.ts
+- [x] T008 Create utility function for relative time formatting in apps/mobile/src/utils/timeUtils.ts
+- [x] T009 Create utility function for generating article ID from URL in services/api/internal/news/utils.go
 
 ---
 
