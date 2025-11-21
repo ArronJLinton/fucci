@@ -18,7 +18,6 @@ export function useNews() {
         try {
           console.log('[useNews] Fetching football news...');
           const result = await fetchFootballNews();
-          console.log('[useNews] Successfully fetched news:', result);
           return result;
         } catch (err) {
           console.error('[useNews] Error fetching news:', err);

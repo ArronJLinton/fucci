@@ -66,21 +66,6 @@ const NewsScreen: React.FC<NewsScreenProps> = ({match}) => {
   const hasArticles =
     todayArticlesToShow.length > 0 || historyArticlesToShow.length > 0;
 
-  // Debug logging
-  React.useEffect(() => {
-    console.log('[NewsScreen] Articles state:', {
-      todayArticles: todayArticles.length,
-      historyArticles: historyArticles.length,
-      todayToShow: todayArticlesToShow.length,
-      historyToShow: historyArticlesToShow.length,
-    });
-  }, [
-    todayArticles,
-    historyArticles,
-    todayArticlesToShow.length,
-    historyArticlesToShow.length,
-  ]);
-
   if (loading && !hasArticles) {
     return (
       <View style={styles.centerContainer}>
