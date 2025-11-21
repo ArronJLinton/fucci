@@ -1,167 +1,87 @@
-import React, {useState, useEffect} from 'react';
+import React from 'react';
 import {
   View,
   Text,
   StyleSheet,
   ScrollView,
-  Image,
-  ActivityIndicator,
   TouchableOpacity,
+  ActivityIndicator,
+  RefreshControl,
+  Image,
 } from 'react-native';
 import {useNavigation} from '@react-navigation/native';
+import {Ionicons} from '@expo/vector-icons';
 import type {Match} from '../types/match';
 import type {NavigationProp} from '../types/navigation';
-
-interface NewsItem {
-  timestamp: string;
-  title: string;
-  snippet: string;
-  images: {
-    thumbnail: string;
-    thumbnailProxied: string;
-  };
-  newsUrl: string;
-  publisher: string;
-}
+import {useNews} from '../hooks/useNews';
+import type {NewsArticle} from '../types/news';
 
 interface NewsScreenProps {
-  match: Match;
+  match?: Match; // Optional - if provided, shows match-specific news, otherwise general football news
 }
 
 const NewsScreen: React.FC<NewsScreenProps> = ({match}) => {
   const navigation = useNavigation<NavigationProp>();
-  const [newsData, setNewsData] = useState<NewsItem[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const {
+    todayArticles,
+    historyArticles,
+    loading,
+    error,
+    refresh,
+    refreshing,
+    invalidateCache,
+  } = useNews();
 
-  useEffect(() => {
-    const fetchNews = async () => {
-      try {
-        setIsLoading(true);
-        setError(null);
-
-        // Validate match object
-        if (!match?.teams?.home?.name || !match?.teams?.away?.name) {
-          throw new Error('Invalid match object: missing team names');
-        }
-
-        // TEMPORARILY DISABLED: API call commented out
-        /*
-        // Create search query
-        const homeTeam = match.teams.home.name;
-        const awayTeam = match.teams.away.name;
-        const searchQuery = `${homeTeam} vs ${awayTeam}`;
-        
-        // Encode the query for URL
-        const encodedQuery = encodeURIComponent(searchQuery);
-        
-        const apiUrl = `https://fucci-api-staging.up.railway.app/v1/api/google/search?q=${encodedQuery}&lr=en-US`;
-        
-        console.log('Fetching news for:', searchQuery);
-        console.log('API URL:', apiUrl);
-
-        const response = await fetch(apiUrl);
-
-        if (!response.ok) {
-          throw new Error(
-            `Failed to fetch news data: ${response.status} ${response.statusText}`,
-          );
-        }
-
-        const data = await response.json();
-        console.log('News API response:', data);
-
-        // Check for no news data message
-        if (data.message === 'No news data available') {
-          setNewsData([]);
-          return;
-        }
-
-        // Validate the data structure
-        if (!data || typeof data !== 'object') {
-          throw new Error('Invalid response format');
-        }
-
-        // Extract news items from the response
-        // Assuming the API returns an array of news items or has a specific structure
-        let newsItems: NewsItem[] = [];
-        
-        if (Array.isArray(data)) {
-          newsItems = data;
-        } else if (data.items && Array.isArray(data.items)) {
-          newsItems = data.items;
-        } else if (data.organic_results && Array.isArray(data.organic_results)) {
-          newsItems = data.organic_results;
-        } else {
-          // If the structure is different, try to extract what we can
-          console.error('Unexpected data structure encountered:', data);
-          // Log the error and gracefully handle the unexpected data structure
-          setNewsData([]);
-          return;
-        }
-
-        setNewsData(newsItems);
-        */
-
-        // TEMPORARY: Set mock data instead of API call
-        const mockNewsData: NewsItem[] = [
-          {
-            timestamp: '1750751956000',
-            title: 'Match Preview: Tactical Analysis',
-            snippet:
-              'Expert analysis of the upcoming match between the two teams...',
-            images: {
-              thumbnail: '',
-              thumbnailProxied: '',
-            },
-            newsUrl: 'https://example.com/news1',
-            publisher: 'Sports News',
-          },
-          {
-            timestamp: '1750742227000',
-            title: 'Team Lineup Predictions',
-            snippet:
-              'Predictions for the starting lineups and key players to watch...',
-            images: {
-              thumbnail: '',
-              thumbnailProxied: '',
-            },
-            newsUrl: 'https://example.com/news2',
-            publisher: 'Football Weekly',
-          },
-          {
-            timestamp: '1750724947000',
-            title: 'Historical Rivalry Analysis',
-            snippet:
-              'Looking back at previous encounters between these two teams...',
-            images: {
-              thumbnail: '',
-              thumbnailProxied: '',
-            },
-            newsUrl: 'https://example.com/news3',
-            publisher: 'Match Analysis',
-          },
-        ];
-
-        setNewsData(mockNewsData);
-      } catch (err) {
-        const errorMessage =
-          err instanceof Error ? err.message : 'Failed to load news data';
-        setError(errorMessage);
-        console.error('Error fetching news:', err);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchNews();
-  }, [match]);
+  const handleRefresh = () => {
+    // Invalidate cache to mark as stale and trigger refetch
+    // This respects React Query's caching strategy while ensuring fresh data
+    invalidateCache();
+  };
 
   const handleNewsItemPress = (url: string) => {
     navigation.navigate('NewsWebView', {url});
   };
 
-  if (isLoading) {
+  const renderImage = (article: NewsArticle) => {
+    if (article.imageUrl) {
+      return (
+        <Image
+          source={{uri: article.imageUrl}}
+          style={styles.newsImage}
+          resizeMode="cover"
+        />
+      );
+    }
+
+    // Placeholder icon
+    return (
+      <View style={[styles.newsImage, styles.placeholderImage]}>
+        <Ionicons name="football-outline" size={32} color="#999" />
+      </View>
+    );
+  };
+
+  const todayArticlesToShow = todayArticles.slice(0, 5);
+  const historyArticlesToShow = historyArticles.slice(0, 5);
+  const hasArticles =
+    todayArticlesToShow.length > 0 || historyArticlesToShow.length > 0;
+
+  // Debug logging
+  React.useEffect(() => {
+    console.log('[NewsScreen] Articles state:', {
+      todayArticles: todayArticles.length,
+      historyArticles: historyArticles.length,
+      todayToShow: todayArticlesToShow.length,
+      historyToShow: historyArticlesToShow.length,
+    });
+  }, [
+    todayArticles,
+    historyArticles,
+    todayArticlesToShow.length,
+    historyArticlesToShow.length,
+  ]);
+
+  if (loading && !hasArticles) {
     return (
       <View style={styles.centerContainer}>
         <ActivityIndicator size="large" color="#007AFF" />
@@ -170,52 +90,105 @@ const NewsScreen: React.FC<NewsScreenProps> = ({match}) => {
     );
   }
 
-  if (error) {
+  if (error && !hasArticles) {
     return (
       <View style={styles.centerContainer}>
-        <Text style={styles.errorText}>{error}</Text>
+        <Ionicons name="alert-circle-outline" size={48} color="#ff6b6b" />
+        <Text style={styles.errorText}>
+          {error?.message || 'Failed to load news'}
+        </Text>
+        <TouchableOpacity style={styles.retryButton} onPress={handleRefresh}>
+          <Ionicons name="refresh" size={20} color="#fff" style={styles.icon} />
+          <Text style={styles.retryText}>Retry</Text>
+        </TouchableOpacity>
       </View>
     );
   }
 
-  if (!newsData || newsData.length === 0) {
+  if (!hasArticles) {
     return (
       <View style={styles.centerContainer}>
-        <Text style={styles.noDataText}>No news available for this match</Text>
+        <Ionicons name="newspaper-outline" size={48} color="#999" />
+        <Text style={styles.noDataText}>No news available right now</Text>
+        <TouchableOpacity style={styles.refreshButton} onPress={handleRefresh}>
+          <Ionicons
+            name="refresh"
+            size={20}
+            color="#007AFF"
+            style={styles.icon}
+          />
+          <Text style={styles.refreshText}>Refresh</Text>
+        </TouchableOpacity>
       </View>
     );
   }
 
   return (
-    <ScrollView style={styles.container}>
+    <ScrollView
+      style={styles.container}
+      refreshControl={
+        <RefreshControl
+          refreshing={refreshing}
+          onRefresh={handleRefresh}
+          tintColor="#007AFF"
+        />
+      }>
       <View style={styles.newsContainer}>
-        {newsData.map((item, _index) => (
-          <TouchableOpacity
-            key={item.newsUrl}
-            style={styles.newsItem}
-            onPress={() => handleNewsItemPress(item.newsUrl)}>
-            {item.images.thumbnail || item.images.thumbnailProxied ? (
-              <Image
-                source={{
-                  uri: item.images.thumbnail || item.images.thumbnailProxied,
-                }}
-                style={styles.newsImage}
-                resizeMode="cover"
-              />
-            ) : (
-              <View style={[styles.newsImage, styles.placeholderImage]} />
-            )}
-            <View style={styles.newsContent}>
-              <Text style={styles.newsTitle} numberOfLines={3}>
-                {item.title}
-              </Text>
-              <Text style={styles.newsSnippet} numberOfLines={3}>
-                {item.snippet}
-              </Text>
-              <Text style={styles.newsPublisher}>{item.publisher}</Text>
+        {/* Today's News Section */}
+        {todayArticlesToShow.length > 0 && (
+          <>
+            <View style={[styles.sectionHeader, styles.firstSectionHeader]}>
+              <Text style={styles.sectionTitle}>Today's News</Text>
             </View>
-          </TouchableOpacity>
-        ))}
+            {todayArticlesToShow.map((item: NewsArticle) => (
+              <TouchableOpacity
+                key={item.id}
+                style={styles.newsItem}
+                onPress={() => handleNewsItemPress(item.sourceUrl)}
+                activeOpacity={0.7}>
+                <View style={styles.newsContent}>
+                  <Text style={styles.newsTitle} numberOfLines={3}>
+                    {item.title}
+                  </Text>
+                  <View style={styles.meta}>
+                    <Text style={styles.newsPublisher}>{item.sourceName}</Text>
+                    <Text style={styles.separator}>•</Text>
+                    <Text style={styles.time}>{item.relativeTime}</Text>
+                  </View>
+                </View>
+                {renderImage(item)}
+              </TouchableOpacity>
+            ))}
+          </>
+        )}
+
+        {/* World Football History Section */}
+        {historyArticlesToShow.length > 0 && (
+          <>
+            <View style={styles.sectionHeader}>
+              <Text style={styles.sectionTitle}>World Football History</Text>
+            </View>
+            {historyArticlesToShow.map((item: NewsArticle) => (
+              <TouchableOpacity
+                key={item.id}
+                style={styles.newsItem}
+                onPress={() => handleNewsItemPress(item.sourceUrl)}
+                activeOpacity={0.7}>
+                <View style={styles.newsContent}>
+                  <Text style={styles.newsTitle} numberOfLines={3}>
+                    {item.title}
+                  </Text>
+                  <View style={styles.meta}>
+                    <Text style={styles.newsPublisher}>{item.sourceName}</Text>
+                    <Text style={styles.separator}>•</Text>
+                    <Text style={styles.time}>{item.relativeTime}</Text>
+                  </View>
+                </View>
+                {renderImage(item)}
+              </TouchableOpacity>
+            ))}
+          </>
+        )}
       </View>
     </ScrollView>
   );
@@ -248,6 +221,63 @@ const styles = StyleSheet.create({
     color: '#666',
     textAlign: 'center',
     paddingHorizontal: 20,
+    marginTop: 16,
+    marginBottom: 24,
+  },
+  retryButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#007AFF',
+    paddingHorizontal: 24,
+    paddingVertical: 12,
+    borderRadius: 8,
+    marginTop: 16,
+  },
+  refreshButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#f0f0f0',
+    paddingHorizontal: 24,
+    paddingVertical: 12,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#007AFF',
+    marginTop: 16,
+  },
+  icon: {
+    marginRight: 8,
+  },
+  retryText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  refreshText: {
+    color: '#007AFF',
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  meta: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 8,
+  },
+  separator: {
+    fontSize: 12,
+    color: '#999',
+    marginHorizontal: 6,
+  },
+  time: {
+    fontSize: 12,
+    color: '#999',
+  },
+  placeholderTitle: {
+    fontSize: 10,
+    color: '#666',
+    textAlign: 'center',
+    marginTop: 4,
+    fontWeight: '500',
+    paddingHorizontal: 4,
   },
   header: {
     backgroundColor: '#fff',
@@ -269,7 +299,22 @@ const styles = StyleSheet.create({
   newsContainer: {
     padding: 16,
   },
+  sectionHeader: {
+    marginTop: 8,
+    marginBottom: 12,
+    paddingBottom: 8,
+  },
+  firstSectionHeader: {
+    marginTop: 0,
+  },
+  sectionTitle: {
+    fontSize: 20,
+    fontWeight: '700',
+    color: '#333',
+    letterSpacing: -0.3,
+  },
   newsItem: {
+    flexDirection: 'row',
     backgroundColor: '#fff',
     borderRadius: 12,
     marginBottom: 16,
@@ -282,30 +327,31 @@ const styles = StyleSheet.create({
     shadowRadius: 3.84,
     elevation: 5,
     overflow: 'hidden',
-  },
-  newsImage: {
-    width: '100%',
-    height: 200,
+    minHeight: 120,
   },
   newsContent: {
+    flex: 1,
     padding: 16,
+    justifyContent: 'space-between',
   },
   newsTitle: {
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: '600',
     color: '#333',
     marginBottom: 8,
-    lineHeight: 24,
-  },
-  newsSnippet: {
-    fontSize: 14,
-    color: '#666',
-    marginBottom: 8,
-    lineHeight: 20,
+    lineHeight: 22,
+    flexShrink: 1,
   },
   newsPublisher: {
     fontSize: 12,
-    color: '#666',
+    color: '#007AFF',
+    fontWeight: '500',
+  },
+  newsImage: {
+    width: 120,
+    height: '100%',
+    minHeight: 120,
+    backgroundColor: '#e0e0e0',
   },
   placeholderImage: {
     backgroundColor: '#e0e0e0',

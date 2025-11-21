@@ -78,12 +78,12 @@ This task list implements a news feed feature that displays recent and historic 
 
 #### News Service Package
 
-- [ ] T010 [P] [US1] Create news service package directory structure in services/api/internal/news/
-- [ ] T011 [P] [US1] Implement RapidAPI client wrapper in services/api/internal/news/client.go
-- [ ] T012 [P] [US1] Implement cache key management in services/api/internal/news/cache.go
-- [ ] T013 [P] [US1] Implement response transformer in services/api/internal/news/transformer.go
-- [ ] T014 [US1] Create news HTTP handler in services/api/internal/api/news.go
-- [ ] T015 [US1] Register news routes in services/api/main.go
+- [x] T010 [P] [US1] Create news service package directory structure in services/api/internal/news/
+- [x] T011 [P] [US1] Implement RapidAPI client wrapper in services/api/internal/news/client.go
+- [x] T012 [P] [US1] Implement cache key management in services/api/internal/news/cache.go
+- [x] T013 [P] [US1] Implement response transformer in services/api/internal/news/transformer.go
+- [x] T014 [US1] Create news HTTP handler in services/api/internal/api/news.go
+- [x] T015 [US1] Register news routes in services/api/main.go
 
 ### Frontend Implementation
 

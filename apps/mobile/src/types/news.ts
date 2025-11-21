@@ -22,7 +22,10 @@ export interface NewsArticle {
  * News API response structure
  */
 export interface NewsAPIResponse {
-  articles: NewsArticle[];
+  todayArticles: NewsArticle[];
+  historyArticles: NewsArticle[];
   cached: boolean;
   cachedAt?: string; // ISO 8601 format (only present if cached is true)
+  // Deprecated: Use todayArticles and historyArticles instead
+  articles?: NewsArticle[];
 }

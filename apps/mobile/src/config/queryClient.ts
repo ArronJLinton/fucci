@@ -19,3 +19,41 @@ export const queryClient = new QueryClient({
   },
 });
 
+/**
+ * Utility functions for clearing React Query cache
+ */
+
+/**
+ * Clear all cached queries
+ */
+export const clearAllCache = () => {
+  queryClient.clear();
+  console.log('[Cache] Cleared all React Query cache');
+};
+
+/**
+ * Invalidate and refetch news queries
+ * This marks the data as stale and triggers a refetch
+ */
+export const invalidateNewsCache = () => {
+  queryClient.invalidateQueries({queryKey: ['news', 'football']});
+  console.log('[Cache] Invalidated news cache');
+};
+
+/**
+ * Remove news queries from cache completely
+ * This removes the data without refetching
+ */
+export const removeNewsCache = () => {
+  queryClient.removeQueries({queryKey: ['news', 'football']});
+  console.log('[Cache] Removed news cache');
+};
+
+/**
+ * Reset all queries to their initial state
+ */
+export const resetAllQueries = () => {
+  queryClient.resetQueries();
+  console.log('[Cache] Reset all queries');
+};
+

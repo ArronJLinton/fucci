@@ -1,0 +1,82 @@
+package api
+
+import (
+	"log"
+	"net/http"
+	"time"
+
+	"github.com/ArronJLinton/fucci-api/internal/cache"
+	"github.com/ArronJLinton/fucci-api/internal/news"
+)
+
+// getFootballNews handles GET /api/news/football
+// Fetches football news from RapidAPI with caching
+func (c *Config) getFootballNews(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+	// Generate cache key
+	cacheKey := news.GenerateCacheKey()
+
+	// Try to get from cache first
+	var cachedResponse news.NewsAPIResponse
+	exists, err := c.Cache.Exists(ctx, cacheKey)
+	if err != nil {
+		log.Printf("Cache check error: %v\n", err)
+	} else if exists {
+		err = c.Cache.Get(ctx, cacheKey, &cachedResponse)
+		if err == nil {
+			// Check if cached response has the new format (todayArticles/historyArticles)
+			// If it only has the old format (articles), skip cache and fetch fresh data
+			if len(cachedResponse.TodayArticles) == 0 && len(cachedResponse.HistoryArticles) == 0 && len(cachedResponse.Articles) > 0 {
+				log.Printf("Cache has old format, bypassing cache to fetch fresh data\n")
+				exists = false // Force fresh fetch
+			} else {
+				// Return cached response with new format
+				cachedResponse.Cached = true
+				cachedResponse.CachedAt = time.Now().UTC().Format(time.RFC3339)
+				respondWithJSON(w, http.StatusOK, cachedResponse)
+				return
+			}
+		}
+		log.Printf("Cache get error: %v\n", err)
+	}
+
+	// Create news client
+	newsClient := news.NewClient(c.RapidAPIKey)
+
+	// Fetch both today's news and historical news from RapidAPI
+	todayAndHistoryResp, err := newsClient.FetchTodayAndHistoryNews()
+	if err != nil {
+		log.Printf("Failed to fetch news from RapidAPI: %v", err)
+
+		// If we have cached data, return it even if stale
+		if exists {
+			cachedResponse.Cached = true
+			cachedResponse.CachedAt = time.Now().UTC().Format(time.RFC3339)
+			respondWithJSON(w, http.StatusServiceUnavailable, cachedResponse)
+			return
+		}
+
+		// No cached data available, return error
+		respondWithError(w, http.StatusInternalServerError, "Failed to fetch news from external API")
+		return
+	}
+
+	// Transform both responses to internal format
+	transformedResponse, err := news.TransformTodayAndHistoryResponse(todayAndHistoryResp)
+	if err != nil {
+		log.Printf("Failed to transform news response: %v", err)
+		respondWithError(w, http.StatusInternalServerError, "Failed to process news data")
+		return
+	}
+
+	// Cache the response for 15 minutes
+	err = c.Cache.Set(ctx, cacheKey, transformedResponse, cache.NewsTTL)
+	if err != nil {
+		log.Printf("Cache set error: %v\n", err)
+		// Continue even if caching fails
+	}
+	log.Printf("transformedResponse: %+v", transformedResponse)
+	// Return the response
+	transformedResponse.Cached = false
+	respondWithJSON(w, http.StatusOK, transformedResponse)
+}

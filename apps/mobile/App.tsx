@@ -20,6 +20,7 @@ import HomeScreen from './src/screens/HomeScreen';
 import MatchDetailsScreen from './src/screens/MatchDetailsScreen';
 import CameraPreviewScreen from './src/screens/CameraPreviewScreen';
 import NewsWebViewScreen from './src/screens/NewsWebViewScreen';
+import NewsScreen from './src/screens/NewsScreen';
 
 // Types
 import type {RootStackParamList} from './src/types/navigation';
@@ -97,6 +98,18 @@ const MainStack = () => {
             headerShown: false,
             tabBarIcon: ({color, size}) => (
               <Ionicons name="football-outline" size={size} color={color} />
+            ),
+            tabBarLabel: () => null,
+            title: '',
+          }}
+        />
+        <Tab.Screen
+          name="News"
+          component={NewsScreen}
+          options={{
+            headerShown: false,
+            tabBarIcon: ({color, size}) => (
+              <Ionicons name="newspaper-outline" size={size} color={color} />
             ),
             tabBarLabel: () => null,
             title: '',
