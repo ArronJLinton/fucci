@@ -75,7 +75,6 @@ func (c *Config) getFootballNews(w http.ResponseWriter, r *http.Request) {
 		log.Printf("Cache set error: %v\n", err)
 		// Continue even if caching fails
 	}
-	log.Printf("transformedResponse: %+v", transformedResponse)
 	// Return the response
 	transformedResponse.Cached = false
 	respondWithJSON(w, http.StatusOK, transformedResponse)
