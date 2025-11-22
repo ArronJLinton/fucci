@@ -151,3 +151,20 @@ func (c *Client) FetchTodayAndHistoryNews() (*TodayAndHistoryResponse, error) {
 		HistoryResponse: historyResp,
 	}, nil
 }
+
+// FetchMatchNews fetches news for a specific match (both teams)
+// Makes a single API call with combined query like "Chelsea FC and Liverpool FC"
+func (c *Client) FetchMatchNews(homeTeam, awayTeam string, limit int) (*RapidAPIResponse, error) {
+	// Build combined query: "Team A and Team B"
+	query := fmt.Sprintf("%s and %s", homeTeam, awayTeam)
+
+	opts := FetchNewsOptions{
+		Query:         query,
+		TimePublished: "1d", // Today's news only
+		Limit:         limit,
+		Country:       "US",
+		Lang:          "en",
+	}
+
+	return c.FetchNews(opts)
+}

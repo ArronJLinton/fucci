@@ -182,3 +182,45 @@ func computeRelativeTime(isoTimestamp string) string {
 	}
 	return fmt.Sprintf("%d years ago", years)
 }
+
+// MatchNewsAPIResponse represents the API response structure for match-specific news
+type MatchNewsAPIResponse struct {
+	Articles []NewsArticle `json:"articles"`
+	Cached   bool          `json:"cached"`
+	CachedAt string        `json:"cachedAt,omitempty"` // ISO 8601 format
+}
+
+// TransformMatchNewsResponse transforms RapidAPI response to match news format (today's articles only)
+func TransformMatchNewsResponse(rapidAPIResp *RapidAPIResponse) (*MatchNewsAPIResponse, error) {
+	articles := make([]NewsArticle, 0, len(rapidAPIResp.Data))
+
+	for _, article := range rapidAPIResp.Data {
+		// Generate article ID from URL
+		articleID, err := GenerateArticleID(article.Link)
+		if err != nil {
+			// Log error but continue with other articles
+			continue
+		}
+
+		// Compute relative time
+		relativeTime := computeRelativeTime(article.PublishedDatetimeUTC)
+
+		transformedArticle := NewsArticle{
+			ID:           articleID,
+			Title:        article.Title,
+			Snippet:      article.Snippet,
+			ImageURL:     article.PhotoURL,
+			SourceURL:    article.Link,
+			SourceName:   article.SourceName,
+			PublishedAt:  article.PublishedDatetimeUTC,
+			RelativeTime: relativeTime,
+		}
+
+		articles = append(articles, transformedArticle)
+	}
+
+	return &MatchNewsAPIResponse{
+		Articles: articles,
+		Cached:   false,
+	}, nil
+}

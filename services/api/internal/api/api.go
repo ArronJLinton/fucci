@@ -75,6 +75,8 @@ func New(c Config) http.Handler {
 	googleRouter.Get("/search", c.search)
 
 	newsRouter := chi.NewRouter()
+	// Register more specific route first to avoid route conflicts
+	newsRouter.Get("/football/match", c.getMatchNews)
 	newsRouter.Get("/football", c.getFootballNews)
 
 	debateRouter := chi.NewRouter()

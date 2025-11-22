@@ -23,3 +23,8 @@ func GenerateCacheKeyWithTimestamp(timestamp string) string {
 	return fmt.Sprintf("%s:%s", CacheKeyPrefix, timestamp)
 }
 
+// GenerateMatchCacheKey creates a cache key for match-specific news
+// Format: "news:football:match:{matchID}"
+func GenerateMatchCacheKey(matchID string) string {
+	return fmt.Sprintf("%s:match:%s", CacheKeyPrefix, matchID)
+}

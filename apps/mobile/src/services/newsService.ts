@@ -1,5 +1,5 @@
 import {apiConfig} from '../config/environment';
-import type {NewsAPIResponse} from '../types/news';
+import type {NewsAPIResponse, MatchNewsAPIResponse} from '../types/news';
 
 /**
  * News API service client
@@ -13,7 +13,6 @@ import type {NewsAPIResponse} from '../types/news';
  */
 export const fetchFootballNews = async (): Promise<NewsAPIResponse> => {
   const url = `${apiConfig.baseURL}/news/football`;
-  console.log('[fetchFootballNews] Requesting:', url);
 
   try {
     const response = await fetch(url, {
@@ -22,8 +21,6 @@ export const fetchFootballNews = async (): Promise<NewsAPIResponse> => {
         ...apiConfig.headers,
       },
     });
-
-    console.log('[fetchFootballNews] Response status:', response.status);
 
     if (!response.ok) {
       const errorText = await response.text();
@@ -34,14 +31,63 @@ export const fetchFootballNews = async (): Promise<NewsAPIResponse> => {
     }
 
     const data: NewsAPIResponse = await response.json();
-    console.log('[fetchFootballNews] Success, received', data.articles?.length || 0, 'articles');
     return data;
   } catch (error) {
     console.error(`[fetchFootballNews] Request failed for ${url}:`, error);
     if (error instanceof TypeError && error.message.includes('fetch')) {
-      throw new Error('Network error: Unable to connect to the server. Please check if the backend is running.');
+      throw new Error(
+        'Network error: Unable to connect to the server. Please check if the backend is running.',
+      );
     }
     throw error;
   }
 };
 
+/**
+ * Fetches match-specific news articles from the backend API
+ * @param homeTeam - Name of the home team
+ * @param awayTeam - Name of the away team
+ * @param matchId - Match ID for caching
+ * @returns Promise resolving to MatchNewsAPIResponse
+ * @throws Error if the API request fails
+ */
+export const fetchMatchNews = async (
+  homeTeam: string,
+  awayTeam: string,
+  matchId: string,
+): Promise<MatchNewsAPIResponse> => {
+  const params = new URLSearchParams({
+    homeTeam,
+    awayTeam,
+    matchId,
+  });
+  const url = `${apiConfig.baseURL}/news/football/match?${params.toString()}`;
+
+  try {
+    const response = await fetch(url, {
+      method: 'GET',
+      headers: {
+        ...apiConfig.headers,
+      },
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('[fetchMatchNews] Error response:', errorText);
+      throw new Error(
+        `API request failed: ${response.status} ${response.statusText}`,
+      );
+    }
+
+    const data: MatchNewsAPIResponse = await response.json();
+    return data;
+  } catch (error) {
+    console.error(`[fetchMatchNews] Request failed for ${url}:`, error);
+    if (error instanceof TypeError && error.message.includes('fetch')) {
+      throw new Error(
+        'Network error: Unable to connect to the server. Please check if the backend is running.',
+      );
+    }
+    throw error;
+  }
+};

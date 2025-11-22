@@ -29,3 +29,12 @@ export interface NewsAPIResponse {
   // Deprecated: Use todayArticles and historyArticles instead
   articles?: NewsArticle[];
 }
+
+/**
+ * Match-specific news API response structure
+ */
+export interface MatchNewsAPIResponse {
+  articles: NewsArticle[];
+  cached: boolean;
+  cachedAt?: string; // ISO 8601 format (only present if cached is true)
+}
