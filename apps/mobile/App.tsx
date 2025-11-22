@@ -62,6 +62,31 @@ const HomeStack = () => {
   );
 };
 
+const NewsStack = () => {
+  return (
+    <StackNavigator>
+      <StackScreen
+        name="News"
+        component={NewsScreen}
+        options={{
+          headerShown: false,
+          title: '',
+        }}
+      />
+      <StackScreen
+        name="NewsWebView"
+        component={NewsWebViewScreen}
+        options={{
+          headerShown: false,
+          presentation: 'card',
+          animation: 'slide_from_right',
+          gestureEnabled: true,
+        }}
+      />
+    </StackNavigator>
+  );
+};
+
 const MainStack = () => {
   return (
     <SafeAreaView style={{flex: 1, backgroundColor: '#fff'}}>
@@ -105,7 +130,7 @@ const MainStack = () => {
         />
         <Tab.Screen
           name="News"
-          component={NewsScreen}
+          component={NewsStack}
           options={{
             headerShown: false,
             tabBarIcon: ({color, size}) => (
@@ -132,14 +157,6 @@ function App(): React.JSX.Element {
                 name="CameraPreview"
                 component={CameraPreviewScreen}
                 options={{
-                  animation: 'slide_from_bottom',
-                }}
-              />
-              <StackScreen
-                name="NewsWebView"
-                component={NewsWebViewScreen}
-                options={{
-                  headerShown: false,
                   animation: 'slide_from_bottom',
                 }}
               />
