@@ -25,12 +25,9 @@ export function useNews() {
         }
       },
       staleTime: 5 * 60 * 1000, // 5 minutes
-      cacheTime: 15 * 60 * 1000, // 15 minutes
+      gcTime: 15 * 60 * 1000, // 15 minutes (formerly cacheTime)
       retry: 3,
       retryDelay: attemptIndex => Math.min(1000 * 2 ** attemptIndex, 30000),
-      onError: error => {
-        console.error('[useNews] Query error:', error);
-      },
     });
 
   /**
@@ -53,15 +50,17 @@ export function useNews() {
     console.log('[useNews] Invalidated news cache');
   };
 
+  const newsData: NewsAPIResponse | undefined = data;
+
   return {
-    todayArticles: data?.todayArticles || [],
-    historyArticles: data?.historyArticles || [],
+    todayArticles: newsData?.todayArticles || [],
+    historyArticles: newsData?.historyArticles || [],
     loading: isLoading,
     error: error as Error | null,
     refresh: refetch,
     refreshing: isRefetching,
-    cached: data?.cached || false,
-    cachedAt: data?.cachedAt,
+    cached: newsData?.cached || false,
+    cachedAt: newsData?.cachedAt,
     clearCache,
     invalidateCache,
   };
