@@ -23,8 +23,6 @@ type NewsAPIResponse struct {
 	HistoryArticles []NewsArticle `json:"historyArticles"`
 	Cached          bool          `json:"cached"`
 	CachedAt        string        `json:"cachedAt,omitempty"` // ISO 8601 format
-	// Deprecated: Use TodayArticles and HistoryArticles instead
-	Articles []NewsArticle `json:"articles,omitempty"`
 }
 
 // TransformRapidAPIResponse transforms RapidAPI response to internal format
@@ -57,8 +55,9 @@ func TransformRapidAPIResponse(rapidAPIResp *RapidAPIResponse) (*NewsAPIResponse
 	}
 
 	return &NewsAPIResponse{
-		Articles: articles,
-		Cached:   false,
+		TodayArticles: articles,
+		// HistoryArticles: []NewsArticle{l},
+		Cached: false,
 	}, nil
 }
 
