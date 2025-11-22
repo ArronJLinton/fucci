@@ -21,7 +21,7 @@ export function useMatchNews(
   const {data, isLoading, error, refetch, isRefetching} =
     useQuery<MatchNewsAPIResponse>({
       queryKey: ['news', 'match', matchId, homeTeam, awayTeam],
-      queryFn: async () => {
+      queryFn: async (): Promise<MatchNewsAPIResponse> => {
         try {
           console.log('[useMatchNews] Fetching match news...', {
             homeTeam,
@@ -36,12 +36,9 @@ export function useMatchNews(
         }
       },
       staleTime: 5 * 60 * 1000, // 5 minutes
-      cacheTime: 15 * 60 * 1000, // 15 minutes
+      gcTime: 15 * 60 * 1000, // 15 minutes (formerly cacheTime)
       retry: 3,
       retryDelay: attemptIndex => Math.min(1000 * 2 ** attemptIndex, 30000),
-      onError: error => {
-        console.error('[useMatchNews] Query error:', error);
-      },
       enabled: !!homeTeam && !!awayTeam && !!matchId, // Only fetch if all params are provided
     });
 
@@ -69,14 +66,16 @@ export function useMatchNews(
     console.log('[useMatchNews] Invalidated match news cache');
   };
 
+  const matchNewsData: MatchNewsAPIResponse | undefined = data;
+
   return {
-    articles: data?.articles || [],
+    articles: matchNewsData?.articles || [],
     loading: isLoading,
     error: error as Error | null,
     refresh: refetch,
     refreshing: isRefetching,
-    cached: data?.cached || false,
-    cachedAt: data?.cachedAt,
+    cached: matchNewsData?.cached || false,
+    cachedAt: matchNewsData?.cachedAt,
     clearCache,
     invalidateCache,
   };
