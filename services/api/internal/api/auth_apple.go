@@ -23,6 +23,7 @@ type AppleAuthRequest struct {
 	IdentityToken     string             `json:"identity_token"`
 	AuthorizationCode string             `json:"authorization_code,omitempty"`
 	FullName          *AppleAuthFullName `json:"full_name,omitempty"`
+	AcceptedTerms     bool               `json:"accepted_terms"`
 }
 
 // AppleAuthResponse matches GoogleAuthResponse shape for shared mobile session handling.
@@ -74,6 +75,10 @@ func (c *Config) handleAppleAuth(w http.ResponseWriter, r *http.Request) {
 		respondWithErrorCode(w, http.StatusBadRequest, "identity_token is required", "INVALID_TOKEN")
 		return
 	}
+	if err := requireAcceptedTerms(req.AcceptedTerms); err != nil {
+		respondWithErrorCode(w, http.StatusBadRequest, err.Error(), "TERMS_REQUIRED")
+		return
+	}
 	if c.DB == nil && c.DBConn == nil {
 		respondWithError(w, http.StatusInternalServerError, "database not configured")
 		return
@@ -84,6 +89,7 @@ func (c *Config) handleAppleAuth(w http.ResponseWriter, r *http.Request) {
 		respondWithErrorCode(w, procErr.status, procErr.msg, procErr.code)
 		return
 	}
+	c.recordTermsAcceptance(r.Context(), out.User.ID)
 	respondWithJSON(w, http.StatusOK, out)
 }
 
@@ -128,7 +134,7 @@ func (c *Config) appleAuthFromIdentityToken(ctx context.Context, req AppleAuthRe
 	switch {
 	case err == nil:
 		if u.IsActive.Valid && !u.IsActive.Bool {
-			return AppleAuthResponse{}, &appleAuthProcError{status: http.StatusForbidden, code: "ACCOUNT_INACTIVE", msg: "This account has been deactivated"}
+			return AppleAuthResponse{}, &appleAuthProcError{status: http.StatusForbidden, code: "ACCOUNT_INACTIVE", msg: accountDeactivatedMessage}
 		}
 		u, err = q.UpdateAppleLoginFields(ctx, database.UpdateAppleLoginFieldsParams{
 			ID:                u.ID,
@@ -148,7 +154,7 @@ func (c *Config) appleAuthFromIdentityToken(ctx context.Context, req AppleAuthRe
 		byEmail, emailErr := q.GetUserByEmailLower(ctx, email)
 		if emailErr == nil {
 			if byEmail.IsActive.Valid && !byEmail.IsActive.Bool {
-				return AppleAuthResponse{}, &appleAuthProcError{status: http.StatusForbidden, code: "ACCOUNT_INACTIVE", msg: "This account has been deactivated"}
+				return AppleAuthResponse{}, &appleAuthProcError{status: http.StatusForbidden, code: "ACCOUNT_INACTIVE", msg: accountDeactivatedMessage}
 			}
 			existingAppleID := strings.TrimSpace(byEmail.AppleID.String)
 			if byEmail.AppleID.Valid && existingAppleID != "" && existingAppleID != subject {
@@ -197,7 +203,7 @@ func (c *Config) appleAuthFromIdentityToken(ctx context.Context, req AppleAuthRe
 
 	userResponse := userResponseFromDBUser(u)
 	if !userResponse.IsActive {
-		return AppleAuthResponse{}, &appleAuthProcError{status: http.StatusForbidden, code: "ACCOUNT_INACTIVE", msg: "This account has been deactivated"}
+		return AppleAuthResponse{}, &appleAuthProcError{status: http.StatusForbidden, code: "ACCOUNT_INACTIVE", msg: accountDeactivatedMessage}
 	}
 
 	token, err := auth.GenerateToken(userResponse.ID, userResponse.Email, userResponse.Role, 24*time.Hour)

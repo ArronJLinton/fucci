@@ -12,6 +12,7 @@ import (
 
 	"github.com/ArronJLinton/fucci-api/internal/auth"
 	"github.com/ArronJLinton/fucci-api/internal/database"
+	"github.com/ArronJLinton/fucci-api/internal/moderation"
 	"github.com/ArronJLinton/fucci-api/internal/youtube"
 	"github.com/go-chi/chi"
 	"github.com/google/uuid"
@@ -211,13 +212,16 @@ func (c *Config) postMatchStory(w http.ResponseWriter, r *http.Request) {
 
 	var caption sql.NullString
 	if req.Caption != nil {
-		c := strings.TrimSpace(*req.Caption)
-		if len(c) > 500 {
+		captionText := strings.TrimSpace(*req.Caption)
+		if len(captionText) > 500 {
 			respondWithError(w, http.StatusBadRequest, "caption must be 500 characters or fewer")
 			return
 		}
-		if c != "" {
-			caption = sql.NullString{String: c, Valid: true}
+		if captionText != "" {
+			if c.rejectIfObjectionable(w, captionText) {
+				return
+			}
+			caption = sql.NullString{String: captionText, Valid: true}
 		}
 	}
 
@@ -320,8 +324,10 @@ func (c *Config) postContentReport(w http.ResponseWriter, r *http.Request) {
 	}
 
 	reportableType := strings.TrimSpace(req.ReportableType)
-	if reportableType != "story" && reportableType != "debate_response" {
-		respondWithError(w, http.StatusBadRequest, "reportable_type must be story or debate_response")
+	switch reportableType {
+	case "story", "debate_response", "avatar", "player_profile", "user":
+	default:
+		respondWithError(w, http.StatusBadRequest, "reportable_type must be story, debate_response, avatar, player_profile, or user")
 		return
 	}
 
@@ -398,6 +404,27 @@ func (c *Config) postContentReport(w http.ResponseWriter, r *http.Request) {
 
 		reportableID = strconv.FormatInt(commentID, 10)
 		reportedUserID = comment.UserID
+
+	case "avatar", "player_profile", "user":
+		targetUserID, err := strconv.ParseInt(strings.TrimSpace(req.ReportableID), 10, 32)
+		if err != nil || targetUserID <= 0 {
+			respondWithError(w, http.StatusBadRequest, "invalid reportable_id")
+			return
+		}
+		if int32(targetUserID) == userID {
+			respondWithError(w, http.StatusBadRequest, "cannot report your own content")
+			return
+		}
+		if _, err := c.DB.GetUser(r.Context(), int32(targetUserID)); err != nil {
+			if errors.Is(err, sql.ErrNoRows) {
+				respondWithError(w, http.StatusNotFound, "user not found")
+				return
+			}
+			respondWithError(w, http.StatusInternalServerError, "Failed to load user")
+			return
+		}
+		reportableID = strconv.FormatInt(targetUserID, 10)
+		reportedUserID = sql.NullInt32{Int32: int32(targetUserID), Valid: true}
 	}
 
 	report, err := c.DB.CreateContentReport(r.Context(), database.CreateContentReportParams{
@@ -412,6 +439,26 @@ func (c *Config) postContentReport(w http.ResponseWriter, r *http.Request) {
 		respondWithError(w, http.StatusInternalServerError, "Failed to create report")
 		return
 	}
+
+	var reportedPtr *int32
+	if reportedUserID.Valid {
+		id := reportedUserID.Int32
+		reportedPtr = &id
+	}
+	desc := ""
+	if description.Valid {
+		desc = description.String
+	}
+	go c.moderationNotifier().NotifyReport(moderation.ReportEmailPayload{
+		ReportID:       report.ID.String(),
+		ReporterID:     userID,
+		ReportedUserID: reportedPtr,
+		ReportableType: reportableType,
+		ReportableID:   reportableID,
+		Reason:         reason,
+		Description:    desc,
+		Source:         "report",
+	})
 
 	respondWithJSON(w, http.StatusOK, map[string]interface{}{
 		"id":                report.ID.String(),

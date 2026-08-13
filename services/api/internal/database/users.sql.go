@@ -10,10 +10,28 @@ import (
 	"database/sql"
 )
 
+const acceptUserTerms = `-- name: AcceptUserTerms :exec
+UPDATE users
+SET terms_accepted_at = CURRENT_TIMESTAMP,
+    terms_version = $1,
+    updated_at = CURRENT_TIMESTAMP
+WHERE id = $2
+`
+
+type AcceptUserTermsParams struct {
+	TermsVersion sql.NullString
+	ID           int32
+}
+
+func (q *Queries) AcceptUserTerms(ctx context.Context, arg AcceptUserTermsParams) error {
+	_, err := q.db.ExecContext(ctx, acceptUserTerms, arg.TermsVersion, arg.ID)
+	return err
+}
+
 const createAppleUser = `-- name: CreateAppleUser :one
 INSERT INTO users (firstname, lastname, email, apple_id, auth_provider, is_admin, is_active, is_verified, last_login_at, apple_refresh_token)
 VALUES ($1, $2, $3, $4, 'apple', false, true, true, CURRENT_TIMESTAMP, $5)
-RETURNING id, firstname, lastname, email, created_at, updated_at, is_admin, display_name, avatar_url, google_id, auth_provider, locale, last_login_at, is_verified, is_active, role, apple_id, apple_refresh_token
+RETURNING id, firstname, lastname, email, created_at, updated_at, is_admin, display_name, avatar_url, google_id, auth_provider, locale, last_login_at, is_verified, is_active, role, apple_id, apple_refresh_token, terms_accepted_at, terms_version
 `
 
 type CreateAppleUserParams struct {
@@ -52,6 +70,8 @@ func (q *Queries) CreateAppleUser(ctx context.Context, arg CreateAppleUserParams
 		&i.Role,
 		&i.AppleID,
 		&i.AppleRefreshToken,
+		&i.TermsAcceptedAt,
+		&i.TermsVersion,
 	)
 	return i, err
 }
@@ -59,7 +79,7 @@ func (q *Queries) CreateAppleUser(ctx context.Context, arg CreateAppleUserParams
 const createGoogleUser = `-- name: CreateGoogleUser :one
 INSERT INTO users (firstname, lastname, email, google_id, auth_provider, avatar_url, locale, is_admin, is_active, is_verified, last_login_at)
 VALUES ($1, $2, $3, $4, 'google', $5, $6, false, true, true, CURRENT_TIMESTAMP)
-RETURNING id, firstname, lastname, email, created_at, updated_at, is_admin, display_name, avatar_url, google_id, auth_provider, locale, last_login_at, is_verified, is_active, role, apple_id, apple_refresh_token
+RETURNING id, firstname, lastname, email, created_at, updated_at, is_admin, display_name, avatar_url, google_id, auth_provider, locale, last_login_at, is_verified, is_active, role, apple_id, apple_refresh_token, terms_accepted_at, terms_version
 `
 
 type CreateGoogleUserParams struct {
@@ -100,6 +120,8 @@ func (q *Queries) CreateGoogleUser(ctx context.Context, arg CreateGoogleUserPara
 		&i.Role,
 		&i.AppleID,
 		&i.AppleRefreshToken,
+		&i.TermsAcceptedAt,
+		&i.TermsVersion,
 	)
 	return i, err
 }
@@ -107,7 +129,7 @@ func (q *Queries) CreateGoogleUser(ctx context.Context, arg CreateGoogleUserPara
 const createUser = `-- name: CreateUser :one
 INSERT INTO users (firstname, lastname, email, is_admin)
 VALUES ($1, $2, $3, $4)
-RETURNING id, firstname, lastname, email, created_at, updated_at, is_admin, display_name, avatar_url, google_id, auth_provider, locale, last_login_at, is_verified, is_active, role, apple_id, apple_refresh_token
+RETURNING id, firstname, lastname, email, created_at, updated_at, is_admin, display_name, avatar_url, google_id, auth_provider, locale, last_login_at, is_verified, is_active, role, apple_id, apple_refresh_token, terms_accepted_at, terms_version
 `
 
 type CreateUserParams struct {
@@ -144,6 +166,44 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (Users, 
 		&i.Role,
 		&i.AppleID,
 		&i.AppleRefreshToken,
+		&i.TermsAcceptedAt,
+		&i.TermsVersion,
+	)
+	return i, err
+}
+
+const deactivateUser = `-- name: DeactivateUser :one
+UPDATE users
+SET is_active = FALSE,
+    updated_at = CURRENT_TIMESTAMP
+WHERE id = $1
+RETURNING id, firstname, lastname, email, created_at, updated_at, is_admin, display_name, avatar_url, google_id, auth_provider, locale, last_login_at, is_verified, is_active, role, apple_id, apple_refresh_token, terms_accepted_at, terms_version
+`
+
+func (q *Queries) DeactivateUser(ctx context.Context, id int32) (Users, error) {
+	row := q.db.QueryRowContext(ctx, deactivateUser, id)
+	var i Users
+	err := row.Scan(
+		&i.ID,
+		&i.Firstname,
+		&i.Lastname,
+		&i.Email,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.IsAdmin,
+		&i.DisplayName,
+		&i.AvatarUrl,
+		&i.GoogleID,
+		&i.AuthProvider,
+		&i.Locale,
+		&i.LastLoginAt,
+		&i.IsVerified,
+		&i.IsActive,
+		&i.Role,
+		&i.AppleID,
+		&i.AppleRefreshToken,
+		&i.TermsAcceptedAt,
+		&i.TermsVersion,
 	)
 	return i, err
 }
@@ -158,7 +218,7 @@ func (q *Queries) DeleteUser(ctx context.Context, id int32) error {
 }
 
 const getUser = `-- name: GetUser :one
-SELECT id, firstname, lastname, email, created_at, updated_at, is_admin, display_name, avatar_url, google_id, auth_provider, locale, last_login_at, is_verified, is_active, role, apple_id, apple_refresh_token FROM users WHERE id = $1
+SELECT id, firstname, lastname, email, created_at, updated_at, is_admin, display_name, avatar_url, google_id, auth_provider, locale, last_login_at, is_verified, is_active, role, apple_id, apple_refresh_token, terms_accepted_at, terms_version FROM users WHERE id = $1
 `
 
 func (q *Queries) GetUser(ctx context.Context, id int32) (Users, error) {
@@ -183,12 +243,14 @@ func (q *Queries) GetUser(ctx context.Context, id int32) (Users, error) {
 		&i.Role,
 		&i.AppleID,
 		&i.AppleRefreshToken,
+		&i.TermsAcceptedAt,
+		&i.TermsVersion,
 	)
 	return i, err
 }
 
 const getUserByAppleID = `-- name: GetUserByAppleID :one
-SELECT id, firstname, lastname, email, created_at, updated_at, is_admin, display_name, avatar_url, google_id, auth_provider, locale, last_login_at, is_verified, is_active, role, apple_id, apple_refresh_token FROM users WHERE apple_id = $1::varchar(255)
+SELECT id, firstname, lastname, email, created_at, updated_at, is_admin, display_name, avatar_url, google_id, auth_provider, locale, last_login_at, is_verified, is_active, role, apple_id, apple_refresh_token, terms_accepted_at, terms_version FROM users WHERE apple_id = $1::varchar(255)
 `
 
 func (q *Queries) GetUserByAppleID(ctx context.Context, appleID string) (Users, error) {
@@ -213,12 +275,14 @@ func (q *Queries) GetUserByAppleID(ctx context.Context, appleID string) (Users, 
 		&i.Role,
 		&i.AppleID,
 		&i.AppleRefreshToken,
+		&i.TermsAcceptedAt,
+		&i.TermsVersion,
 	)
 	return i, err
 }
 
 const getUserByEmail = `-- name: GetUserByEmail :one
-SELECT id, firstname, lastname, email, created_at, updated_at, is_admin, display_name, avatar_url, google_id, auth_provider, locale, last_login_at, is_verified, is_active, role, apple_id, apple_refresh_token FROM users WHERE email = $1
+SELECT id, firstname, lastname, email, created_at, updated_at, is_admin, display_name, avatar_url, google_id, auth_provider, locale, last_login_at, is_verified, is_active, role, apple_id, apple_refresh_token, terms_accepted_at, terms_version FROM users WHERE email = $1
 `
 
 func (q *Queries) GetUserByEmail(ctx context.Context, email string) (Users, error) {
@@ -243,12 +307,14 @@ func (q *Queries) GetUserByEmail(ctx context.Context, email string) (Users, erro
 		&i.Role,
 		&i.AppleID,
 		&i.AppleRefreshToken,
+		&i.TermsAcceptedAt,
+		&i.TermsVersion,
 	)
 	return i, err
 }
 
 const getUserByEmailLower = `-- name: GetUserByEmailLower :one
-SELECT id, firstname, lastname, email, created_at, updated_at, is_admin, display_name, avatar_url, google_id, auth_provider, locale, last_login_at, is_verified, is_active, role, apple_id, apple_refresh_token FROM users WHERE email = $1 LIMIT 1
+SELECT id, firstname, lastname, email, created_at, updated_at, is_admin, display_name, avatar_url, google_id, auth_provider, locale, last_login_at, is_verified, is_active, role, apple_id, apple_refresh_token, terms_accepted_at, terms_version FROM users WHERE email = $1 LIMIT 1
 `
 
 // Caller must pass email already lowercased to match stored rows and use a plain index on email.
@@ -274,12 +340,14 @@ func (q *Queries) GetUserByEmailLower(ctx context.Context, email string) (Users,
 		&i.Role,
 		&i.AppleID,
 		&i.AppleRefreshToken,
+		&i.TermsAcceptedAt,
+		&i.TermsVersion,
 	)
 	return i, err
 }
 
 const getUserByGoogleID = `-- name: GetUserByGoogleID :one
-SELECT id, firstname, lastname, email, created_at, updated_at, is_admin, display_name, avatar_url, google_id, auth_provider, locale, last_login_at, is_verified, is_active, role, apple_id, apple_refresh_token FROM users WHERE google_id = $1::varchar(255)
+SELECT id, firstname, lastname, email, created_at, updated_at, is_admin, display_name, avatar_url, google_id, auth_provider, locale, last_login_at, is_verified, is_active, role, apple_id, apple_refresh_token, terms_accepted_at, terms_version FROM users WHERE google_id = $1::varchar(255)
 `
 
 func (q *Queries) GetUserByGoogleID(ctx context.Context, googleID string) (Users, error) {
@@ -304,8 +372,23 @@ func (q *Queries) GetUserByGoogleID(ctx context.Context, googleID string) (Users
 		&i.Role,
 		&i.AppleID,
 		&i.AppleRefreshToken,
+		&i.TermsAcceptedAt,
+		&i.TermsVersion,
 	)
 	return i, err
+}
+
+const isUserActive = `-- name: IsUserActive :one
+SELECT COALESCE(is_active, TRUE)::bool AS is_active
+FROM users
+WHERE id = $1
+`
+
+func (q *Queries) IsUserActive(ctx context.Context, id int32) (bool, error) {
+	row := q.db.QueryRowContext(ctx, isUserActive, id)
+	var is_active bool
+	err := row.Scan(&is_active)
+	return is_active, err
 }
 
 const linkAppleToExistingUser = `-- name: LinkAppleToExistingUser :one
@@ -316,7 +399,7 @@ SET apple_id = COALESCE(NULLIF(apple_id::text, ''), $1::text)::varchar(255),
     apple_refresh_token = COALESCE($2, apple_refresh_token),
     updated_at = CURRENT_TIMESTAMP
 WHERE id = $3
-RETURNING id, firstname, lastname, email, created_at, updated_at, is_admin, display_name, avatar_url, google_id, auth_provider, locale, last_login_at, is_verified, is_active, role, apple_id, apple_refresh_token
+RETURNING id, firstname, lastname, email, created_at, updated_at, is_admin, display_name, avatar_url, google_id, auth_provider, locale, last_login_at, is_verified, is_active, role, apple_id, apple_refresh_token, terms_accepted_at, terms_version
 `
 
 type LinkAppleToExistingUserParams struct {
@@ -347,6 +430,8 @@ func (q *Queries) LinkAppleToExistingUser(ctx context.Context, arg LinkAppleToEx
 		&i.Role,
 		&i.AppleID,
 		&i.AppleRefreshToken,
+		&i.TermsAcceptedAt,
+		&i.TermsVersion,
 	)
 	return i, err
 }
@@ -359,7 +444,7 @@ SET google_id = COALESCE(NULLIF(google_id::text, ''), $1::text)::varchar(255),
     avatar_url = CASE WHEN $2::text <> '' THEN $2 ELSE avatar_url END,
     updated_at = CURRENT_TIMESTAMP
 WHERE id = $3
-RETURNING id, firstname, lastname, email, created_at, updated_at, is_admin, display_name, avatar_url, google_id, auth_provider, locale, last_login_at, is_verified, is_active, role, apple_id, apple_refresh_token
+RETURNING id, firstname, lastname, email, created_at, updated_at, is_admin, display_name, avatar_url, google_id, auth_provider, locale, last_login_at, is_verified, is_active, role, apple_id, apple_refresh_token, terms_accepted_at, terms_version
 `
 
 type LinkGoogleToExistingUserParams struct {
@@ -390,12 +475,14 @@ func (q *Queries) LinkGoogleToExistingUser(ctx context.Context, arg LinkGoogleTo
 		&i.Role,
 		&i.AppleID,
 		&i.AppleRefreshToken,
+		&i.TermsAcceptedAt,
+		&i.TermsVersion,
 	)
 	return i, err
 }
 
 const listUsers = `-- name: ListUsers :many
-SELECT id, firstname, lastname, email, created_at, updated_at, is_admin, display_name, avatar_url, google_id, auth_provider, locale, last_login_at, is_verified, is_active, role, apple_id, apple_refresh_token FROM users ORDER BY created_at DESC
+SELECT id, firstname, lastname, email, created_at, updated_at, is_admin, display_name, avatar_url, google_id, auth_provider, locale, last_login_at, is_verified, is_active, role, apple_id, apple_refresh_token, terms_accepted_at, terms_version FROM users ORDER BY created_at DESC
 `
 
 func (q *Queries) ListUsers(ctx context.Context) ([]Users, error) {
@@ -426,6 +513,8 @@ func (q *Queries) ListUsers(ctx context.Context) ([]Users, error) {
 			&i.Role,
 			&i.AppleID,
 			&i.AppleRefreshToken,
+			&i.TermsAcceptedAt,
+			&i.TermsVersion,
 		); err != nil {
 			return nil, err
 		}
@@ -446,7 +535,7 @@ SET last_login_at = CURRENT_TIMESTAMP,
     apple_refresh_token = COALESCE($1, apple_refresh_token),
     updated_at = CURRENT_TIMESTAMP
 WHERE id = $2
-RETURNING id, firstname, lastname, email, created_at, updated_at, is_admin, display_name, avatar_url, google_id, auth_provider, locale, last_login_at, is_verified, is_active, role, apple_id, apple_refresh_token
+RETURNING id, firstname, lastname, email, created_at, updated_at, is_admin, display_name, avatar_url, google_id, auth_provider, locale, last_login_at, is_verified, is_active, role, apple_id, apple_refresh_token, terms_accepted_at, terms_version
 `
 
 type UpdateAppleLoginFieldsParams struct {
@@ -476,6 +565,8 @@ func (q *Queries) UpdateAppleLoginFields(ctx context.Context, arg UpdateAppleLog
 		&i.Role,
 		&i.AppleID,
 		&i.AppleRefreshToken,
+		&i.TermsAcceptedAt,
+		&i.TermsVersion,
 	)
 	return i, err
 }
@@ -486,7 +577,7 @@ SET last_login_at = CURRENT_TIMESTAMP,
     avatar_url = CASE WHEN $1::text <> '' THEN $1 ELSE avatar_url END,
     updated_at = CURRENT_TIMESTAMP
 WHERE id = $2
-RETURNING id, firstname, lastname, email, created_at, updated_at, is_admin, display_name, avatar_url, google_id, auth_provider, locale, last_login_at, is_verified, is_active, role, apple_id, apple_refresh_token
+RETURNING id, firstname, lastname, email, created_at, updated_at, is_admin, display_name, avatar_url, google_id, auth_provider, locale, last_login_at, is_verified, is_active, role, apple_id, apple_refresh_token, terms_accepted_at, terms_version
 `
 
 type UpdateGoogleLoginFieldsParams struct {
@@ -516,6 +607,8 @@ func (q *Queries) UpdateGoogleLoginFields(ctx context.Context, arg UpdateGoogleL
 		&i.Role,
 		&i.AppleID,
 		&i.AppleRefreshToken,
+		&i.TermsAcceptedAt,
+		&i.TermsVersion,
 	)
 	return i, err
 }
@@ -524,7 +617,7 @@ const updateUser = `-- name: UpdateUser :one
 UPDATE users 
 SET firstname = $2, lastname = $3, email = $4, is_admin = $5, updated_at = CURRENT_TIMESTAMP
 WHERE id = $1
-RETURNING id, firstname, lastname, email, created_at, updated_at, is_admin, display_name, avatar_url, google_id, auth_provider, locale, last_login_at, is_verified, is_active, role, apple_id, apple_refresh_token
+RETURNING id, firstname, lastname, email, created_at, updated_at, is_admin, display_name, avatar_url, google_id, auth_provider, locale, last_login_at, is_verified, is_active, role, apple_id, apple_refresh_token, terms_accepted_at, terms_version
 `
 
 type UpdateUserParams struct {
@@ -563,6 +656,8 @@ func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (Users, 
 		&i.Role,
 		&i.AppleID,
 		&i.AppleRefreshToken,
+		&i.TermsAcceptedAt,
+		&i.TermsVersion,
 	)
 	return i, err
 }

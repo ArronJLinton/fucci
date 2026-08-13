@@ -23,6 +23,9 @@ import {isAppleAuthAvailable, launchAppleSignIn} from '../services/appleAuth';
 import {rootNavigate} from '../navigation/rootNavigation';
 import {dispatchAfterSignInSuccess} from '../navigation/authNavigationActions';
 import type {ReturnToDebateParams} from '../types/navigation';
+import TermsAcceptanceRow from './TermsAcceptanceRow';
+import {ACCOUNT_DEACTIVATED_MESSAGE} from '../constants/legal';
+import {isAccountDeactivatedError} from '../services/moderation';
 
 export type ProfileGuestAuthProps = {
   /** When set (e.g. from debate auth gate), resume this screen after sign-in. */
@@ -42,6 +45,7 @@ export default function ProfileGuestAuth({
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [appleAvailable, setAppleAvailable] = useState(false);
+  const [acceptedTerms, setAcceptedTerms] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -61,16 +65,36 @@ export default function ProfileGuestAuth({
       setError('Enter your email and password.');
       return;
     }
+    if (!acceptedTerms) {
+      setError('Please accept the Terms of Use to continue.');
+      return;
+    }
     setError(null);
     setBusy(true);
     try {
-      const result = await login({email: email.trim(), password});
+      const result = await login({
+        email: email.trim(),
+        password,
+        accepted_terms: true,
+      });
       if (result.ok) {
         await setAuth(result.data.token, result.data.user);
         dispatchAfterSignInSuccess({returnToDebate});
         return;
       }
-      setError(result.status === 401 ? 'Invalid credentials.' : result.message);
+      if (
+        isAccountDeactivatedError({
+          status: result.status,
+          message: result.message,
+          code: result.code,
+        })
+      ) {
+        setError(ACCOUNT_DEACTIVATED_MESSAGE);
+      } else {
+        setError(
+          result.status === 401 ? 'Invalid credentials.' : result.message,
+        );
+      }
     } catch {
       setError('Something went wrong. Try again.');
     } finally {
@@ -80,9 +104,13 @@ export default function ProfileGuestAuth({
 
   const handleGoogle = async () => {
     setError(null);
+    if (!acceptedTerms) {
+      setError('Please accept the Terms of Use to continue.');
+      return;
+    }
     setBusy(true);
     try {
-      const authResult = await launchGoogleAuthBrowserFlow();
+      const authResult = await launchGoogleAuthBrowserFlow(true);
       if (authResult.kind === 'cancel') {
         return;
       }
@@ -108,9 +136,13 @@ export default function ProfileGuestAuth({
 
   const handleApple = async () => {
     setError(null);
+    if (!acceptedTerms) {
+      setError('Please accept the Terms of Use to continue.');
+      return;
+    }
     setBusy(true);
     try {
-      const authResult = await launchAppleSignIn();
+      const authResult = await launchAppleSignIn(true);
       if (authResult.kind === 'cancel' || authResult.kind === 'unavailable') {
         return;
       }
@@ -229,6 +261,12 @@ export default function ProfileGuestAuth({
           <Text style={styles.passwordHint}>
             Min 8 characters, one letter, one number.
           </Text>
+
+          <TermsAcceptanceRow
+            accepted={acceptedTerms}
+            onToggle={() => setAcceptedTerms(v => !v)}
+            disabled={busy}
+          />
 
           <TouchableOpacity
             activeOpacity={0.92}

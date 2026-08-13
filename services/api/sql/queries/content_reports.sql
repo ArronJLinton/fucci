@@ -15,3 +15,19 @@ INSERT INTO content_reports (
     sqlc.narg(description)
 )
 RETURNING *;
+
+-- name: ListPendingContentReports :many
+SELECT *
+FROM content_reports
+WHERE status = 'pending'
+ORDER BY created_at ASC
+LIMIT sqlc.arg(row_limit);
+
+-- name: GetContentReportByID :one
+SELECT * FROM content_reports WHERE id = sqlc.arg(id);
+
+-- name: UpdateContentReportStatus :one
+UPDATE content_reports
+SET status = sqlc.arg(status)
+WHERE id = sqlc.arg(id)
+RETURNING *;

@@ -32,7 +32,8 @@ import {
   type FanStory,
   type StorySlide,
 } from '../services/matchShortsApi';
-import {deleteMatchStory, reportMatchStory} from '../services/matchStoryApi';
+import {deleteMatchStory} from '../services/matchStoryApi';
+import {promptModerationActions} from '../services/moderation';
 import type {RootStackParamList} from '../types/navigation';
 
 const SHORT_RING_AMBER = '#F5A623';
@@ -201,30 +202,24 @@ export default function MatchTeamShortsScreen() {
 
   const onReportStory = useCallback(
     (story: FanStory) => {
-      Alert.alert('Report story?', 'This story will be reviewed by our team.', [
-        {text: 'Cancel', style: 'cancel'},
-        {
-          text: 'Report',
-          style: 'destructive',
-          onPress: async () => {
-            if (!token) {
-              Alert.alert('Sign in required', 'Please sign in to report a story.');
-              return;
-            }
-            try {
-              await reportMatchStory(token, story.id);
-              setRemovedFanIds(prev => new Set(prev).add(story.id));
-              if (params.matchId != null) {
-                await queryClient.invalidateQueries({
-                  queryKey: matchShortsQueryKey(params.matchId),
-                });
-              }
-            } catch {
-              Alert.alert('Could not report', 'Please try again.');
-            }
-          },
+      if (!token) {
+        Alert.alert('Sign in required', 'Please sign in to report a story.');
+        return;
+      }
+      promptModerationActions({
+        token,
+        targetUserId: story.user_id,
+        reportableType: 'story',
+        reportableId: story.id,
+        onReportedOrBlocked: () => {
+          setRemovedFanIds(prev => new Set(prev).add(story.id));
+          if (params.matchId != null) {
+            void queryClient.invalidateQueries({
+              queryKey: matchShortsQueryKey(params.matchId),
+            });
+          }
         },
-      ]);
+      });
     },
     [params.matchId, queryClient, token],
   );

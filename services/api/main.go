@@ -106,6 +106,12 @@ func main() {
 		YouTubeCacheTTLHours:          c.YOUTUBE_CACHE_TTL_HOURS,
 		ExpoAccessToken:               c.EXPO_ACCESS_TOKEN,
 		Environment:                   c.ENVIRONMENT,
+		SMTPHost:                      c.SMTPHost,
+		SMTPPort:                      c.SMTPPort,
+		SMTPUsername:                  c.SMTPUsername,
+		SMTPPassword:                  c.SMTPPassword,
+		SMTPFrom:                      c.SMTPFrom,
+		ModerationNotifyEmail:         c.ModerationNotifyEmail,
 	}
 	apiRouter := api.New(&apiCfg)
 	v1Router.Mount("/api", apiRouter)

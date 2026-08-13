@@ -731,6 +731,7 @@ func TestGetPlayerProfileCatalog_FiltersRequesterAndHandlesQuery(t *testing.T) {
 	require.Len(t, out["players"], 1)
 	row := out["players"][0]
 	assert.Equal(t, "profile-202", row["id"])
+	assert.EqualValues(t, 42, row["user_id"])
 	assert.Equal(t, "JANE PRO", row["display_name"])
 	assert.Equal(t, "GB", row["country_code"])
 	assert.Equal(t, "—", row["country_label"])

@@ -7,6 +7,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/ArronJLinton/fucci-api/internal/auth"
 	"github.com/ArronJLinton/fucci-api/internal/cache"
 	"github.com/ArronJLinton/fucci-api/internal/database"
 	"github.com/ArronJLinton/fucci-api/internal/youtube"
@@ -70,6 +71,12 @@ func (c *Config) getMatchYouTubeShorts(w http.ResponseWriter, r *http.Request) {
 
 	homeUserStories := c.listUserStoriesForTeam(ctx, database.StoryScopeTypeMatch, matchID, homeKey)
 	awayUserStories := c.listUserStoriesForTeam(ctx, database.StoryScopeTypeMatch, matchID, awayKey)
+
+	if viewerID, ok := auth.UserIDFromContext(ctx); ok && viewerID != 0 {
+		blocked := c.blockedUserIDSet(ctx, viewerID)
+		homeUserStories = filterStoriesByBlocked(homeUserStories, blocked)
+		awayUserStories = filterStoriesByBlocked(awayUserStories, blocked)
+	}
 
 	var resp matchShortsResponse
 	resp.MatchID = matchID

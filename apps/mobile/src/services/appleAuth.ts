@@ -30,8 +30,17 @@ export async function isAppleAuthAvailable(): Promise<boolean> {
 
 /**
  * Native Sign in with Apple → POST /auth/apple with verified identity token on the server.
+ * Callers must collect Terms acceptance before invoking.
  */
-export async function launchAppleSignIn(): Promise<AppleAuthResult> {
+export async function launchAppleSignIn(
+  acceptedTerms = false,
+): Promise<AppleAuthResult> {
+  if (!acceptedTerms) {
+    return {
+      kind: 'error',
+      message: 'Please accept the Terms of Use to continue.',
+    };
+  }
   if (Platform.OS !== 'ios') {
     return {kind: 'unavailable'};
   }
@@ -72,6 +81,7 @@ export async function launchAppleSignIn(): Promise<AppleAuthResult> {
         identity_token: credential.identityToken,
         authorization_code: credential.authorizationCode ?? undefined,
         full_name: fullName,
+        accepted_terms: true,
       }),
     });
     const data = await response.json().catch(() => ({}));

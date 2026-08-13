@@ -65,9 +65,10 @@ func systemUserMockRows(userID int32, email string) *sqlmock.Rows {
 		"id", "firstname", "lastname", "email", "created_at", "updated_at", "is_admin",
 		"display_name", "avatar_url", "google_id", "auth_provider", "locale", "last_login_at",
 		"is_verified", "is_active", "role", "apple_id", "apple_refresh_token",
+		"terms_accepted_at", "terms_version",
 	}).AddRow(
 		userID, "Fucci", "System", email, now, now, false,
-		"Fucci", nil, nil, "local", nil, nil, true, true, "user", nil, nil,
+		"Fucci", nil, nil, "local", nil, nil, true, true, "user", nil, nil, nil, nil,
 	)
 }
 func TestGetSystemUserID_FallsBackToDefaultEmail(t *testing.T) {

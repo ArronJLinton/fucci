@@ -20,6 +20,11 @@ import type {RootStackParamList} from '../types/navigation';
 import PushNotificationSettings from '../components/PushNotificationSettings';
 import {logoutWithPushCleanup} from '../hooks/usePushNotifications';
 import {deleteAccount, userFacingApiMessage} from '../services/api';
+import {
+  PRIVACY_POLICY_URL,
+  TERMS_OF_SERVICE_URL,
+  SUPPORT_URL,
+} from '../constants/legal';
 
 const LIME = '#c7f349';
 const CYAN = '#22d3ee';
@@ -29,10 +34,6 @@ const CARD_BORDER = '#1f2937';
 const MUTED = '#64748b';
 const TEXT = '#e2e8f0';
 const DANGER = '#f87171';
-
-const PRIVACY_POLICY_URL = 'https://fucci-privacy-policy.vercel.app/privacy';
-const TERMS_OF_SERVICE_URL = 'https://fucci-privacy-policy.vercel.app/terms';
-const SUPPORT_URL = 'https://fucci-privacy-policy.vercel.app/support';
 
 type Nav = NativeStackNavigationProp<RootStackParamList>;
 

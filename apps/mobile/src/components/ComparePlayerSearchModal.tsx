@@ -9,10 +9,13 @@ import {
   FlatList,
   KeyboardAvoidingView,
   Platform,
+  Alert,
 } from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {Ionicons} from '@expo/vector-icons';
 import type {ComparePlayerSnapshot} from '../types/comparePlayer';
+import {useAuth} from '../context/AuthContext';
+import {promptModerationActions} from '../services/moderation';
 
 type Props = {
   visible: boolean;
@@ -34,6 +37,7 @@ export function ComparePlayerSearchModal({
   onSelect,
   excludeIds,
 }: Props) {
+  const {token} = useAuth();
   const [query, setQuery] = useState('');
 
   const filtered = useMemo(() => {
@@ -48,6 +52,22 @@ export function ComparePlayerSearchModal({
       );
     });
   }, [players, query, excludeIds]);
+
+  const onLongPressPlayer = (item: ComparePlayerSnapshot) => {
+    if (!token || item.userId == null) {
+      Alert.alert(
+        'Unavailable',
+        'Sign in to report or block this player profile.',
+      );
+      return;
+    }
+    promptModerationActions({
+      token,
+      targetUserId: item.userId,
+      reportableType: 'player_profile',
+      reportableId: String(item.userId),
+    });
+  };
 
   return (
     <Modal
@@ -83,6 +103,9 @@ export function ComparePlayerSearchModal({
               clearButtonMode="while-editing"
             />
           </View>
+          <Text style={styles.hint}>
+            Long-press a player to report their profile or block them.
+          </Text>
 
           <FlatList
             data={filtered}
@@ -106,6 +129,8 @@ export function ComparePlayerSearchModal({
                   setQuery('');
                   onClose();
                 }}
+                onLongPress={() => onLongPressPlayer(item)}
+                delayLongPress={350}
                 activeOpacity={0.7}>
                 <View style={styles.rowAvatar}>
                   <Ionicons name="person" size={22} color="#64748b" />
@@ -164,6 +189,12 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#e2e8f0',
     padding: 0,
+  },
+  hint: {
+    marginHorizontal: 16,
+    marginBottom: 8,
+    fontSize: 12,
+    color: '#64748b',
   },
   listContent: {paddingBottom: 32},
   row: {

@@ -31,6 +31,7 @@ var sqlGoogleAuthUserColumns = []string{
 	"id", "firstname", "lastname", "email", "created_at", "updated_at", "is_admin",
 	"display_name", "avatar_url", "google_id", "auth_provider", "locale", "last_login_at",
 	"is_verified", "is_active", "role", "apple_id", "apple_refresh_token",
+	"terms_accepted_at", "terms_version",
 }
 
 func sqlMockGoogleUserFullRow(id int32, firstname, lastname, email, avatarURL, googleSub, authProv string, ts time.Time) *sqlmock.Rows {
@@ -46,6 +47,8 @@ func sqlMockGoogleUserFullRow(id int32, firstname, lastname, email, avatarURL, g
 		sql.NullBool{Bool: true, Valid: true},
 		sql.NullString{String: "fan", Valid: true},
 		sql.NullString{},
+		sql.NullString{},
+		sql.NullTime{},
 		sql.NullString{},
 	)
 }
@@ -63,6 +66,8 @@ func sqlMockGoogleUserInactiveRow(id int32, firstname, lastname, email, avatarUR
 		sql.NullBool{Bool: false, Valid: true},
 		sql.NullString{String: "fan", Valid: true},
 		sql.NullString{},
+		sql.NullString{},
+		sql.NullTime{},
 		sql.NullString{},
 	)
 }
@@ -113,7 +118,7 @@ func TestHandleGoogleAuth_NotConfiguredReturns503(t *testing.T) {
 		// Intentionally unset GoogleOAuthClientID/GoogleOAuthClientSecret.
 	}
 
-	body := map[string]string{"code": "auth-code", "redirect_uri": "fucci://auth"}
+	body := map[string]any{"code": "auth-code", "redirect_uri": "fucci://auth", "accepted_terms": true}
 	raw, _ := json.Marshal(body)
 	req := httptest.NewRequest(http.MethodPost, "/auth/google", bytes.NewReader(raw))
 	rec := httptest.NewRecorder()
@@ -304,7 +309,7 @@ func TestHandleGoogleAuth_NewUserReturnsIsNewTrue(t *testing.T) {
 		WithArgs("New", "User", "newuser@example.com", sql.NullString{String: "sub-123", Valid: true}, sql.NullString{String: "https://cdn.example/avatar.jpg", Valid: true}, sql.NullString{String: "en", Valid: true}).
 		WillReturnRows(sqlMockGoogleUserFullRow(101, "New", "User", "newuser@example.com", "https://cdn.example/avatar.jpg", "sub-123", "google", ts))
 
-	body := map[string]string{"code": "auth-code", "redirect_uri": "fucci://auth"}
+	body := map[string]any{"code": "auth-code", "redirect_uri": "fucci://auth", "accepted_terms": true}
 	raw, _ := json.Marshal(body)
 	req := httptest.NewRequest(http.MethodPost, "/auth/google", bytes.NewReader(raw))
 	rec := httptest.NewRecorder()
@@ -356,7 +361,7 @@ func TestHandleGoogleAuth_EmailNotVerifiedReturns400(t *testing.T) {
 		},
 	}
 
-	body := map[string]string{"code": "auth-code", "redirect_uri": "fucci://auth"}
+	body := map[string]any{"code": "auth-code", "redirect_uri": "fucci://auth", "accepted_terms": true}
 	raw, _ := json.Marshal(body)
 	req := httptest.NewRequest(http.MethodPost, "/auth/google", bytes.NewReader(raw))
 	rec := httptest.NewRecorder()
@@ -410,7 +415,7 @@ func TestHandleGoogleAuth_ExistingGoogleUserReturnsIsNewFalse(t *testing.T) {
 		WithArgs("https://cdn.example/new-avatar.jpg", int32(42)).
 		WillReturnRows(sqlMockGoogleUserFullRow(42, "Existing", "User", "existing@example.com", "https://cdn.example/new-avatar.jpg", "sub-existing", "google", ts2))
 
-	body := map[string]string{"code": "auth-code", "redirect_uri": "fucci://auth"}
+	body := map[string]any{"code": "auth-code", "redirect_uri": "fucci://auth", "accepted_terms": true}
 	raw, _ := json.Marshal(body)
 	req := httptest.NewRequest(http.MethodPost, "/auth/google", bytes.NewReader(raw))
 	rec := httptest.NewRecorder()
@@ -465,7 +470,7 @@ func TestHandleGoogleAuth_InactiveUserReturns403(t *testing.T) {
 		WithArgs("sub-inactive").
 		WillReturnRows(sqlMockGoogleUserInactiveRow(42, "In", "Active", "inactive@example.com", "", "sub-inactive", "google", ts))
 
-	body := map[string]string{"code": "auth-code", "redirect_uri": "fucci://auth"}
+	body := map[string]any{"code": "auth-code", "redirect_uri": "fucci://auth", "accepted_terms": true}
 	raw, _ := json.Marshal(body)
 	req := httptest.NewRequest(http.MethodPost, "/auth/google", bytes.NewReader(raw))
 	rec := httptest.NewRecorder()
@@ -507,7 +512,7 @@ func TestHandleGoogleAuth_InvalidCodeReturns400(t *testing.T) {
 		},
 	}
 
-	body := map[string]string{"code": "bad-code", "redirect_uri": "fucci://auth"}
+	body := map[string]any{"code": "bad-code", "redirect_uri": "fucci://auth", "accepted_terms": true}
 	raw, _ := json.Marshal(body)
 	req := httptest.NewRequest(http.MethodPost, "/auth/google", bytes.NewReader(raw))
 	rec := httptest.NewRecorder()
@@ -548,7 +553,7 @@ func TestHandleGoogleAuth_MissingRedirectURIReturnsInvalidRedirectURI(t *testing
 		},
 	}
 
-	body := map[string]string{"code": "auth-code", "redirect_uri": ""}
+	body := map[string]any{"code": "auth-code", "redirect_uri": "", "accepted_terms": true}
 	raw, _ := json.Marshal(body)
 	req := httptest.NewRequest(http.MethodPost, "/auth/google", bytes.NewReader(raw))
 	rec := httptest.NewRecorder()
@@ -587,7 +592,7 @@ func TestHandleGoogleAuth_InvalidRedirectURIReturns400(t *testing.T) {
 		},
 	}
 
-	body := map[string]string{"code": "auth-code", "redirect_uri": "https://evil.example/cb"}
+	body := map[string]any{"code": "auth-code", "redirect_uri": "https://evil.example/cb", "accepted_terms": true}
 	raw, _ := json.Marshal(body)
 	req := httptest.NewRequest(http.MethodPost, "/auth/google", bytes.NewReader(raw))
 	rec := httptest.NewRecorder()
@@ -648,9 +653,10 @@ func TestHandleGoogleAuth_EmailPasswordAccountReturns409(t *testing.T) {
 			sql.NullBool{Bool: true, Valid: true},
 			sql.NullString{String: "fan", Valid: true},
 			sql.NullString{}, sql.NullString{},
+			sql.NullTime{}, sql.NullString{},
 		))
 
-	body := map[string]string{"code": "auth-code", "redirect_uri": "fucci://auth"}
+	body := map[string]any{"code": "auth-code", "redirect_uri": "fucci://auth", "accepted_terms": true}
 	raw, _ := json.Marshal(body)
 	req := httptest.NewRequest(http.MethodPost, "/auth/google", bytes.NewReader(raw))
 	rec := httptest.NewRecorder()
@@ -692,7 +698,7 @@ func TestHandleGoogleAuth_GoogleExchangeFailedReturns500(t *testing.T) {
 		},
 	}
 
-	body := map[string]string{"code": "auth-code", "redirect_uri": "fucci://auth"}
+	body := map[string]any{"code": "auth-code", "redirect_uri": "fucci://auth", "accepted_terms": true}
 	raw, _ := json.Marshal(body)
 	req := httptest.NewRequest(http.MethodPost, "/auth/google", bytes.NewReader(raw))
 	rec := httptest.NewRecorder()
@@ -731,7 +737,7 @@ func TestHandleGoogleAuth_TokenVerifyFailedReturns401(t *testing.T) {
 		},
 	}
 
-	body := map[string]string{"code": "auth-code", "redirect_uri": "fucci://auth"}
+	body := map[string]any{"code": "auth-code", "redirect_uri": "fucci://auth", "accepted_terms": true}
 	raw, _ := json.Marshal(body)
 	req := httptest.NewRequest(http.MethodPost, "/auth/google", bytes.NewReader(raw))
 	rec := httptest.NewRecorder()
@@ -783,7 +789,7 @@ func TestHandleGoogleAuth_ExistingGoogleUserUpdateFailureReturns500(t *testing.T
 		WithArgs("https://cdn.example/new-avatar.jpg", int32(42)).
 		WillReturnError(errors.New("db write failed"))
 
-	body := map[string]string{"code": "auth-code", "redirect_uri": "fucci://auth"}
+	body := map[string]any{"code": "auth-code", "redirect_uri": "fucci://auth", "accepted_terms": true}
 	raw, _ := json.Marshal(body)
 	req := httptest.NewRequest(http.MethodPost, "/auth/google", bytes.NewReader(raw))
 	rec := httptest.NewRecorder()
@@ -841,12 +847,13 @@ func TestHandleGoogleAuth_EmailFallbackUpdateFailureReturns500(t *testing.T) {
 			sql.NullBool{}, sql.NullBool{},
 			sql.NullString{String: "fan", Valid: true},
 			sql.NullString{}, sql.NullString{},
+			sql.NullTime{}, sql.NullString{},
 		))
 	mock.ExpectQuery(rxSQLGoogleLink).
 		WithArgs("sub-fallback", "https://cdn.example/new-avatar.jpg", int32(77)).
 		WillReturnError(errors.New("db write failed"))
 
-	body := map[string]string{"code": "auth-code", "redirect_uri": "fucci://auth"}
+	body := map[string]any{"code": "auth-code", "redirect_uri": "fucci://auth", "accepted_terms": true}
 	raw, _ := json.Marshal(body)
 	req := httptest.NewRequest(http.MethodPost, "/auth/google", bytes.NewReader(raw))
 	rec := httptest.NewRecorder()
@@ -903,9 +910,10 @@ func TestHandleGoogleAuth_EmailMatchedDifferentGoogleIDReturns409(t *testing.T) 
 			sql.NullBool{}, sql.NullBool{},
 			sql.NullString{String: "fan", Valid: true},
 			sql.NullString{}, sql.NullString{},
+			sql.NullTime{}, sql.NullString{},
 		))
 
-	body := map[string]string{"code": "auth-code", "redirect_uri": "fucci://auth"}
+	body := map[string]any{"code": "auth-code", "redirect_uri": "fucci://auth", "accepted_terms": true}
 	raw, _ := json.Marshal(body)
 	req := httptest.NewRequest(http.MethodPost, "/auth/google", bytes.NewReader(raw))
 	rec := httptest.NewRecorder()
@@ -965,9 +973,10 @@ func TestHandleGoogleAuth_EmailFallbackNonGoogleProviderReturns409(t *testing.T)
 			sql.NullBool{}, sql.NullBool{},
 			sql.NullString{String: "fan", Valid: true},
 			sql.NullString{}, sql.NullString{},
+			sql.NullTime{}, sql.NullString{},
 		))
 
-	body := map[string]string{"code": "auth-code", "redirect_uri": "fucci://auth"}
+	body := map[string]any{"code": "auth-code", "redirect_uri": "fucci://auth", "accepted_terms": true}
 	raw, _ := json.Marshal(body)
 	req := httptest.NewRequest(http.MethodPost, "/auth/google", bytes.NewReader(raw))
 	rec := httptest.NewRecorder()
@@ -1178,7 +1187,7 @@ func TestHandleGoogleOAuthCallback_SuccessRedirectsWithExchangeCode(t *testing.T
 	}
 
 	// Exchange endpoint accepts the one-time code exactly once.
-	body := map[string]string{"code": exc}
+	body := map[string]any{"code": exc, "accepted_terms": true}
 	raw, _ := json.Marshal(body)
 	reqEx := httptest.NewRequest(http.MethodPost, "/auth/google/exchange", bytes.NewReader(raw))
 	recEx := httptest.NewRecorder()
@@ -1486,7 +1495,7 @@ func TestHandleGoogleOAuthCallback_ProcErrorRedirectsToApp(t *testing.T) {
 
 func TestHandleGoogleOAuthExchange_InvalidOrExpiredCode400(t *testing.T) {
 	cfg := &Config{}
-	body := map[string]string{"code": "definitely-not-issued"}
+	body := map[string]any{"code": "definitely-not-issued", "accepted_terms": true}
 	raw, _ := json.Marshal(body)
 	req := httptest.NewRequest(http.MethodPost, "/auth/google/exchange", bytes.NewReader(raw))
 	rec := httptest.NewRecorder()
@@ -1534,7 +1543,7 @@ func TestHandleGoogleOAuthExchange_ReuseCodeReturns400(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	body := map[string]string{"code": code}
+	body := map[string]any{"code": code, "accepted_terms": true}
 	raw, _ := json.Marshal(body)
 	req1 := httptest.NewRequest(http.MethodPost, "/auth/google/exchange", bytes.NewReader(raw))
 	rec1 := httptest.NewRecorder()

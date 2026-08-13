@@ -44,4 +44,11 @@ type Config struct {
 	YOUTUBE_CACHE_TTL_HOURS int
 	// EXPO_ACCESS_TOKEN is the Expo account token for push API rate limits.
 	EXPO_ACCESS_TOKEN string
+	// Optional SMTP for Guideline 1.2 moderation alerts (defaults to log when unset).
+	SMTPHost              string
+	SMTPPort              string
+	SMTPUsername          string
+	SMTPPassword          string
+	SMTPFrom              string
+	ModerationNotifyEmail string
 }
