@@ -6,7 +6,6 @@ import (
 	"encoding/json"
 	"errors"
 	"net/http"
-	"strconv"
 	"strings"
 	"time"
 
@@ -155,9 +154,8 @@ func cloudinaryContextForStoryContent(contentType string) (string, error) {
 
 // POST /v1/api/stories
 func (c *Config) postMatchStory(w http.ResponseWriter, r *http.Request) {
-	userID, ok := auth.UserIDFromContext(r.Context())
-	if !ok || userID == 0 {
-		respondWithError(w, http.StatusUnauthorized, "Authentication required")
+	userID, ok := c.requireActiveAuthedUser(w, r)
+	if !ok {
 		return
 	}
 	if c.DB == nil {
@@ -305,15 +303,31 @@ var allowedReportReasons = map[string]struct{}{
 	"other":                 {},
 }
 
+var allowedReportableTypes = map[string]struct{}{
+	"story":           {},
+	"debate_response": {},
+	"avatar":          {},
+	"player_profile":  {},
+	"user":            {},
+}
+
+func isAllowedReportableType(t string) bool {
+	_, ok := allowedReportableTypes[strings.TrimSpace(t)]
+	return ok
+}
+
 // POST /v1/api/reports
 func (c *Config) postContentReport(w http.ResponseWriter, r *http.Request) {
-	userID, ok := auth.UserIDFromContext(r.Context())
-	if !ok || userID == 0 {
-		respondWithError(w, http.StatusUnauthorized, "Authentication required")
+	userID, ok := c.requireActiveAuthedUser(w, r)
+	if !ok {
 		return
 	}
 	if c.DB == nil {
 		respondWithError(w, http.StatusInternalServerError, "Database not configured")
+		return
+	}
+	if !checkModerationRateLimit(r.Context(), c, userID) {
+		respondWithError(w, http.StatusTooManyRequests, "Rate limit exceeded; try again later")
 		return
 	}
 
@@ -324,9 +338,7 @@ func (c *Config) postContentReport(w http.ResponseWriter, r *http.Request) {
 	}
 
 	reportableType := strings.TrimSpace(req.ReportableType)
-	switch reportableType {
-	case "story", "debate_response", "avatar", "player_profile", "user":
-	default:
+	if !isAllowedReportableType(reportableType) {
 		respondWithError(w, http.StatusBadRequest, "reportable_type must be story, debate_response, avatar, player_profile, or user")
 		return
 	}
@@ -337,101 +349,35 @@ func (c *Config) postContentReport(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var description sql.NullString
+	descText := ""
 	if req.Description != nil {
-		d := strings.TrimSpace(*req.Description)
-		if d != "" {
-			description = sql.NullString{String: d, Valid: true}
+		var err error
+		descText, err = clampModerationDescription(*req.Description)
+		if err != nil {
+			respondWithError(w, http.StatusBadRequest, err.Error())
+			return
 		}
 	}
+	var description sql.NullString
+	if descText != "" {
+		description = sql.NullString{String: descText, Valid: true}
+	}
 
-	var reportableID string
-	var reportedUserID sql.NullInt32
-
-	switch reportableType {
-	case "story":
-		storyID, err := uuid.Parse(strings.TrimSpace(req.ReportableID))
-		if err != nil {
-			respondWithError(w, http.StatusBadRequest, "invalid reportable_id")
-			return
-		}
-
-		story, err := c.DB.GetMatchStoryByID(r.Context(), storyID)
-		if err != nil {
-			if errors.Is(err, sql.ErrNoRows) {
-				respondWithError(w, http.StatusNotFound, "story not found")
-				return
-			}
-			respondWithError(w, http.StatusInternalServerError, "Failed to load story")
-			return
-		}
-		if !story.IsActive {
-			respondWithJSON(w, http.StatusOK, map[string]string{"status": "already_removed"})
-			return
-		}
-		if story.UserID == userID {
-			respondWithError(w, http.StatusBadRequest, "cannot report your own content")
-			return
-		}
-
-		reportableID = storyID.String()
-		reportedUserID = sql.NullInt32{Int32: story.UserID, Valid: true}
-
-	case "debate_response":
-		commentID, err := strconv.ParseInt(strings.TrimSpace(req.ReportableID), 10, 32)
-		if err != nil || commentID <= 0 {
-			respondWithError(w, http.StatusBadRequest, "invalid reportable_id")
-			return
-		}
-
-		comment, err := c.DB.GetComment(r.Context(), int32(commentID))
-		if err != nil {
-			if errors.Is(err, sql.ErrNoRows) {
-				respondWithError(w, http.StatusNotFound, "comment not found")
-				return
-			}
-			respondWithError(w, http.StatusInternalServerError, "Failed to load comment")
-			return
-		}
-		if !comment.UserID.Valid {
-			respondWithError(w, http.StatusBadRequest, "comment has no author")
-			return
-		}
-		if comment.UserID.Int32 == userID {
-			respondWithError(w, http.StatusBadRequest, "cannot report your own content")
-			return
-		}
-
-		reportableID = strconv.FormatInt(commentID, 10)
-		reportedUserID = comment.UserID
-
-	case "avatar", "player_profile", "user":
-		targetUserID, err := strconv.ParseInt(strings.TrimSpace(req.ReportableID), 10, 32)
-		if err != nil || targetUserID <= 0 {
-			respondWithError(w, http.StatusBadRequest, "invalid reportable_id")
-			return
-		}
-		if int32(targetUserID) == userID {
-			respondWithError(w, http.StatusBadRequest, "cannot report your own content")
-			return
-		}
-		if _, err := c.DB.GetUser(r.Context(), int32(targetUserID)); err != nil {
-			if errors.Is(err, sql.ErrNoRows) {
-				respondWithError(w, http.StatusNotFound, "user not found")
-				return
-			}
-			respondWithError(w, http.StatusInternalServerError, "Failed to load user")
-			return
-		}
-		reportableID = strconv.FormatInt(targetUserID, 10)
-		reportedUserID = sql.NullInt32{Int32: int32(targetUserID), Valid: true}
+	resolved, status, msg := c.resolveReportableTarget(r.Context(), userID, reportableType, req.ReportableID)
+	if resolved.AlreadyRemoved {
+		respondWithJSON(w, http.StatusOK, map[string]string{"status": "already_removed"})
+		return
+	}
+	if status != 0 {
+		respondWithError(w, status, msg)
+		return
 	}
 
 	report, err := c.DB.CreateContentReport(r.Context(), database.CreateContentReportParams{
 		ReporterID:     userID,
 		ReportableType: reportableType,
-		ReportableID:   reportableID,
-		ReportedUserID: reportedUserID,
+		ReportableID:   resolved.ReportableID,
+		ReportedUserID: resolved.ReportedUserID,
 		Reason:         reason,
 		Description:    description,
 	})
@@ -441,22 +387,18 @@ func (c *Config) postContentReport(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var reportedPtr *int32
-	if reportedUserID.Valid {
-		id := reportedUserID.Int32
+	if resolved.ReportedUserID.Valid {
+		id := resolved.ReportedUserID.Int32
 		reportedPtr = &id
 	}
-	desc := ""
-	if description.Valid {
-		desc = description.String
-	}
-	go c.moderationNotifier().NotifyReport(moderation.ReportEmailPayload{
+	c.enqueueModerationNotify(moderation.ReportEmailPayload{
 		ReportID:       report.ID.String(),
 		ReporterID:     userID,
 		ReportedUserID: reportedPtr,
 		ReportableType: reportableType,
-		ReportableID:   reportableID,
+		ReportableID:   resolved.ReportableID,
 		Reason:         reason,
-		Description:    desc,
+		Description:    descText,
 		Source:         "report",
 	})
 

@@ -245,9 +245,8 @@ type CreateDebateCommentRequest struct {
 func (c *Config) CreateDebateComment(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
-	userID, ok := auth.UserIDFromContext(r.Context())
-	if !ok || userID == 0 {
-		respondWithError(w, http.StatusUnauthorized, "Authentication required")
+	userID, ok := c.requireActiveAuthedUser(w, r)
+	if !ok {
 		return
 	}
 

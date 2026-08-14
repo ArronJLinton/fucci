@@ -32,6 +32,10 @@ func (c *Config) postUserBlock(w http.ResponseWriter, r *http.Request) {
 		respondWithError(w, http.StatusInternalServerError, "Database not configured")
 		return
 	}
+	if !checkModerationRateLimit(r.Context(), c, blockerID) {
+		respondWithError(w, http.StatusTooManyRequests, "Rate limit exceeded; try again later")
+		return
+	}
 
 	var req createUserBlockRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
@@ -47,13 +51,49 @@ func (c *Config) postUserBlock(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	_, err := c.DB.GetUser(r.Context(), req.BlockedUserID)
-	if err != nil {
-		if errors.Is(err, sql.ErrNoRows) {
-			respondWithError(w, http.StatusNotFound, "user not found")
+	reason := strings.TrimSpace(req.Reason)
+	if reason == "" {
+		reason = "harassment"
+	}
+	if _, ok := allowedReportReasons[reason]; !ok {
+		respondWithError(w, http.StatusBadRequest, "invalid reason")
+		return
+	}
+
+	reportableType := strings.TrimSpace(req.ReportableType)
+	reportableID := strings.TrimSpace(req.ReportableID)
+	if reportableType == "" && reportableID == "" {
+		reportableType = "user"
+		reportableID = strconv.FormatInt(int64(req.BlockedUserID), 10)
+	}
+	if reportableType == "" {
+		respondWithError(w, http.StatusBadRequest, "reportable_type is required when reportable_id is set")
+		return
+	}
+	if !isAllowedReportableType(reportableType) {
+		respondWithError(w, http.StatusBadRequest, "reportable_type must be story, debate_response, avatar, player_profile, or user")
+		return
+	}
+	if reportableID == "" {
+		if reportableType == "user" || reportableType == "avatar" || reportableType == "player_profile" {
+			reportableID = strconv.FormatInt(int64(req.BlockedUserID), 10)
+		} else {
+			respondWithError(w, http.StatusBadRequest, "reportable_id is required for this reportable_type")
 			return
 		}
-		respondWithError(w, http.StatusInternalServerError, "Failed to load user")
+	}
+
+	resolved, status, msg := c.resolveReportableTarget(r.Context(), blockerID, reportableType, reportableID)
+	if resolved.AlreadyRemoved {
+		respondWithError(w, http.StatusBadRequest, "reportable content is no longer available")
+		return
+	}
+	if status != 0 {
+		respondWithError(w, status, msg)
+		return
+	}
+	if !resolved.ReportedUserID.Valid || resolved.ReportedUserID.Int32 != req.BlockedUserID {
+		respondWithError(w, http.StatusBadRequest, "reportable content must belong to the blocked user")
 		return
 	}
 
@@ -75,42 +115,24 @@ func (c *Config) postUserBlock(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	reason := strings.TrimSpace(req.Reason)
-	if reason == "" {
-		reason = "harassment"
-	}
-	if _, ok := allowedReportReasons[reason]; !ok {
-		respondWithError(w, http.StatusBadRequest, "invalid reason")
-		return
-	}
-
-	reportableType := strings.TrimSpace(req.ReportableType)
-	if reportableType == "" {
-		reportableType = "user"
-	}
-	reportableID := strings.TrimSpace(req.ReportableID)
-	if reportableID == "" {
-		reportableID = strconv.FormatInt(int64(req.BlockedUserID), 10)
-	}
-
-	var description sql.NullString
+	descText := ""
 	if req.Description != nil {
-		d := strings.TrimSpace(*req.Description)
-		if d != "" {
-			description = sql.NullString{String: d, Valid: true}
+		var err error
+		descText, err = clampModerationDescription(*req.Description)
+		if err != nil {
+			respondWithError(w, http.StatusBadRequest, err.Error())
+			return
 		}
 	}
-	if !description.Valid {
-		description = sql.NullString{
-			String: "Auto-created when user was blocked",
-			Valid:  true,
-		}
+	if descText == "" {
+		descText = "Auto-created when user was blocked"
 	}
+	description := sql.NullString{String: descText, Valid: true}
 
 	report, err := c.DB.CreateContentReport(r.Context(), database.CreateContentReportParams{
 		ReporterID:     blockerID,
 		ReportableType: reportableType,
-		ReportableID:   reportableID,
+		ReportableID:   resolved.ReportableID,
 		ReportedUserID: sql.NullInt32{Int32: req.BlockedUserID, Valid: true},
 		Reason:         reason,
 		Description:    description,
@@ -121,12 +143,12 @@ func (c *Config) postUserBlock(w http.ResponseWriter, r *http.Request) {
 	}
 
 	reportedID := req.BlockedUserID
-	go c.moderationNotifier().NotifyReport(moderation.ReportEmailPayload{
+	c.enqueueModerationNotify(moderation.ReportEmailPayload{
 		ReportID:       report.ID.String(),
 		ReporterID:     blockerID,
 		ReportedUserID: &reportedID,
 		ReportableType: reportableType,
-		ReportableID:   reportableID,
+		ReportableID:   resolved.ReportableID,
 		Reason:         reason,
 		Description:    description.String,
 		Source:         "block",

@@ -760,10 +760,8 @@ func respondWithGoogleAuthError(w http.ResponseWriter, status int, code, message
 }
 
 func (c *Config) handleUpdateProfile(w http.ResponseWriter, r *http.Request) {
-	// Get user ID from context (set by auth middleware)
-	userID, ok := auth.UserIDFromContext(r.Context())
+	userID, ok := c.requireActiveAuthedUser(w, r)
 	if !ok {
-		respondWithError(w, http.StatusUnauthorized, "authentication required")
 		return
 	}
 

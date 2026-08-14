@@ -337,9 +337,8 @@ func (c *Config) getPlayerProfile(w http.ResponseWriter, r *http.Request) {
 }
 
 func (c *Config) postPlayerProfile(w http.ResponseWriter, r *http.Request) {
-	userID, ok := auth.UserIDFromContext(r.Context())
-	if !ok || userID == 0 {
-		respondWithError(w, http.StatusUnauthorized, "Authentication required")
+	userID, ok := c.requireActiveAuthedUser(w, r)
+	if !ok {
 		return
 	}
 	ctx := r.Context()
@@ -438,9 +437,8 @@ func (c *Config) postPlayerProfile(w http.ResponseWriter, r *http.Request) {
 }
 
 func (c *Config) putPlayerProfile(w http.ResponseWriter, r *http.Request) {
-	userID, ok := auth.UserIDFromContext(r.Context())
-	if !ok || userID == 0 {
-		respondWithError(w, http.StatusUnauthorized, "Authentication required")
+	userID, ok := c.requireActiveAuthedUser(w, r)
+	if !ok {
 		return
 	}
 	ctx := r.Context()
@@ -575,9 +573,8 @@ func dedupeTraitCodesPreserveOrder(codes []string) []string {
 }
 
 func (c *Config) putPlayerProfileTraits(w http.ResponseWriter, r *http.Request) {
-	userID, ok := auth.UserIDFromContext(r.Context())
-	if !ok || userID == 0 {
-		respondWithError(w, http.StatusUnauthorized, "Authentication required")
+	userID, ok := c.requireActiveAuthedUser(w, r)
+	if !ok {
 		return
 	}
 	ctx := r.Context()
@@ -684,9 +681,8 @@ func (c *Config) putPlayerProfileTraits(w http.ResponseWriter, r *http.Request) 
 }
 
 func (c *Config) deletePlayerProfile(w http.ResponseWriter, r *http.Request) {
-	userID, ok := auth.UserIDFromContext(r.Context())
-	if !ok || userID == 0 {
-		respondWithError(w, http.StatusUnauthorized, "Authentication required")
+	userID, ok := c.requireActiveAuthedUser(w, r)
+	if !ok {
 		return
 	}
 	ctx := r.Context()

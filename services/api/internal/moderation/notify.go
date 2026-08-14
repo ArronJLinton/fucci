@@ -36,13 +36,37 @@ type ReportEmailPayload struct {
 	Source         string // "report" | "block"
 }
 
+// sanitizeHeaderValue strips CR/LF (and other ASCII controls) so untrusted
+// payload fields cannot inject SMTP/RFC 5322 headers (CWE-93).
+func sanitizeHeaderValue(s string) string {
+	if s == "" {
+		return s
+	}
+	var b strings.Builder
+	b.Grow(len(s))
+	for _, r := range s {
+		if r == '\r' || r == '\n' || r == '\x00' {
+			continue
+		}
+		// Drop other C0 controls that can confuse mail agents.
+		if r < 0x20 && r != '\t' {
+			continue
+		}
+		b.WriteRune(r)
+	}
+	return strings.TrimSpace(b.String())
+}
+
 // NotifyReport emails the moderation inbox, or logs loudly when SMTP is unset.
 func (n *Notifier) NotifyReport(p ReportEmailPayload) {
-	to := strings.TrimSpace(n.Mail.To)
+	to := sanitizeHeaderValue(n.Mail.To)
 	if to == "" {
 		to = "contact@magistri.dev"
 	}
-	subject := fmt.Sprintf("[Fucci Moderation] %s — %s (%s)", p.Source, p.ReportableType, p.Reason)
+	source := sanitizeHeaderValue(p.Source)
+	reportableType := sanitizeHeaderValue(p.ReportableType)
+	reason := sanitizeHeaderValue(p.Reason)
+	subject := sanitizeHeaderValue(fmt.Sprintf("[Fucci Moderation] %s — %s (%s)", source, reportableType, reason))
 	body := formatReportBody(p)
 
 	if strings.TrimSpace(n.Mail.Host) == "" {
@@ -50,7 +74,7 @@ func (n *Notifier) NotifyReport(p ReportEmailPayload) {
 		return
 	}
 
-	from := strings.TrimSpace(n.Mail.From)
+	from := sanitizeHeaderValue(n.Mail.From)
 	if from == "" {
 		from = to
 	}
@@ -84,16 +108,18 @@ func formatReportBody(p ReportEmailPayload) string {
 	if desc == "" {
 		desc = "(none)"
 	}
+	// Flatten CR/LF in description so logged/rewrapped bodies cannot reintroduce header splits.
+	desc = strings.ReplaceAll(strings.ReplaceAll(desc, "\r", " "), "\n", " ")
 	return strings.Join([]string{
 		"A content report requires review within 24 hours.",
 		"",
-		"Source: " + p.Source,
-		"Report ID: " + p.ReportID,
+		"Source: " + sanitizeHeaderValue(p.Source),
+		"Report ID: " + sanitizeHeaderValue(p.ReportID),
 		"Reporter user ID: " + fmt.Sprintf("%d", p.ReporterID),
 		"Reported user ID: " + reported,
-		"Type: " + p.ReportableType,
-		"Content ID: " + p.ReportableID,
-		"Reason: " + p.Reason,
+		"Type: " + sanitizeHeaderValue(p.ReportableType),
+		"Content ID: " + sanitizeHeaderValue(p.ReportableID),
+		"Reason: " + sanitizeHeaderValue(p.Reason),
 		"Description: " + desc,
 		"Received at (UTC): " + time.Now().UTC().Format(time.RFC3339),
 		"",

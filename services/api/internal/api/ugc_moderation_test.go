@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"strconv"
+	"strings"
 	"testing"
 	"time"
 
@@ -170,6 +171,9 @@ func TestPostContentReport_AvatarOK(t *testing.T) {
 	createdAt := time.Date(2026, 8, 13, 12, 0, 0, 0, time.UTC)
 	ts := createdAt
 
+	mock.ExpectQuery(`SELECT COALESCE\(is_active, TRUE\)::bool AS is_active`).
+		WithArgs(reporterID).
+		WillReturnRows(sqlmock.NewRows([]string{"is_active"}).AddRow(true))
 	mock.ExpectQuery(`FROM users WHERE id = \$1`).
 		WithArgs(targetID).
 		WillReturnRows(sqlMockAppleUserFullRow(targetID, "T", "User", "t@example.com", "", "email", ts))
@@ -214,6 +218,9 @@ func TestPostContentReport_PlayerProfileOK(t *testing.T) {
 	reportID := uuid.New()
 	createdAt := time.Date(2026, 8, 13, 12, 0, 0, 0, time.UTC)
 
+	mock.ExpectQuery(`SELECT COALESCE\(is_active, TRUE\)::bool AS is_active`).
+		WithArgs(reporterID).
+		WillReturnRows(sqlmock.NewRows([]string{"is_active"}).AddRow(true))
 	mock.ExpectQuery(`FROM users WHERE id = \$1`).
 		WithArgs(targetID).
 		WillReturnRows(sqlMockAppleUserFullRow(targetID, "P", "Pro", "p@example.com", "", "email", createdAt))
@@ -271,8 +278,8 @@ func TestPostUserBlock_CreatesReport(t *testing.T) {
 	mock.ExpectQuery(`(?s)-- name: CreateContentReport :one\s+INSERT INTO content_reports .*RETURNING id, reporter_id, reportable_type, reportable_id, reason, description, status, created_at, reported_user_id`).
 		WithArgs(
 			blockerID,
-			"story",
-			"story-1",
+			"user",
+			strconv.FormatInt(int64(blockedID), 10),
 			sql.NullInt32{Int32: blockedID, Valid: true},
 			"harassment",
 			sql.NullString{String: "Auto-created when user was blocked", Valid: true},
@@ -280,14 +287,12 @@ func TestPostUserBlock_CreatesReport(t *testing.T) {
 		WillReturnRows(sqlmock.NewRows([]string{
 			"id", "reporter_id", "reportable_type", "reportable_id", "reason", "description", "status", "created_at", "reported_user_id",
 		}).AddRow(
-			reportID, blockerID, "story", "story-1", "harassment",
+			reportID, blockerID, "user", strconv.FormatInt(int64(blockedID), 10), "harassment",
 			"Auto-created when user was blocked", "pending", createdAt, blockedID,
 		))
 
 	body, _ := json.Marshal(map[string]any{
 		"blocked_user_id": blockedID,
-		"reportable_type": "story",
-		"reportable_id":   "story-1",
 		"reason":          "harassment",
 	})
 	req := httptest.NewRequest(http.MethodPost, "/users/blocks", bytes.NewReader(body))
@@ -325,6 +330,45 @@ func TestPostUserBlock_CannotBlockSelf(t *testing.T) {
 	require.NoError(t, mock.ExpectationsWereMet())
 }
 
+func TestPostUserBlock_RejectsInjectedReportableType(t *testing.T) {
+	db, mock, err := sqlmock.New()
+	require.NoError(t, err)
+	defer db.Close()
+
+	cfg := &Config{DB: database.New(db)}
+	const blockerID int32 = 7
+	const blockedID int32 = 42
+
+	mock.ExpectQuery(`SELECT COALESCE\(is_active, TRUE\)::bool AS is_active`).
+		WithArgs(blockerID).
+		WillReturnRows(sqlmock.NewRows([]string{"is_active"}).AddRow(true))
+
+	// CR/LF in reportable_type must be rejected by allowlist before any DB writes.
+	body, _ := json.Marshal(map[string]any{
+		"blocked_user_id": blockedID,
+		"reason":          "harassment",
+		"reportable_type": "user\r\nContent-Type: text/html\r\n\r\n",
+	})
+	req := httptest.NewRequest(http.MethodPost, "/users/blocks", bytes.NewReader(body))
+	req = req.WithContext(auth.ContextWithClaims(req.Context(), &auth.JWTClaims{UserID: blockerID}))
+	rec := httptest.NewRecorder()
+	cfg.postUserBlock(rec, req)
+
+	assert.Equal(t, http.StatusBadRequest, rec.Code)
+	var out apiErrorBody
+	require.NoError(t, json.NewDecoder(rec.Body).Decode(&out))
+	assert.Contains(t, out.Error, "reportable_type")
+	require.NoError(t, mock.ExpectationsWereMet())
+}
+
+func TestIsAllowedReportableType(t *testing.T) {
+	t.Parallel()
+	assert.True(t, isAllowedReportableType("user"))
+	assert.True(t, isAllowedReportableType("story"))
+	assert.False(t, isAllowedReportableType("user\r\nBcc: evil@x.test"))
+	assert.False(t, isAllowedReportableType("not-a-type"))
+}
+
 func TestDeleteUserBlock_OK(t *testing.T) {
 	db, mock, err := sqlmock.New()
 	require.NoError(t, err)
@@ -350,6 +394,101 @@ func TestDeleteUserBlock_OK(t *testing.T) {
 	cfg.deleteUserBlock(rec, req)
 
 	assert.Equal(t, http.StatusOK, rec.Code)
+	require.NoError(t, mock.ExpectationsWereMet())
+}
+
+func TestClampModerationDescription(t *testing.T) {
+	t.Parallel()
+	got, err := clampModerationDescription("  hello  ")
+	require.NoError(t, err)
+	assert.Equal(t, "hello", got)
+
+	_, err = clampModerationDescription(strings.Repeat("a", moderationReportDescMaxLen+1))
+	require.Error(t, err)
+}
+
+func TestPostContentReport_DescriptionTooLong(t *testing.T) {
+	db, mock, err := sqlmock.New()
+	require.NoError(t, err)
+	defer db.Close()
+
+	cfg := &Config{DB: database.New(db)}
+	const reporterID int32 = 55
+	mock.ExpectQuery(`SELECT COALESCE\(is_active, TRUE\)::bool AS is_active`).
+		WithArgs(reporterID).
+		WillReturnRows(sqlmock.NewRows([]string{"is_active"}).AddRow(true))
+
+	long := strings.Repeat("x", moderationReportDescMaxLen+1)
+	body, _ := json.Marshal(map[string]any{
+		"reportable_type": "user",
+		"reportable_id":   "10",
+		"reason":          "spam",
+		"description":     long,
+	})
+	req := httptest.NewRequest(http.MethodPost, "/reports", bytes.NewReader(body))
+	req = req.WithContext(auth.ContextWithClaims(req.Context(), &auth.JWTClaims{UserID: reporterID}))
+	rec := httptest.NewRecorder()
+	cfg.postContentReport(rec, req)
+
+	assert.Equal(t, http.StatusBadRequest, rec.Code)
+	require.NoError(t, mock.ExpectationsWereMet())
+}
+
+func TestPostUserBlock_RejectsMismatchedReportableOwner(t *testing.T) {
+	db, mock, err := sqlmock.New()
+	require.NoError(t, err)
+	defer db.Close()
+
+	cfg := &Config{DB: database.New(db)}
+	const blockerID int32 = 7
+	const blockedID int32 = 42
+	const otherUserID int32 = 99
+
+	mock.ExpectQuery(`SELECT COALESCE\(is_active, TRUE\)::bool AS is_active`).
+		WithArgs(blockerID).
+		WillReturnRows(sqlmock.NewRows([]string{"is_active"}).AddRow(true))
+	mock.ExpectQuery(`FROM users WHERE id = \$1`).
+		WithArgs(otherUserID).
+		WillReturnRows(sqlMockAppleUserFullRow(otherUserID, "O", "Ther", "o@example.com", "", "email", time.Now().UTC()))
+
+	body, _ := json.Marshal(map[string]any{
+		"blocked_user_id": blockedID,
+		"reportable_type": "user",
+		"reportable_id":   strconv.FormatInt(int64(otherUserID), 10),
+		"reason":          "harassment",
+	})
+	req := httptest.NewRequest(http.MethodPost, "/users/blocks", bytes.NewReader(body))
+	req = req.WithContext(auth.ContextWithClaims(req.Context(), &auth.JWTClaims{UserID: blockerID}))
+	rec := httptest.NewRecorder()
+	cfg.postUserBlock(rec, req)
+
+	assert.Equal(t, http.StatusBadRequest, rec.Code)
+	var out apiErrorBody
+	require.NoError(t, json.NewDecoder(rec.Body).Decode(&out))
+	assert.Contains(t, out.Error, "belong to the blocked user")
+	require.NoError(t, mock.ExpectationsWereMet())
+}
+
+func TestRequireActiveAuthedUser_Deactivated(t *testing.T) {
+	db, mock, err := sqlmock.New()
+	require.NoError(t, err)
+	defer db.Close()
+
+	cfg := &Config{DB: database.New(db)}
+	const uid int32 = 12
+	mock.ExpectQuery(`SELECT COALESCE\(is_active, TRUE\)::bool AS is_active`).
+		WithArgs(uid).
+		WillReturnRows(sqlmock.NewRows([]string{"is_active"}).AddRow(false))
+
+	req := httptest.NewRequest(http.MethodPost, "/reports", nil)
+	req = req.WithContext(auth.ContextWithClaims(req.Context(), &auth.JWTClaims{UserID: uid}))
+	rec := httptest.NewRecorder()
+	_, ok := cfg.requireActiveAuthedUser(rec, req)
+	assert.False(t, ok)
+	assert.Equal(t, http.StatusForbidden, rec.Code)
+	var out apiErrorBody
+	require.NoError(t, json.NewDecoder(rec.Body).Decode(&out))
+	assert.Equal(t, auth.GoogleAuthAccountInactive, out.Code)
 	require.NoError(t, mock.ExpectationsWereMet())
 }
 

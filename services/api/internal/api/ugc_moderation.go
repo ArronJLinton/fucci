@@ -4,20 +4,114 @@ import (
 	"context"
 	"database/sql"
 	"errors"
+	"fmt"
 	"log"
 	"net/http"
+	"strconv"
+	"strings"
 	"sync"
+	"time"
 
 	"github.com/ArronJLinton/fucci-api/internal/auth"
 	"github.com/ArronJLinton/fucci-api/internal/moderation"
+	"github.com/google/uuid"
 )
 
 const accountDeactivatedMessage = "This account has been deactivated. Contact support if you believe this is a mistake."
 
+const (
+	moderationReportDescMaxLen = 500
+	moderationRateLimitN       = 10
+	moderationRateWindow       = time.Minute
+	moderationNotifyMaxInFlight = 32
+)
+
 var (
 	contentFilterOnce sync.Once
 	contentFilter     *moderation.Filter
+
+	moderationNotifySem = make(chan struct{}, moderationNotifyMaxInFlight)
+
+	defaultModerationRateLimiter = moderationRateLimiter{byUser: make(map[int32]moderationRateEntry)}
 )
+
+type moderationRateEntry struct {
+	count       int
+	windowStart time.Time
+}
+
+type moderationRateLimiter struct {
+	mu     sync.Mutex
+	byUser map[int32]moderationRateEntry
+}
+
+func (r *moderationRateLimiter) allow(userID int32) bool {
+	r.mu.Lock()
+	defer r.mu.Unlock()
+	if r.byUser == nil {
+		r.byUser = make(map[int32]moderationRateEntry)
+	}
+	now := time.Now()
+	entry, ok := r.byUser[userID]
+	if !ok || now.Sub(entry.windowStart) >= moderationRateWindow {
+		r.byUser[userID] = moderationRateEntry{count: 1, windowStart: now}
+		return true
+	}
+	entry.count++
+	r.byUser[userID] = entry
+	return entry.count <= moderationRateLimitN
+}
+
+func checkModerationRateLimit(ctx context.Context, c *Config, userID int32) bool {
+	if c != nil && c.Cache != nil {
+		key := fmt.Sprintf("ratelimit:moderation:%d", userID)
+		n, err := c.Cache.Incr(ctx, key)
+		if err == nil {
+			if n == 1 {
+				if err := c.Cache.Expire(ctx, key, moderationRateWindow); err != nil {
+					log.Printf("[moderation] rate limit Redis Expire failed: %v", err)
+				}
+			} else {
+				ttl, ttlErr := c.Cache.TTL(ctx, key)
+				if ttlErr != nil || ttl < 0 {
+					if err := c.Cache.Expire(ctx, key, moderationRateWindow); err != nil {
+						log.Printf("[moderation] rate limit Redis fallback Expire failed: %v", err)
+					}
+				}
+			}
+			return n <= int64(moderationRateLimitN)
+		}
+		log.Printf("[moderation] rate limit Redis Incr failed: %v; using in-memory fallback", err)
+	}
+	return defaultModerationRateLimiter.allow(userID)
+}
+
+func clampModerationDescription(raw string) (string, error) {
+	d := strings.TrimSpace(raw)
+	if d == "" {
+		return "", nil
+	}
+	if len(d) > moderationReportDescMaxLen {
+		return "", fmt.Errorf("description must be at most %d characters", moderationReportDescMaxLen)
+	}
+	return d, nil
+}
+
+func (c *Config) enqueueModerationNotify(p moderation.ReportEmailPayload) {
+	go func() {
+		select {
+		case moderationNotifySem <- struct{}{}:
+			defer func() { <-moderationNotifySem }()
+			c.moderationNotifier().NotifyReport(p)
+		default:
+			// Bound concurrency: fall back to log-only so SMTP work cannot unbounded-grow.
+			log.Printf("MODERATION_ALERT queue full; logging only report_id=%s type=%s", p.ReportID, p.ReportableType)
+			(&moderation.Notifier{
+				Mail: moderation.MailConfig{To: c.ModerationNotifyEmail},
+			}).NotifyReport(p)
+		}
+	}()
+}
 
 func (c *Config) objectionableFilter() *moderation.Filter {
 	contentFilterOnce.Do(func() {
@@ -142,4 +236,87 @@ func (c *Config) requireActiveAuthedUser(w http.ResponseWriter, r *http.Request)
 		return 0, false
 	}
 	return userID, true
+}
+
+// resolveReportableTarget validates reportable_type/id the same way as POST /reports.
+// Returns normalized id, reported user, or an http-ready error message + status.
+type resolveReportableResult struct {
+	ReportableID   string
+	ReportedUserID sql.NullInt32
+	AlreadyRemoved bool
+}
+
+func (c *Config) resolveReportableTarget(
+	ctx context.Context,
+	reporterID int32,
+	reportableType, rawID string,
+) (resolveReportableResult, int, string) {
+	switch reportableType {
+	case "story":
+		storyID, err := uuid.Parse(strings.TrimSpace(rawID))
+		if err != nil {
+			return resolveReportableResult{}, http.StatusBadRequest, "invalid reportable_id"
+		}
+		story, err := c.DB.GetMatchStoryByID(ctx, storyID)
+		if err != nil {
+			if errors.Is(err, sql.ErrNoRows) {
+				return resolveReportableResult{}, http.StatusNotFound, "story not found"
+			}
+			return resolveReportableResult{}, http.StatusInternalServerError, "Failed to load story"
+		}
+		if !story.IsActive {
+			return resolveReportableResult{AlreadyRemoved: true}, http.StatusOK, ""
+		}
+		if story.UserID == reporterID {
+			return resolveReportableResult{}, http.StatusBadRequest, "cannot report your own content"
+		}
+		return resolveReportableResult{
+			ReportableID:   storyID.String(),
+			ReportedUserID: sql.NullInt32{Int32: story.UserID, Valid: true},
+		}, 0, ""
+
+	case "debate_response":
+		commentID, err := strconv.ParseInt(strings.TrimSpace(rawID), 10, 32)
+		if err != nil || commentID <= 0 {
+			return resolveReportableResult{}, http.StatusBadRequest, "invalid reportable_id"
+		}
+		comment, err := c.DB.GetComment(ctx, int32(commentID))
+		if err != nil {
+			if errors.Is(err, sql.ErrNoRows) {
+				return resolveReportableResult{}, http.StatusNotFound, "comment not found"
+			}
+			return resolveReportableResult{}, http.StatusInternalServerError, "Failed to load comment"
+		}
+		if !comment.UserID.Valid {
+			return resolveReportableResult{}, http.StatusBadRequest, "comment has no author"
+		}
+		if comment.UserID.Int32 == reporterID {
+			return resolveReportableResult{}, http.StatusBadRequest, "cannot report your own content"
+		}
+		return resolveReportableResult{
+			ReportableID:   strconv.FormatInt(commentID, 10),
+			ReportedUserID: comment.UserID,
+		}, 0, ""
+
+	case "avatar", "player_profile", "user":
+		targetUserID, err := strconv.ParseInt(strings.TrimSpace(rawID), 10, 32)
+		if err != nil || targetUserID <= 0 {
+			return resolveReportableResult{}, http.StatusBadRequest, "invalid reportable_id"
+		}
+		if int32(targetUserID) == reporterID {
+			return resolveReportableResult{}, http.StatusBadRequest, "cannot report your own content"
+		}
+		if _, err := c.DB.GetUser(ctx, int32(targetUserID)); err != nil {
+			if errors.Is(err, sql.ErrNoRows) {
+				return resolveReportableResult{}, http.StatusNotFound, "user not found"
+			}
+			return resolveReportableResult{}, http.StatusInternalServerError, "Failed to load user"
+		}
+		return resolveReportableResult{
+			ReportableID:   strconv.FormatInt(targetUserID, 10),
+			ReportedUserID: sql.NullInt32{Int32: int32(targetUserID), Valid: true},
+		}, 0, ""
+	default:
+		return resolveReportableResult{}, http.StatusBadRequest, "reportable_type must be story, debate_response, avatar, player_profile, or user"
+	}
 }
