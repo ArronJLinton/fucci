@@ -100,6 +100,11 @@ func (c *Config) handleLogin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if c.DBConn == nil {
+		respondWithError(w, http.StatusInternalServerError, "Database not configured")
+		return
+	}
+
 	email := strings.TrimSpace(req.Email)
 
 	// Detect soft-deactivated accounts before the active-only credential lookup.

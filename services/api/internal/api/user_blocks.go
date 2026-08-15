@@ -138,6 +138,11 @@ func (c *Config) postUserBlock(w http.ResponseWriter, r *http.Request) {
 		Description:    description,
 	})
 	if err != nil {
+		// Roll back the block so the two records stay consistent.
+		_ = c.DB.DeleteUserBlock(r.Context(), database.DeleteUserBlockParams{
+			BlockerID:     blockerID,
+			BlockedUserID: req.BlockedUserID,
+		})
 		respondWithError(w, http.StatusInternalServerError, "Failed to create report for block")
 		return
 	}
@@ -194,6 +199,10 @@ func (c *Config) deleteUserBlock(w http.ResponseWriter, r *http.Request) {
 func (c *Config) listUserBlocks(w http.ResponseWriter, r *http.Request) {
 	blockerID, ok := c.requireActiveAuthedUser(w, r)
 	if !ok {
+		return
+	}
+	if c.DB == nil {
+		respondWithError(w, http.StatusInternalServerError, "Database not configured")
 		return
 	}
 	ids, err := c.DB.ListBlockedUserIDs(r.Context(), blockerID)

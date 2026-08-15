@@ -1,5 +1,6 @@
 import React from 'react';
 import {
+  GestureResponderEvent,
   View,
   Text,
   TouchableOpacity,
@@ -49,7 +50,8 @@ export default function TermsAcceptanceRow({
         I agree to the{' '}
         <Text
           style={{color: linkColor}}
-          onPress={() => {
+          onPress={(e: GestureResponderEvent) => {
+            e.stopPropagation();
             void Linking.openURL(TERMS_OF_SERVICE_URL);
           }}>
           Terms of Use
@@ -57,7 +59,8 @@ export default function TermsAcceptanceRow({
         and{' '}
         <Text
           style={{color: linkColor}}
-          onPress={() => {
+          onPress={(e: GestureResponderEvent) => {
+            e.stopPropagation();
             void Linking.openURL(PRIVACY_POLICY_URL);
           }}>
           Privacy Policy

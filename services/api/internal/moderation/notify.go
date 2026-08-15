@@ -1,6 +1,7 @@
 package moderation
 
 import (
+	"crypto/tls"
 	"fmt"
 	"log"
 	"net"
@@ -94,8 +95,75 @@ func (n *Notifier) NotifyReport(p ReportEmailPayload) {
 	if strings.TrimSpace(n.Mail.Username) != "" {
 		auth = smtp.PlainAuth("", n.Mail.Username, n.Mail.Password, n.Mail.Host)
 	}
-	if err := smtp.SendMail(addr, auth, from, []string{to}, msg); err != nil {
-		log.Printf("MODERATION_ALERT email failed: %v — falling back to log\n%s", err, body)
+
+	// Use explicit TLS (SMTPS on 465) or STARTTLS (587/25) so credentials and
+	// message content are never transmitted in cleartext.
+	var sendErr error
+	if port == "465" {
+		// SMTPS: dial a TLS connection directly.
+		tlsCfg := &tls.Config{ServerName: n.Mail.Host, MinVersion: tls.VersionTLS12}
+		conn, err := tls.Dial("tcp", addr, tlsCfg)
+		if err != nil {
+			sendErr = fmt.Errorf("tls dial: %w", err)
+		} else {
+			client, err := smtp.NewClient(conn, n.Mail.Host)
+			if err != nil {
+				sendErr = fmt.Errorf("smtp client: %w", err)
+			} else {
+				if auth != nil {
+					if err := client.Auth(auth); err != nil {
+						sendErr = fmt.Errorf("smtp auth: %w", err)
+					}
+				}
+				if sendErr == nil {
+					if err := client.Mail(from); err != nil {
+						sendErr = fmt.Errorf("smtp MAIL: %w", err)
+					} else if err := client.Rcpt(to); err != nil {
+						sendErr = fmt.Errorf("smtp RCPT: %w", err)
+					} else if wc, err := client.Data(); err != nil {
+						sendErr = fmt.Errorf("smtp DATA: %w", err)
+					} else {
+						_, sendErr = wc.Write(msg)
+						_ = wc.Close()
+					}
+				}
+				_ = client.Quit()
+			}
+		}
+	} else {
+		// STARTTLS: negotiate TLS upgrade after the initial plaintext handshake.
+		client, err := smtp.Dial(addr)
+		if err != nil {
+			sendErr = fmt.Errorf("smtp dial: %w", err)
+		} else {
+			tlsCfg := &tls.Config{ServerName: n.Mail.Host, MinVersion: tls.VersionTLS12}
+			if err := client.StartTLS(tlsCfg); err != nil {
+				sendErr = fmt.Errorf("starttls: %w", err)
+			} else {
+				if auth != nil {
+					if err := client.Auth(auth); err != nil {
+						sendErr = fmt.Errorf("smtp auth: %w", err)
+					}
+				}
+				if sendErr == nil {
+					if err := client.Mail(from); err != nil {
+						sendErr = fmt.Errorf("smtp MAIL: %w", err)
+					} else if err := client.Rcpt(to); err != nil {
+						sendErr = fmt.Errorf("smtp RCPT: %w", err)
+					} else if wc, err := client.Data(); err != nil {
+						sendErr = fmt.Errorf("smtp DATA: %w", err)
+					} else {
+						_, sendErr = wc.Write(msg)
+						_ = wc.Close()
+					}
+				}
+			}
+			_ = client.Quit()
+		}
+	}
+
+	if sendErr != nil {
+		log.Printf("MODERATION_ALERT email failed: %v — falling back to log\n%s", sendErr, body)
 	}
 }
 
