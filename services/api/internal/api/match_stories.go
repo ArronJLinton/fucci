@@ -6,12 +6,12 @@ import (
 	"encoding/json"
 	"errors"
 	"net/http"
-	"strconv"
 	"strings"
 	"time"
 
 	"github.com/ArronJLinton/fucci-api/internal/auth"
 	"github.com/ArronJLinton/fucci-api/internal/database"
+	"github.com/ArronJLinton/fucci-api/internal/moderation"
 	"github.com/ArronJLinton/fucci-api/internal/youtube"
 	"github.com/go-chi/chi"
 	"github.com/google/uuid"
@@ -154,9 +154,8 @@ func cloudinaryContextForStoryContent(contentType string) (string, error) {
 
 // POST /v1/api/stories
 func (c *Config) postMatchStory(w http.ResponseWriter, r *http.Request) {
-	userID, ok := auth.UserIDFromContext(r.Context())
-	if !ok || userID == 0 {
-		respondWithError(w, http.StatusUnauthorized, "Authentication required")
+	userID, ok := c.requireActiveAuthedUser(w, r)
+	if !ok {
 		return
 	}
 	if c.DB == nil {
@@ -211,13 +210,16 @@ func (c *Config) postMatchStory(w http.ResponseWriter, r *http.Request) {
 
 	var caption sql.NullString
 	if req.Caption != nil {
-		c := strings.TrimSpace(*req.Caption)
-		if len(c) > 500 {
+		captionText := strings.TrimSpace(*req.Caption)
+		if len(captionText) > 500 {
 			respondWithError(w, http.StatusBadRequest, "caption must be 500 characters or fewer")
 			return
 		}
-		if c != "" {
-			caption = sql.NullString{String: c, Valid: true}
+		if captionText != "" {
+			if c.rejectIfObjectionable(w, captionText) {
+				return
+			}
+			caption = sql.NullString{String: captionText, Valid: true}
 		}
 	}
 
@@ -301,15 +303,31 @@ var allowedReportReasons = map[string]struct{}{
 	"other":                 {},
 }
 
+var allowedReportableTypes = map[string]struct{}{
+	"story":           {},
+	"debate_response": {},
+	"avatar":          {},
+	"player_profile":  {},
+	"user":            {},
+}
+
+func isAllowedReportableType(t string) bool {
+	_, ok := allowedReportableTypes[strings.TrimSpace(t)]
+	return ok
+}
+
 // POST /v1/api/reports
 func (c *Config) postContentReport(w http.ResponseWriter, r *http.Request) {
-	userID, ok := auth.UserIDFromContext(r.Context())
-	if !ok || userID == 0 {
-		respondWithError(w, http.StatusUnauthorized, "Authentication required")
+	userID, ok := c.requireActiveAuthedUser(w, r)
+	if !ok {
 		return
 	}
 	if c.DB == nil {
 		respondWithError(w, http.StatusInternalServerError, "Database not configured")
+		return
+	}
+	if !checkModerationRateLimit(r.Context(), c, userID) {
+		respondWithError(w, http.StatusTooManyRequests, "Rate limit exceeded; try again later")
 		return
 	}
 
@@ -320,8 +338,8 @@ func (c *Config) postContentReport(w http.ResponseWriter, r *http.Request) {
 	}
 
 	reportableType := strings.TrimSpace(req.ReportableType)
-	if reportableType != "story" && reportableType != "debate_response" {
-		respondWithError(w, http.StatusBadRequest, "reportable_type must be story or debate_response")
+	if !isAllowedReportableType(reportableType) {
+		respondWithError(w, http.StatusBadRequest, "reportable_type must be story, debate_response, avatar, player_profile, or user")
 		return
 	}
 
@@ -331,80 +349,35 @@ func (c *Config) postContentReport(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var description sql.NullString
+	descText := ""
 	if req.Description != nil {
-		d := strings.TrimSpace(*req.Description)
-		if d != "" {
-			description = sql.NullString{String: d, Valid: true}
+		var err error
+		descText, err = clampModerationDescription(*req.Description)
+		if err != nil {
+			respondWithError(w, http.StatusBadRequest, err.Error())
+			return
 		}
 	}
+	var description sql.NullString
+	if descText != "" {
+		description = sql.NullString{String: descText, Valid: true}
+	}
 
-	var reportableID string
-	var reportedUserID sql.NullInt32
-
-	switch reportableType {
-	case "story":
-		storyID, err := uuid.Parse(strings.TrimSpace(req.ReportableID))
-		if err != nil {
-			respondWithError(w, http.StatusBadRequest, "invalid reportable_id")
-			return
-		}
-
-		story, err := c.DB.GetMatchStoryByID(r.Context(), storyID)
-		if err != nil {
-			if errors.Is(err, sql.ErrNoRows) {
-				respondWithError(w, http.StatusNotFound, "story not found")
-				return
-			}
-			respondWithError(w, http.StatusInternalServerError, "Failed to load story")
-			return
-		}
-		if !story.IsActive {
-			respondWithJSON(w, http.StatusOK, map[string]string{"status": "already_removed"})
-			return
-		}
-		if story.UserID == userID {
-			respondWithError(w, http.StatusBadRequest, "cannot report your own content")
-			return
-		}
-
-		reportableID = storyID.String()
-		reportedUserID = sql.NullInt32{Int32: story.UserID, Valid: true}
-
-	case "debate_response":
-		commentID, err := strconv.ParseInt(strings.TrimSpace(req.ReportableID), 10, 32)
-		if err != nil || commentID <= 0 {
-			respondWithError(w, http.StatusBadRequest, "invalid reportable_id")
-			return
-		}
-
-		comment, err := c.DB.GetComment(r.Context(), int32(commentID))
-		if err != nil {
-			if errors.Is(err, sql.ErrNoRows) {
-				respondWithError(w, http.StatusNotFound, "comment not found")
-				return
-			}
-			respondWithError(w, http.StatusInternalServerError, "Failed to load comment")
-			return
-		}
-		if !comment.UserID.Valid {
-			respondWithError(w, http.StatusBadRequest, "comment has no author")
-			return
-		}
-		if comment.UserID.Int32 == userID {
-			respondWithError(w, http.StatusBadRequest, "cannot report your own content")
-			return
-		}
-
-		reportableID = strconv.FormatInt(commentID, 10)
-		reportedUserID = comment.UserID
+	resolved, status, msg := c.resolveReportableTarget(r.Context(), userID, reportableType, req.ReportableID)
+	if resolved.AlreadyRemoved {
+		respondWithJSON(w, http.StatusOK, map[string]string{"status": "already_removed"})
+		return
+	}
+	if status != 0 {
+		respondWithError(w, status, msg)
+		return
 	}
 
 	report, err := c.DB.CreateContentReport(r.Context(), database.CreateContentReportParams{
 		ReporterID:     userID,
 		ReportableType: reportableType,
-		ReportableID:   reportableID,
-		ReportedUserID: reportedUserID,
+		ReportableID:   resolved.ReportableID,
+		ReportedUserID: resolved.ReportedUserID,
 		Reason:         reason,
 		Description:    description,
 	})
@@ -412,6 +385,22 @@ func (c *Config) postContentReport(w http.ResponseWriter, r *http.Request) {
 		respondWithError(w, http.StatusInternalServerError, "Failed to create report")
 		return
 	}
+
+	var reportedPtr *int32
+	if resolved.ReportedUserID.Valid {
+		id := resolved.ReportedUserID.Int32
+		reportedPtr = &id
+	}
+	c.enqueueModerationNotify(moderation.ReportEmailPayload{
+		ReportID:       report.ID.String(),
+		ReporterID:     userID,
+		ReportedUserID: reportedPtr,
+		ReportableType: reportableType,
+		ReportableID:   resolved.ReportableID,
+		Reason:         reason,
+		Description:    descText,
+		Source:         "report",
+	})
 
 	respondWithJSON(w, http.StatusOK, map[string]interface{}{
 		"id":                report.ID.String(),

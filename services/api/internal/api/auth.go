@@ -23,8 +23,9 @@ import (
 
 // LoginRequest represents the login request payload (email-only)
 type LoginRequest struct {
-	Email    string `json:"email"`
-	Password string `json:"password"`
+	Email         string `json:"email"`
+	Password      string `json:"password"`
+	AcceptedTerms bool   `json:"accepted_terms"`
 }
 
 // LoginResponse represents the login response payload
@@ -34,8 +35,9 @@ type LoginResponse struct {
 }
 
 type GoogleAuthRequest struct {
-	Code        string `json:"code"`
-	RedirectURI string `json:"redirect_uri"`
+	Code          string `json:"code"`
+	RedirectURI   string `json:"redirect_uri"`
+	AcceptedTerms bool   `json:"accepted_terms"`
 }
 
 type GoogleAuthResponse struct {
@@ -45,7 +47,8 @@ type GoogleAuthResponse struct {
 }
 
 type GoogleOAuthExchangeRequest struct {
-	Code string `json:"code"`
+	Code          string `json:"code"`
+	AcceptedTerms bool   `json:"accepted_terms"`
 }
 
 type googleOAuthExchangeSession struct {
@@ -92,6 +95,32 @@ func (c *Config) handleLogin(w http.ResponseWriter, r *http.Request) {
 		respondWithError(w, http.StatusBadRequest, "email and password are required")
 		return
 	}
+	if err := requireAcceptedTerms(req.AcceptedTerms); err != nil {
+		respondWithErrorCode(w, http.StatusBadRequest, err.Error(), "TERMS_REQUIRED")
+		return
+	}
+
+	if c.DBConn == nil {
+		respondWithError(w, http.StatusInternalServerError, "Database not configured")
+		return
+	}
+
+	email := strings.TrimSpace(req.Email)
+
+	// Detect soft-deactivated accounts before the active-only credential lookup.
+	var inactiveID int32
+	err := c.DBConn.QueryRowContext(r.Context(),
+		`SELECT id FROM users WHERE email = $1 AND COALESCE(is_active, true) = false LIMIT 1`,
+		email,
+	).Scan(&inactiveID)
+	if err == nil {
+		respondAccountDeactivated(w)
+		return
+	}
+	if err != nil && err != sql.ErrNoRows {
+		respondWithError(w, http.StatusInternalServerError, "failed to get user")
+		return
+	}
 
 	// Get user by email
 	var user struct {
@@ -100,9 +129,9 @@ func (c *Config) handleLogin(w http.ResponseWriter, r *http.Request) {
 		Lastname  string
 		Email     string
 	}
-	err := c.DBConn.QueryRowContext(r.Context(),
+	err = c.DBConn.QueryRowContext(r.Context(),
 		`SELECT id, firstname, lastname, email FROM users WHERE email = $1 AND is_active = true LIMIT 1`,
-		strings.TrimSpace(req.Email),
+		email,
 	).Scan(&user.ID, &user.Firstname, &user.Lastname, &user.Email)
 	if err != nil {
 		if err == sql.ErrNoRows {
@@ -182,6 +211,7 @@ func (c *Config) handleLogin(w http.ResponseWriter, r *http.Request) {
 		User:  userResponse,
 	}
 
+	c.recordTermsAcceptance(r.Context(), user.ID)
 	respondWithJSON(w, http.StatusOK, response)
 }
 
@@ -340,7 +370,7 @@ func (c *Config) googleAuthFromCode(ctx context.Context, code, redirectURI strin
 			return GoogleAuthResponse{}, &googleAuthProcError{
 				status: http.StatusForbidden,
 				code:   auth.GoogleAuthAccountInactive,
-				msg:    "This account has been deactivated",
+				msg:    accountDeactivatedMessage,
 			}
 		}
 		u, err = q.UpdateGoogleLoginFields(ctx, database.UpdateGoogleLoginFieldsParams{
@@ -361,7 +391,7 @@ func (c *Config) googleAuthFromCode(ctx context.Context, code, redirectURI strin
 				return GoogleAuthResponse{}, &googleAuthProcError{
 					status: http.StatusForbidden,
 					code:   auth.GoogleAuthAccountInactive,
-					msg:    "This account has been deactivated",
+					msg:    accountDeactivatedMessage,
 				}
 			}
 			existingGoogleIDVal := strings.TrimSpace(byEmail.GoogleID.String)
@@ -422,7 +452,7 @@ func (c *Config) googleAuthFromCode(ctx context.Context, code, redirectURI strin
 		return GoogleAuthResponse{}, &googleAuthProcError{
 			status: http.StatusForbidden,
 			code:   auth.GoogleAuthAccountInactive,
-			msg:    "This account has been deactivated",
+			msg:    accountDeactivatedMessage,
 		}
 	}
 
@@ -471,6 +501,10 @@ func (c *Config) handleGoogleAuth(w http.ResponseWriter, r *http.Request) {
 		respondWithGoogleAuthError(w, http.StatusBadRequest, auth.GoogleAuthInvalidRedirectURI, "redirect_uri is required")
 		return
 	}
+	if err := requireAcceptedTerms(req.AcceptedTerms); err != nil {
+		respondWithGoogleAuthError(w, http.StatusBadRequest, "TERMS_REQUIRED", err.Error())
+		return
+	}
 
 	out, procErr := c.googleAuthFromCode(r.Context(), req.Code, req.RedirectURI)
 	if procErr != nil {
@@ -478,6 +512,7 @@ func (c *Config) handleGoogleAuth(w http.ResponseWriter, r *http.Request) {
 		respondWithGoogleAuthError(w, procErr.status, procErr.code, publicGoogleOAuthAppErrorDescription(procErr))
 		return
 	}
+	c.recordTermsAcceptance(r.Context(), out.User.ID)
 	logGoogleAuthEvent("post_success", "path", r.URL.Path, "user_id", out.User.ID, "is_new", out.IsNew)
 	respondWithJSON(w, http.StatusOK, out)
 }
@@ -712,11 +747,16 @@ func (c *Config) handleGoogleOAuthExchange(w http.ResponseWriter, r *http.Reques
 		respondWithGoogleAuthError(w, http.StatusBadRequest, auth.GoogleAuthCodeInvalid, "invalid request body")
 		return
 	}
+	if err := requireAcceptedTerms(req.AcceptedTerms); err != nil {
+		respondWithGoogleAuthError(w, http.StatusBadRequest, "TERMS_REQUIRED", err.Error())
+		return
+	}
 	out, ok := c.consumeGoogleOAuthExchangeCode(r.Context(), req.Code)
 	if !ok {
 		respondWithGoogleAuthError(w, http.StatusBadRequest, auth.GoogleAuthCodeInvalid, "invalid or expired oauth exchange code")
 		return
 	}
+	c.recordTermsAcceptance(r.Context(), out.User.ID)
 	respondWithJSON(w, http.StatusOK, out)
 }
 
@@ -725,10 +765,8 @@ func respondWithGoogleAuthError(w http.ResponseWriter, status int, code, message
 }
 
 func (c *Config) handleUpdateProfile(w http.ResponseWriter, r *http.Request) {
-	// Get user ID from context (set by auth middleware)
-	userID, ok := auth.UserIDFromContext(r.Context())
+	userID, ok := c.requireActiveAuthedUser(w, r)
 	if !ok {
-		respondWithError(w, http.StatusUnauthorized, "authentication required")
 		return
 	}
 
@@ -750,18 +788,27 @@ func (c *Config) handleUpdateProfile(w http.ResponseWriter, r *http.Request) {
 	argPos := 1
 
 	if req.Firstname != nil {
+		if c.rejectIfObjectionable(w, *req.Firstname) {
+			return
+		}
 		updates = append(updates, fmt.Sprintf("firstname = $%d", argPos))
 		args = append(args, *req.Firstname)
 		argPos++
 	}
 
 	if req.Lastname != nil {
+		if c.rejectIfObjectionable(w, *req.Lastname) {
+			return
+		}
 		updates = append(updates, fmt.Sprintf("lastname = $%d", argPos))
 		args = append(args, *req.Lastname)
 		argPos++
 	}
 
 	if req.DisplayName != nil {
+		if c.rejectIfObjectionable(w, *req.DisplayName) {
+			return
+		}
 		updates = append(updates, fmt.Sprintf("display_name = $%d", argPos))
 		args = append(args, *req.DisplayName)
 		argPos++

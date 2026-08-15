@@ -12,6 +12,7 @@ import (
 	"github.com/ArronJLinton/fucci-api/internal/auth"
 	"github.com/ArronJLinton/fucci-api/internal/cache"
 	"github.com/ArronJLinton/fucci-api/internal/database"
+	"github.com/ArronJLinton/fucci-api/internal/moderation"
 	"github.com/ArronJLinton/fucci-api/internal/push"
 	"github.com/ArronJLinton/fucci-api/internal/youtube"
 	"github.com/go-chi/chi"
@@ -163,6 +164,15 @@ type Config struct {
 	ExpoAccessToken string
 	Environment     string
 	PushService     *push.Service // optional override for unit tests
+
+	// Moderation / Guideline 1.2 (optional SMTP; logs when unset).
+	SMTPHost               string
+	SMTPPort               string
+	SMTPUsername           string
+	SMTPPassword           string
+	SMTPFrom               string
+	ModerationNotifyEmail  string
+	ModerationNotifier     *moderation.Notifier // optional test override
 }
 
 // newsXAPIKey is the key passed to the Open Web Ninja news HTTP client. When trimmed NewsAPIKey
@@ -215,6 +225,9 @@ func New(c *Config) http.Handler {
 	userRouter.Put("/profile", c.handleUpdateProfile)
 	userRouter.Delete("/account", c.handleDeleteAccount)
 	userRouter.Get("/me/following", c.handleGetFollowing)
+	userRouter.Get("/blocks", c.listUserBlocks)
+	userRouter.Post("/blocks", c.postUserBlock)
+	userRouter.Delete("/blocks/{blockedUserId}", c.deleteUserBlock)
 
 	// Temp route for listing all users
 	userRouter.Get("/all", c.handleListAllUsers)
@@ -250,7 +263,7 @@ func New(c *Config) http.Handler {
 	newsRouter.Get("/stories/shorts", c.getNewsMediaYouTubeShorts)
 
 	matchesRouter := chi.NewRouter()
-	matchesRouter.Get("/{matchId}/stories/shorts", c.getMatchYouTubeShorts)
+	matchesRouter.With(auth.OptionalAuth).Get("/{matchId}/stories/shorts", c.getMatchYouTubeShorts)
 
 	storiesRouter := chi.NewRouter()
 	storiesRouter.Use(auth.RequireAuth)
@@ -277,7 +290,7 @@ func New(c *Config) http.Handler {
 	debateRouter.With(auth.RequireAuth).Put("/{debateId}/cards/{cardId}/vote", c.setCardVote)
 	debateRouter.Post("/cards", c.createDebateCard)
 	// Legacy POST /debates/votes and POST /debates/comments removed: they were unauthenticated and used hardcoded user_id. Use PUT /debates/{id}/cards/{cardId}/vote and POST /debates/{id}/comments (auth required) instead.
-	debateRouter.Get("/{debateId}/comments", c.ListDebateComments)
+	debateRouter.With(auth.OptionalAuth).Get("/{debateId}/comments", c.ListDebateComments)
 	debateRouter.With(auth.RequireAuth).Post("/{debateId}/comments", c.CreateDebateComment)
 	// Admin routes for soft delete management
 	debateRouter.With(auth.RequireAuth).Delete("/{id}/hard", c.hardDeleteDebate) // Permanent deletion

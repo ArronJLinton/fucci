@@ -29,6 +29,9 @@ import {
   dispatchAfterSignInSuccess,
   dispatchResetToMainProfileTab,
 } from '../navigation/authNavigationActions';
+import TermsAcceptanceRow from '../components/TermsAcceptanceRow';
+import {ACCOUNT_DEACTIVATED_MESSAGE} from '../constants/legal';
+import {isAccountDeactivatedError} from '../services/moderation';
 
 function validatePassword(password: string): string | null {
   if (password.length < 8) {
@@ -71,6 +74,7 @@ export default function SignUpScreen() {
   const [error, setError] = useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [appleAvailable, setAppleAvailable] = useState(false);
+  const [acceptedTerms, setAcceptedTerms] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -105,6 +109,10 @@ export default function SignUpScreen() {
   const handleSubmit = async () => {
     setError(null);
     setFieldErrors({});
+    if (!acceptedTerms) {
+      setError('Please accept the Terms of Use to continue.');
+      return;
+    }
     if (!validate()) return;
 
     setPending('email');
@@ -114,6 +122,7 @@ export default function SignUpScreen() {
         password,
         first_name: firstName.trim(),
         last_name: lastName.trim(),
+        accepted_terms: true,
       };
       const result = await register(body);
 
@@ -123,7 +132,15 @@ export default function SignUpScreen() {
         return;
       }
 
-      if (result.status === 400 && result.errors?.length) {
+      if (
+        isAccountDeactivatedError({
+          status: result.status,
+          message: result.message,
+          code: result.code,
+        })
+      ) {
+        setError(ACCOUNT_DEACTIVATED_MESSAGE);
+      } else if (result.status === 400 && result.errors?.length) {
         const errs: Record<string, string> = {};
         result.errors.forEach(e => {
           errs[e.field] = e.message;
@@ -146,9 +163,13 @@ export default function SignUpScreen() {
 
   const handleGoogleSignUp = async () => {
     setError(null);
+    if (!acceptedTerms) {
+      setError('Please accept the Terms of Use to continue.');
+      return;
+    }
     setPending('google');
     try {
-      const authResult = await launchGoogleAuthBrowserFlow();
+      const authResult = await launchGoogleAuthBrowserFlow(true);
       if (authResult.kind === 'cancel') {
         return;
       }
@@ -175,9 +196,13 @@ export default function SignUpScreen() {
 
   const handleAppleSignUp = async () => {
     setError(null);
+    if (!acceptedTerms) {
+      setError('Please accept the Terms of Use to continue.');
+      return;
+    }
     setPending('apple');
     try {
-      const authResult = await launchAppleSignIn();
+      const authResult = await launchAppleSignIn(true);
       if (authResult.kind === 'cancel' || authResult.kind === 'unavailable') {
         return;
       }
@@ -323,6 +348,12 @@ export default function SignUpScreen() {
           {fieldErrors.last_name ? (
             <Text style={styles.fieldError}>{fieldErrors.last_name}</Text>
           ) : null}
+
+          <TermsAcceptanceRow
+            accepted={acceptedTerms}
+            onToggle={() => setAcceptedTerms(v => !v)}
+            disabled={submitting}
+          />
 
           <TouchableOpacity
             activeOpacity={0.92}

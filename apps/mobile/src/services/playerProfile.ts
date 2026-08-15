@@ -11,6 +11,7 @@ const BASE = '/player-profile';
 
 type ComparePlayerCatalogApiItem = {
   id: string;
+  user_id?: number;
   display_name: string;
   age: number | null;
   country_code: string;
@@ -107,6 +108,7 @@ export async function listComparePlayerCatalog(
       (countryCode || '—');
     return {
       id: p.id,
+      userId: typeof p.user_id === 'number' ? p.user_id : undefined,
       displayName: p.display_name,
       age: p.age,
       countryCode,

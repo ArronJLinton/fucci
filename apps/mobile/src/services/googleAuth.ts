@@ -22,16 +22,17 @@ function firstQuery(
 
 async function exchangeGoogleOAuthCode(
   code: string,
+  acceptedTerms: boolean,
 ): Promise<
   | {ok: true; data: GoogleAuthResponse}
-  | {ok: false; message: string}
+  | {ok: false; message: string; code?: string; status?: number}
 > {
   const url = `${apiConfig.baseURL}/auth/google/exchange`;
   try {
     const response = await fetch(url, {
       method: 'POST',
       headers: {...apiConfig.headers},
-      body: JSON.stringify({code}),
+      body: JSON.stringify({code, accepted_terms: acceptedTerms}),
     });
     const data = await response.json().catch(() => ({}));
     if (!response.ok) {
@@ -39,7 +40,12 @@ async function exchangeGoogleOAuthCode(
         (typeof data.error === 'string' && data.error) ||
         (typeof data.message === 'string' && data.message) ||
         `Request failed (${response.status})`;
-      return {ok: false, message};
+      return {
+        ok: false,
+        message,
+        code: typeof data.code === 'string' ? data.code : undefined,
+        status: response.status,
+      };
     }
     if (typeof data.token !== 'string' || !data.user) {
       return {ok: false, message: 'Google sign-in failed'};
@@ -60,8 +66,17 @@ async function exchangeGoogleOAuthCode(
  * The app then exchanges the short-lived code at POST /auth/google/exchange.
  * Client ID and secret stay on the API only.
  */
-export async function launchGoogleAuthBrowserFlow(): Promise<GoogleBrowserAuthResult> {
+export async function launchGoogleAuthBrowserFlow(
+  acceptedTerms = false,
+): Promise<GoogleBrowserAuthResult> {
   WebBrowser.maybeCompleteAuthSession();
+
+  if (!acceptedTerms) {
+    return {
+      kind: 'error',
+      message: 'Please accept the Terms of Use to continue.',
+    };
+  }
 
   const returnUrl = Linking.createURL('auth');
   const startUrl = `${apiConfig.baseURL}/auth/google/start?return=${encodeURIComponent(returnUrl)}`;
@@ -89,7 +104,7 @@ export async function launchGoogleAuthBrowserFlow(): Promise<GoogleBrowserAuthRe
     return {kind: 'cancel'};
   }
 
-  const exchanged = await exchangeGoogleOAuthCode(exchangeCode);
+  const exchanged = await exchangeGoogleOAuthCode(exchangeCode, acceptedTerms);
   if (!exchanged.ok) {
     return {kind: 'error', message: exchanged.message};
   }

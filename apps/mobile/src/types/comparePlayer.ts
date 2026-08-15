@@ -1,6 +1,8 @@
 /** Snapshot used to render one column on the compare screen (signed-in user or catalog pick). */
 export type ComparePlayerSnapshot = {
   id: string;
+  /** Owning user id — used for report/block of player profile / avatar UGC. */
+  userId?: number;
   displayName: string;
   age: number | null;
   countryCode: string;

@@ -50,6 +50,7 @@ type PlayerProfileCareerTeamDTO struct {
 // ComparePlayerCatalogItem is one selectable player for compare search.
 type ComparePlayerCatalogItem struct {
 	ID             string  `json:"id"`
+	UserID         int32   `json:"user_id"`
 	DisplayName    string  `json:"display_name"`
 	Age            *int32  `json:"age"`
 	CountryCode    string  `json:"country_code"`
@@ -234,6 +235,7 @@ func compareCatalogItem(row database.ListComparePlayerCatalogRow) ComparePlayerC
 	completion := completionPercentForCompare(row)
 	return ComparePlayerCatalogItem{
 		ID:          "profile-" + strconv.Itoa(int(row.ID)),
+		UserID:      row.UserID,
 		DisplayName: compareCatalogDisplayName(row),
 		Age:         age,
 		CountryCode: countryCode,
@@ -335,9 +337,8 @@ func (c *Config) getPlayerProfile(w http.ResponseWriter, r *http.Request) {
 }
 
 func (c *Config) postPlayerProfile(w http.ResponseWriter, r *http.Request) {
-	userID, ok := auth.UserIDFromContext(r.Context())
-	if !ok || userID == 0 {
-		respondWithError(w, http.StatusUnauthorized, "Authentication required")
+	userID, ok := c.requireActiveAuthedUser(w, r)
+	if !ok {
 		return
 	}
 	ctx := r.Context()
@@ -377,8 +378,14 @@ func (c *Config) postPlayerProfile(w http.ResponseWriter, r *http.Request) {
 	}
 	club := sql.NullString{}
 	if req.Club != nil {
-		club.String = *req.Club
-		club.Valid = true
+		clubName := strings.TrimSpace(*req.Club)
+		if c.rejectIfObjectionable(w, clubName) {
+			return
+		}
+		if clubName != "" {
+			club.String = clubName
+			club.Valid = true
+		}
 	}
 	isFreeAgent := false
 	if req.IsFreeAgent != nil {
@@ -430,9 +437,8 @@ func (c *Config) postPlayerProfile(w http.ResponseWriter, r *http.Request) {
 }
 
 func (c *Config) putPlayerProfile(w http.ResponseWriter, r *http.Request) {
-	userID, ok := auth.UserIDFromContext(r.Context())
-	if !ok || userID == 0 {
-		respondWithError(w, http.StatusUnauthorized, "Authentication required")
+	userID, ok := c.requireActiveAuthedUser(w, r)
+	if !ok {
 		return
 	}
 	ctx := r.Context()
@@ -483,8 +489,14 @@ func (c *Config) putPlayerProfile(w http.ResponseWriter, r *http.Request) {
 	}
 	club := sql.NullString{}
 	if req.Club != nil {
-		club.String = *req.Club
-		club.Valid = true
+		clubName := strings.TrimSpace(*req.Club)
+		if c.rejectIfObjectionable(w, clubName) {
+			return
+		}
+		if clubName != "" {
+			club.String = clubName
+			club.Valid = true
+		}
 	}
 	isFreeAgent := false
 	if req.IsFreeAgent != nil {
@@ -561,9 +573,8 @@ func dedupeTraitCodesPreserveOrder(codes []string) []string {
 }
 
 func (c *Config) putPlayerProfileTraits(w http.ResponseWriter, r *http.Request) {
-	userID, ok := auth.UserIDFromContext(r.Context())
-	if !ok || userID == 0 {
-		respondWithError(w, http.StatusUnauthorized, "Authentication required")
+	userID, ok := c.requireActiveAuthedUser(w, r)
+	if !ok {
 		return
 	}
 	ctx := r.Context()
@@ -670,9 +681,8 @@ func (c *Config) putPlayerProfileTraits(w http.ResponseWriter, r *http.Request) 
 }
 
 func (c *Config) deletePlayerProfile(w http.ResponseWriter, r *http.Request) {
-	userID, ok := auth.UserIDFromContext(r.Context())
-	if !ok || userID == 0 {
-		respondWithError(w, http.StatusUnauthorized, "Authentication required")
+	userID, ok := c.requireActiveAuthedUser(w, r)
+	if !ok {
 		return
 	}
 	ctx := r.Context()

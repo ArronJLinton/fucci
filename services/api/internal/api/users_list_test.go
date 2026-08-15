@@ -35,6 +35,8 @@ func TestHandleListAllUsers_OmitsAppleRefreshToken(t *testing.T) {
 		sql.NullString{String: "fan", Valid: true},
 		sql.NullString{String: "apple.sub.7", Valid: true},
 		sql.NullString{String: secret, Valid: true},
+		sql.NullTime{},
+		sql.NullString{},
 	)
 	mock.ExpectQuery(`FROM users ORDER BY created_at DESC`).WillReturnRows(rows)
 

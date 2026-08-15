@@ -45,6 +45,7 @@ func InitConfig(logger *otelzap.Logger) Config {
 	viper.SetDefault("port", "8080")
 	viper.SetDefault("environment", "development")
 	viper.SetDefault("system_user_email", "contact@magistri.dev")
+	viper.SetDefault("moderation_notify_email", "contact@magistri.dev")
 	viper.SetDefault("google_oauth_redirect_uris", "")
 	viper.SetDefault("google_oauth_callback_url", "")
 	// Default scope of the daily debate pre-warm: disabled by default to avoid
@@ -115,6 +116,12 @@ func InitConfig(logger *otelzap.Logger) Config {
 		YOUTUBE_API_KEY:                    viper.GetString("youtube_api_key"),
 		YOUTUBE_CACHE_TTL_HOURS:            viper.GetInt("youtube_cache_ttl_hours"),
 		EXPO_ACCESS_TOKEN:                  viper.GetString("expo_access_token"),
+		SMTPHost:                           viper.GetString("smtp_host"),
+		SMTPPort:                           viper.GetString("smtp_port"),
+		SMTPUsername:                       viper.GetString("smtp_username"),
+		SMTPPassword:                       viper.GetString("smtp_password"),
+		SMTPFrom:                           viper.GetString("smtp_from"),
+		ModerationNotifyEmail:              viper.GetString("moderation_notify_email"),
 	}
 
 	return cfg

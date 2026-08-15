@@ -207,6 +207,9 @@ func TestPostContentReport_DoesNotDeactivateStory(t *testing.T) {
 	const ownerID int32 = 10
 	createdAt := time.Date(2026, 7, 2, 12, 0, 0, 0, time.UTC)
 
+	mock.ExpectQuery(`SELECT COALESCE\(is_active, TRUE\)::bool AS is_active`).
+		WithArgs(reporterID).
+		WillReturnRows(sqlmock.NewRows([]string{"is_active"}).AddRow(true))
 	mock.ExpectQuery(`SELECT id, user_id, scope_type, scope_id, team_lookup_key, content_type, media_url, caption, is_active, created_at FROM match_stories WHERE id = \$1`).
 		WithArgs(storyID).
 		WillReturnRows(sqlmock.NewRows([]string{
@@ -263,6 +266,9 @@ func TestPostContentReport_DebateResponseOK(t *testing.T) {
 	reportID := uuid.New()
 	createdAt := time.Date(2026, 8, 5, 12, 0, 0, 0, time.UTC)
 
+	mock.ExpectQuery(`SELECT COALESCE\(is_active, TRUE\)::bool AS is_active`).
+		WithArgs(reporterID).
+		WillReturnRows(sqlmock.NewRows([]string{"is_active"}).AddRow(true))
 	mock.ExpectQuery(`SELECT\s+c\.id, c\.debate_id, c\.parent_comment_id, c\.user_id, c\.content, c\.created_at, c\.updated_at, c\.seeded`).
 		WithArgs(commentID).
 		WillReturnRows(sqlmock.NewRows([]string{
@@ -320,6 +326,9 @@ func TestPostContentReport_CannotReportOwnComment(t *testing.T) {
 	const userID int32 = 10
 	createdAt := time.Date(2026, 8, 5, 12, 0, 0, 0, time.UTC)
 
+	mock.ExpectQuery(`SELECT COALESCE\(is_active, TRUE\)::bool AS is_active`).
+		WithArgs(userID).
+		WillReturnRows(sqlmock.NewRows([]string{"is_active"}).AddRow(true))
 	mock.ExpectQuery(`SELECT\s+c\.id, c\.debate_id, c\.parent_comment_id, c\.user_id, c\.content, c\.created_at, c\.updated_at, c\.seeded`).
 		WithArgs(commentID).
 		WillReturnRows(sqlmock.NewRows([]string{

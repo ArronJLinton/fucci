@@ -415,6 +415,13 @@ type Teams struct {
 	Capacity    sql.NullInt32
 }
 
+type UserBlocks struct {
+	ID            uuid.UUID
+	BlockerID     int32
+	BlockedUserID int32
+	CreatedAt     time.Time
+}
+
 type UserFollows struct {
 	ID             uuid.UUID
 	UserID         int32
@@ -442,6 +449,8 @@ type Users struct {
 	Role              NullUserRole
 	AppleID           sql.NullString
 	AppleRefreshToken sql.NullString `json:"-"`
+	TermsAcceptedAt   sql.NullTime
+	TermsVersion      sql.NullString
 }
 
 type Votes struct {

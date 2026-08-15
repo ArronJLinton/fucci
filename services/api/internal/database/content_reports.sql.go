@@ -8,6 +8,8 @@ package database
 import (
 	"context"
 	"database/sql"
+
+	"github.com/google/uuid"
 )
 
 const createContentReport = `-- name: CreateContentReport :one
@@ -47,6 +49,97 @@ func (q *Queries) CreateContentReport(ctx context.Context, arg CreateContentRepo
 		arg.Reason,
 		arg.Description,
 	)
+	var i ContentReports
+	err := row.Scan(
+		&i.ID,
+		&i.ReporterID,
+		&i.ReportableType,
+		&i.ReportableID,
+		&i.Reason,
+		&i.Description,
+		&i.Status,
+		&i.CreatedAt,
+		&i.ReportedUserID,
+	)
+	return i, err
+}
+
+const getContentReportByID = `-- name: GetContentReportByID :one
+SELECT id, reporter_id, reportable_type, reportable_id, reason, description, status, created_at, reported_user_id FROM content_reports WHERE id = $1
+`
+
+func (q *Queries) GetContentReportByID(ctx context.Context, id uuid.UUID) (ContentReports, error) {
+	row := q.db.QueryRowContext(ctx, getContentReportByID, id)
+	var i ContentReports
+	err := row.Scan(
+		&i.ID,
+		&i.ReporterID,
+		&i.ReportableType,
+		&i.ReportableID,
+		&i.Reason,
+		&i.Description,
+		&i.Status,
+		&i.CreatedAt,
+		&i.ReportedUserID,
+	)
+	return i, err
+}
+
+const listPendingContentReports = `-- name: ListPendingContentReports :many
+SELECT id, reporter_id, reportable_type, reportable_id, reason, description, status, created_at, reported_user_id
+FROM content_reports
+WHERE status = 'pending'
+ORDER BY created_at ASC
+LIMIT $1
+`
+
+func (q *Queries) ListPendingContentReports(ctx context.Context, rowLimit int32) ([]ContentReports, error) {
+	rows, err := q.db.QueryContext(ctx, listPendingContentReports, rowLimit)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []ContentReports
+	for rows.Next() {
+		var i ContentReports
+		if err := rows.Scan(
+			&i.ID,
+			&i.ReporterID,
+			&i.ReportableType,
+			&i.ReportableID,
+			&i.Reason,
+			&i.Description,
+			&i.Status,
+			&i.CreatedAt,
+			&i.ReportedUserID,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const updateContentReportStatus = `-- name: UpdateContentReportStatus :one
+UPDATE content_reports
+SET status = $1
+WHERE id = $2
+RETURNING id, reporter_id, reportable_type, reportable_id, reason, description, status, created_at, reported_user_id
+`
+
+type UpdateContentReportStatusParams struct {
+	Status string
+	ID     uuid.UUID
+}
+
+func (q *Queries) UpdateContentReportStatus(ctx context.Context, arg UpdateContentReportStatusParams) (ContentReports, error) {
+	row := q.db.QueryRowContext(ctx, updateContentReportStatus, arg.Status, arg.ID)
 	var i ContentReports
 	err := row.Scan(
 		&i.ID,

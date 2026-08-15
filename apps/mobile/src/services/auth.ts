@@ -8,6 +8,7 @@ export interface RegisterRequest {
   first_name: string;
   last_name: string;
   photo_url?: string;
+  accepted_terms: boolean;
 }
 
 export interface AuthUser {
@@ -29,6 +30,7 @@ export interface RegisterResponse {
 export interface LoginRequest {
   email: string;
   password: string;
+  accepted_terms: boolean;
 }
 
 export interface LoginResponse {
@@ -64,6 +66,7 @@ export const register = async (
       status: number;
       message: string;
       errors?: Array<{field: string; message: string}>;
+      code?: string;
     }
 > => {
   const url = `${apiConfig.baseURL}/auth/register`;
@@ -77,6 +80,7 @@ export const register = async (
         email: body.email,
         password: body.password,
         avatar_url: body.photo_url || undefined,
+        accepted_terms: body.accepted_terms === true,
       }),
     });
     const data = await response.json().catch(() => ({}));
@@ -86,7 +90,13 @@ export const register = async (
     const message =
       data.message || data.error || `Request failed (${response.status})`;
     const errors = data.errors;
-    return {ok: false, status: response.status, message, errors};
+    return {
+      ok: false,
+      status: response.status,
+      message,
+      errors,
+      code: typeof data.code === 'string' ? data.code : undefined,
+    };
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Network error';
     return {ok: false, status: 0, message};
@@ -97,7 +107,8 @@ export const register = async (
 export const login = async (
   body: LoginRequest,
 ): Promise<
-  {ok: true; data: LoginResponse} | {ok: false; status: number; message: string}
+  | {ok: true; data: LoginResponse}
+  | {ok: false; status: number; message: string; code?: string}
 > => {
   const url = `${apiConfig.baseURL}/auth/login`;
   try {
@@ -107,6 +118,7 @@ export const login = async (
       body: JSON.stringify({
         email: body.email,
         password: body.password,
+        accepted_terms: body.accepted_terms === true,
       }),
     });
     const data = await response.json().catch(() => ({}));
@@ -115,7 +127,12 @@ export const login = async (
     }
     const message =
       data.message || data.error || `Request failed (${response.status})`;
-    return {ok: false, status: response.status, message};
+    return {
+      ok: false,
+      status: response.status,
+      message,
+      code: typeof data.code === 'string' ? data.code : undefined,
+    };
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Network error';
     return {ok: false, status: 0, message};

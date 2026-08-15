@@ -12,7 +12,6 @@ import {
   ActivityIndicator,
   StatusBar,
   Linking,
-  Alert,
 } from 'react-native';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {useRoute, useNavigation, RouteProp} from '@react-navigation/native';
@@ -32,9 +31,8 @@ import {
   createComment as apiCreateComment,
   setCommentVote,
   addCommentReaction,
-  userFacingApiMessage,
 } from '../services/api';
-import {reportDebateComment} from '../services/debateCommentReport';
+import {promptModerationActions} from '../services/moderation';
 import {useAuth} from '../context/AuthContext';
 import {rootNavigateToProfileAuth} from '../navigation/authNavigationActions';
 import {rootNavigate} from '../navigation/rootNavigation';
@@ -492,38 +490,33 @@ const SingleDebateScreen = () => {
     }
   };
 
-  const handleReportComment = (commentId: number) => {
+  const handleReportComment = (comment: {
+    id: number;
+    user_id: number;
+  }) => {
     if (!token) {
       setAuthGatePendingAction('report_comment');
       return;
     }
-    Alert.alert(
-      'Report comment?',
-      'Flag this comment for review by our moderation team.',
-      [
-        {text: 'Cancel', style: 'cancel'},
-        {
-          text: 'Report',
-          style: 'destructive',
-          onPress: () => {
-            void (async () => {
-              try {
-                await reportDebateComment(token, commentId);
-                Alert.alert(
-                  'Report submitted',
-                  'Thanks for helping keep Fucci safe.',
-                );
-              } catch (error) {
-                Alert.alert(
-                  'Could not report comment',
-                  userFacingApiMessage(error),
-                );
-              }
-            })();
-          },
-        },
-      ],
-    );
+    promptModerationActions({
+      token,
+      targetUserId: comment.user_id,
+      reportableType: 'debate_response',
+      reportableId: String(comment.id),
+      onReportedOrBlocked: () => {
+        // Hide from local thread immediately
+        setComments(prev =>
+          prev
+            .filter(c => c.id !== comment.id)
+            .map(c => ({
+              ...c,
+              subcomments: (c.subcomments ?? []).filter(
+                s => s.id !== comment.id,
+              ),
+            })),
+        );
+      },
+    });
   };
 
   const renderComment = (c: DebateComment, isSub?: boolean) => {
@@ -622,7 +615,7 @@ const SingleDebateScreen = () => {
             )}
             {canReportComment ? (
               <TouchableOpacity
-                onPress={() => handleReportComment(c.id)}
+                onPress={() => handleReportComment(c)}
                 style={styles.commentActionBtn}
                 accessibilityRole="button"
                 accessibilityLabel="Report comment">

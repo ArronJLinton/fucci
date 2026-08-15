@@ -76,3 +76,22 @@ RETURNING *;
 
 -- name: DeleteUser :exec
 DELETE FROM users WHERE id = $1;
+
+-- name: AcceptUserTerms :exec
+UPDATE users
+SET terms_accepted_at = CURRENT_TIMESTAMP,
+    terms_version = sqlc.arg(terms_version),
+    updated_at = CURRENT_TIMESTAMP
+WHERE id = sqlc.arg(id);
+
+-- name: DeactivateUser :one
+UPDATE users
+SET is_active = FALSE,
+    updated_at = CURRENT_TIMESTAMP
+WHERE id = sqlc.arg(id)
+RETURNING *;
+
+-- name: IsUserActive :one
+SELECT COALESCE(is_active, TRUE)::bool AS is_active
+FROM users
+WHERE id = sqlc.arg(id);

@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/ArronJLinton/fucci-api/internal/auth"
@@ -13,12 +14,13 @@ import (
 )
 
 type CreateUserRequest struct {
-	Firstname   string `json:"firstname"`
-	Lastname    string `json:"lastname"`
-	Email       string `json:"email"`
-	Password    string `json:"password"`
-	DisplayName string `json:"display_name,omitempty"`
-	AvatarURL   string `json:"avatar_url,omitempty"`
+	Firstname     string `json:"firstname"`
+	Lastname      string `json:"lastname"`
+	Email         string `json:"email"`
+	Password      string `json:"password"`
+	DisplayName   string `json:"display_name,omitempty"`
+	AvatarURL     string `json:"avatar_url,omitempty"`
+	AcceptedTerms bool   `json:"accepted_terms"`
 }
 
 type CreateUserResponse struct {
@@ -32,6 +34,30 @@ func (config *Config) handleCreateUser(w http.ResponseWriter, r *http.Request) {
 	err := decoder.Decode(&req)
 	if err != nil {
 		respondWithError(w, http.StatusBadRequest, fmt.Sprintf("Error parsing JSON: %s", err))
+		return
+	}
+
+	if err := requireAcceptedTerms(req.AcceptedTerms); err != nil {
+		respondWithErrorCode(w, http.StatusBadRequest, err.Error(), "TERMS_REQUIRED")
+		return
+	}
+
+	// Soft-deactivated accounts keep their email; surface a clear message instead of "already in use".
+	if config.DBConn != nil {
+		var inactiveID int32
+		qerr := config.DBConn.QueryRowContext(r.Context(),
+			`SELECT id FROM users WHERE email = $1 AND COALESCE(is_active, true) = false LIMIT 1`,
+			strings.TrimSpace(req.Email),
+		).Scan(&inactiveID)
+		if qerr == nil {
+			respondAccountDeactivated(w)
+			return
+		}
+	}
+
+	if config.rejectIfObjectionable(w, req.Firstname) ||
+		config.rejectIfObjectionable(w, req.Lastname) ||
+		config.rejectIfObjectionable(w, req.DisplayName) {
 		return
 	}
 
@@ -99,6 +125,7 @@ func (config *Config) handleCreateUser(w http.ResponseWriter, r *http.Request) {
 		UpdatedAt:   updatedAt.Format(time.RFC3339),
 	}
 
+	config.recordTermsAcceptance(r.Context(), id)
 	respondWithJSON(w, http.StatusCreated, CreateUserResponse{User: userResponse, Token: token})
 }
 

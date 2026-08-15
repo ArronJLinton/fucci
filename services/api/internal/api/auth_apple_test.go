@@ -28,6 +28,7 @@ var sqlAppleAuthUserColumns = []string{
 	"id", "firstname", "lastname", "email", "created_at", "updated_at", "is_admin",
 	"display_name", "avatar_url", "google_id", "auth_provider", "locale", "last_login_at",
 	"is_verified", "is_active", "role", "apple_id", "apple_refresh_token",
+	"terms_accepted_at", "terms_version",
 }
 
 func sqlMockAppleUserFullRow(id int32, firstname, lastname, email, appleSub, authProv string, ts time.Time) *sqlmock.Rows {
@@ -43,6 +44,8 @@ func sqlMockAppleUserFullRow(id int32, firstname, lastname, email, appleSub, aut
 		sql.NullBool{Bool: true, Valid: true},
 		sql.NullString{String: "fan", Valid: true},
 		sql.NullString{String: appleSub, Valid: appleSub != ""},
+		sql.NullString{},
+		sql.NullTime{},
 		sql.NullString{},
 	)
 }
@@ -61,6 +64,8 @@ func sqlMockAppleUserInactiveRow(id int32, firstname, lastname, email, appleSub,
 		sql.NullString{String: "fan", Valid: true},
 		sql.NullString{String: appleSub, Valid: appleSub != ""},
 		sql.NullString{},
+		sql.NullTime{},
+		sql.NullString{},
 	)
 }
 
@@ -75,7 +80,7 @@ func (f *fakeAppleVerifier) VerifyIdentityToken(ctx context.Context, identityTok
 func TestHandleAppleAuth_NotConfigured(t *testing.T) {
 	cfg := &Config{}
 	rec := httptest.NewRecorder()
-	body, _ := json.Marshal(map[string]string{"identity_token": "x"})
+	body, _ := json.Marshal(map[string]any{"identity_token": "x", "accepted_terms": true})
 	req := httptest.NewRequest(http.MethodPost, "/auth/apple", bytes.NewReader(body))
 
 	cfg.handleAppleAuth(rec, req)
@@ -148,7 +153,7 @@ func TestHandleAppleAuth_InvalidTokenReturns401(t *testing.T) {
 		},
 	}
 
-	body, _ := json.Marshal(map[string]string{"identity_token": "bad"})
+	body, _ := json.Marshal(map[string]any{"identity_token": "bad", "accepted_terms": true})
 	req := httptest.NewRequest(http.MethodPost, "/auth/apple", bytes.NewReader(body))
 	rec := httptest.NewRecorder()
 	cfg.handleAppleAuth(rec, req)
@@ -202,6 +207,7 @@ func TestHandleAppleAuth_NewUserReturnsIsNewTrue(t *testing.T) {
 
 	body, _ := json.Marshal(map[string]any{
 		"identity_token": "id-token",
+		"accepted_terms": true,
 		"full_name": map[string]string{
 			"given_name":  "Ada",
 			"family_name": "Lovelace",
@@ -264,7 +270,7 @@ func TestHandleAppleAuth_NewUserDefaultsNamesWhenMissing(t *testing.T) {
 		WithArgs("Fucci", "Fan", "defaultname@example.com", sql.NullString{String: "apple.sub.default-name", Valid: true}, sql.NullString{}).
 		WillReturnRows(sqlMockAppleUserFullRow(202, "Fucci", "Fan", "defaultname@example.com", "apple.sub.default-name", "apple", ts))
 
-	body, _ := json.Marshal(map[string]string{"identity_token": "id-token"})
+	body, _ := json.Marshal(map[string]any{"identity_token": "id-token", "accepted_terms": true})
 	req := httptest.NewRequest(http.MethodPost, "/auth/apple", bytes.NewReader(body))
 	rec := httptest.NewRecorder()
 	cfg.handleAppleAuth(rec, req)
@@ -314,7 +320,7 @@ func TestHandleAppleAuth_ExistingAppleUserReturnsIsNewFalse(t *testing.T) {
 		WithArgs(sql.NullString{}, int32(42)).
 		WillReturnRows(sqlMockAppleUserFullRow(42, "Existing", "User", "existing@example.com", "apple.sub.existing", "apple", ts2))
 
-	body, _ := json.Marshal(map[string]string{"identity_token": "id-token"})
+	body, _ := json.Marshal(map[string]any{"identity_token": "id-token", "accepted_terms": true})
 	req := httptest.NewRequest(http.MethodPost, "/auth/apple", bytes.NewReader(body))
 	rec := httptest.NewRecorder()
 	cfg.handleAppleAuth(rec, req)
@@ -363,7 +369,7 @@ func TestHandleAppleAuth_InactiveUserReturns403(t *testing.T) {
 		WithArgs("apple.sub.inactive").
 		WillReturnRows(sqlMockAppleUserInactiveRow(42, "In", "Active", "inactive@example.com", "apple.sub.inactive", "apple", ts))
 
-	body, _ := json.Marshal(map[string]string{"identity_token": "id-token"})
+	body, _ := json.Marshal(map[string]any{"identity_token": "id-token", "accepted_terms": true})
 	req := httptest.NewRequest(http.MethodPost, "/auth/apple", bytes.NewReader(body))
 	rec := httptest.NewRecorder()
 	cfg.handleAppleAuth(rec, req)
@@ -407,7 +413,7 @@ func TestHandleAppleAuth_NewUserWithoutEmailReturns400(t *testing.T) {
 		WithArgs("apple.sub.no-email").
 		WillReturnError(sql.ErrNoRows)
 
-	body, _ := json.Marshal(map[string]string{"identity_token": "id-token"})
+	body, _ := json.Marshal(map[string]any{"identity_token": "id-token", "accepted_terms": true})
 	req := httptest.NewRequest(http.MethodPost, "/auth/apple", bytes.NewReader(body))
 	rec := httptest.NewRecorder()
 	cfg.handleAppleAuth(rec, req)
@@ -455,7 +461,7 @@ func TestHandleAppleAuth_EmailPasswordAccountReturns409(t *testing.T) {
 		WithArgs("password-only@example.com").
 		WillReturnRows(sqlMockAppleUserFullRow(55, "Pass", "User", "password-only@example.com", "", "email", ts))
 
-	body, _ := json.Marshal(map[string]string{"identity_token": "id-token"})
+	body, _ := json.Marshal(map[string]any{"identity_token": "id-token", "accepted_terms": true})
 	req := httptest.NewRequest(http.MethodPost, "/auth/apple", bytes.NewReader(body))
 	rec := httptest.NewRecorder()
 	cfg.handleAppleAuth(rec, req)
@@ -503,7 +509,7 @@ func TestHandleAppleAuth_EmailLinkedToOtherAppleReturns409(t *testing.T) {
 		WithArgs("taken@example.com").
 		WillReturnRows(sqlMockAppleUserFullRow(77, "Other", "Apple", "taken@example.com", "different-apple-sub", "apple", ts))
 
-	body, _ := json.Marshal(map[string]string{"identity_token": "id-token"})
+	body, _ := json.Marshal(map[string]any{"identity_token": "id-token", "accepted_terms": true})
 	req := httptest.NewRequest(http.MethodPost, "/auth/apple", bytes.NewReader(body))
 	rec := httptest.NewRecorder()
 	cfg.handleAppleAuth(rec, req)
@@ -558,9 +564,10 @@ func TestHandleAppleAuth_EmailFallbackNonAppleProviderReturns409(t *testing.T) {
 			sql.NullBool{Bool: true, Valid: true},
 			sql.NullString{String: "fan", Valid: true},
 			sql.NullString{}, sql.NullString{},
+			sql.NullTime{}, sql.NullString{},
 		))
 
-	body, _ := json.Marshal(map[string]string{"identity_token": "id-token"})
+	body, _ := json.Marshal(map[string]any{"identity_token": "id-token", "accepted_terms": true})
 	req := httptest.NewRequest(http.MethodPost, "/auth/apple", bytes.NewReader(body))
 	rec := httptest.NewRecorder()
 	cfg.handleAppleAuth(rec, req)
@@ -612,7 +619,7 @@ func TestHandleAppleAuth_LinksExistingAppleProviderUser(t *testing.T) {
 		WithArgs("apple.sub.link", sql.NullString{}, int32(99)).
 		WillReturnRows(sqlMockAppleUserFullRow(99, "Link", "Me", "linkme@example.com", "apple.sub.link", "apple", ts))
 
-	body, _ := json.Marshal(map[string]string{"identity_token": "id-token"})
+	body, _ := json.Marshal(map[string]any{"identity_token": "id-token", "accepted_terms": true})
 	req := httptest.NewRequest(http.MethodPost, "/auth/apple", bytes.NewReader(body))
 	rec := httptest.NewRecorder()
 	cfg.handleAppleAuth(rec, req)

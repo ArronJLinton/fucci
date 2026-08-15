@@ -155,6 +155,22 @@ func (c *Config) ListDebateComments(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if viewerID, ok := auth.UserIDFromContext(ctx); ok && viewerID != 0 {
+		blocked := c.blockedUserIDSet(ctx, viewerID)
+		if len(blocked) > 0 {
+			filtered := make([]database.GetCommentsRow, 0, len(rows))
+			for _, row := range rows {
+				if row.UserID.Valid {
+					if _, hide := blocked[row.UserID.Int32]; hide {
+						continue
+					}
+				}
+				filtered = append(filtered, row)
+			}
+			rows = filtered
+		}
+	}
+
 	// Split into top-level and subcomments (do not expose seeded)
 	var topLevel []database.GetCommentsRow
 	subByParent := make(map[int32][]database.GetCommentsRow)
@@ -229,9 +245,8 @@ type CreateDebateCommentRequest struct {
 func (c *Config) CreateDebateComment(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
-	userID, ok := auth.UserIDFromContext(r.Context())
-	if !ok || userID == 0 {
-		respondWithError(w, http.StatusUnauthorized, "Authentication required")
+	userID, ok := c.requireActiveAuthedUser(w, r)
+	if !ok {
 		return
 	}
 
@@ -255,6 +270,9 @@ func (c *Config) CreateDebateComment(w http.ResponseWriter, r *http.Request) {
 	}
 	if len(content) > commentMaxLength {
 		respondWithError(w, http.StatusBadRequest, fmt.Sprintf("content must be at most %d characters", commentMaxLength))
+		return
+	}
+	if c.rejectIfObjectionable(w, content) {
 		return
 	}
 
