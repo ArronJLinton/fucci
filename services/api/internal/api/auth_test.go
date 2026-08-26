@@ -41,6 +41,12 @@ func (f *fakeProfileUpdatePersistence) LoadUserResponse(ctx context.Context, use
 	}, nil
 }
 
+func expectIsUserActive(mock sqlmock.Sqlmock, userID int32, active bool) {
+	mock.ExpectQuery(`SELECT COALESCE\(is_active, TRUE\)::bool AS is_active`).
+		WithArgs(userID).
+		WillReturnRows(sqlmock.NewRows([]string{"is_active"}).AddRow(active))
+}
+
 func authTestRequest(method, path string, body interface{}, userID int32) *http.Request {
 	var r *http.Request
 	if body != nil {
@@ -177,6 +183,7 @@ func TestHandleDeleteAccount_DBError(t *testing.T) {
 	defer db.Close()
 
 	const userID int32 = 42
+	expectIsUserActive(mock, userID, true)
 	mock.ExpectExec(`DELETE FROM users WHERE id = \$1`).
 		WithArgs(userID).
 		WillReturnError(fmt.Errorf("db error"))
@@ -203,6 +210,7 @@ func TestHandleDeleteAccount_OK(t *testing.T) {
 	defer db.Close()
 
 	const userID int32 = 42
+	expectIsUserActive(mock, userID, true)
 	mock.ExpectExec(`DELETE FROM users WHERE id = \$1`).
 		WithArgs(userID).
 		WillReturnResult(sqlmock.NewResult(0, 1))
@@ -215,6 +223,40 @@ func TestHandleDeleteAccount_OK(t *testing.T) {
 
 	if rec.Code != http.StatusNoContent {
 		t.Fatalf("expected 204, got %d: %s", rec.Code, rec.Body.String())
+	}
+	if err := mock.ExpectationsWereMet(); err != nil {
+		t.Fatalf("sql expectations: %v", err)
+	}
+}
+
+func TestHandleDeleteAccount_Deactivated(t *testing.T) {
+	db, mock, err := sqlmock.New()
+	if err != nil {
+		t.Fatalf("sqlmock: %v", err)
+	}
+	defer db.Close()
+
+	const userID int32 = 42
+	expectIsUserActive(mock, userID, false)
+
+	cfg := &Config{DB: database.New(db)}
+	rec := httptest.NewRecorder()
+	req := authTestRequest(http.MethodDelete, "/users/account", nil, userID)
+
+	cfg.handleDeleteAccount(rec, req)
+
+	if rec.Code != http.StatusForbidden {
+		t.Fatalf("expected 403, got %d: %s", rec.Code, rec.Body.String())
+	}
+	var out apiErrorBody
+	if err := json.NewDecoder(rec.Body).Decode(&out); err != nil {
+		t.Fatalf("decode body: %v", err)
+	}
+	if out.Code != auth.GoogleAuthAccountInactive {
+		t.Fatalf("expected code %s, got %s", auth.GoogleAuthAccountInactive, out.Code)
+	}
+	if !strings.Contains(out.Error, "deactivated") {
+		t.Fatalf("expected deactivated message, got %q", out.Error)
 	}
 	if err := mock.ExpectationsWereMet(); err != nil {
 		t.Fatalf("sql expectations: %v", err)
