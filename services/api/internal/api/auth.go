@@ -921,10 +921,11 @@ func (c *Config) handleGetFollowing(w http.ResponseWriter, r *http.Request) {
 
 // handleDeleteAccount permanently deletes the authenticated user's account and cascaded data.
 // DELETE /users/account
+// Deactivated accounts must keep their email row so they cannot self-delete and immediately
+// re-register as a new active user (Guideline 1.2 moderation).
 func (c *Config) handleDeleteAccount(w http.ResponseWriter, r *http.Request) {
-	userID, ok := auth.UserIDFromContext(r.Context())
+	userID, ok := c.requireActiveAuthedUser(w, r)
 	if !ok {
-		respondWithError(w, http.StatusUnauthorized, "authentication required")
 		return
 	}
 	if c.DB == nil {
