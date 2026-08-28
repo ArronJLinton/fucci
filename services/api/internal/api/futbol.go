@@ -236,8 +236,16 @@ func (c *Config) FetchLineupData(ctx context.Context, matchID string) (*GetLineU
 		return nil, fmt.Errorf("lineup parse: %w", err)
 	}
 
-	if c.Cache != nil && data.Get != "" {
-		_ = c.Cache.Set(ctx, rawCacheKey, data, cache.LineupTTL)
+	// API-Football returns get="fixtures/lineups" with an empty response until
+	// both teams publish (~1h before kickoff). Caching that for LineupTTL (12h)
+	// poisons Match Details for the entire match: daily prewarm and early
+	// lineup-tab opens fetch NS fixtures hours before lineups exist.
+	if c.Cache != nil && len(data.Response) >= 2 {
+		if err := c.Cache.Set(ctx, rawCacheKey, data, cache.LineupTTL); err != nil {
+			log.Printf("lineup cache set error: %v\n", err)
+		}
+	} else if len(data.Response) < 2 {
+		log.Printf("WARNING: lineup empty for fixture %s (teams=%d), skipping cache\n", matchID, len(data.Response))
 	}
 
 	return &data, nil
@@ -290,8 +298,15 @@ func (c *Config) FetchMatchStatsData(ctx context.Context, matchID string) (*GetF
 		return nil, fmt.Errorf("match stats parse: %w", err)
 	}
 
-	if c.Cache != nil {
-		_ = c.Cache.Set(ctx, cacheKey, data, cache.MatchStatsTTL)
+	// Same empty-cache trap as lineups: pre-match / failed upstream payloads
+	// have results=0. Caching them for MatchStatsTTL (12h) freezes missing
+	// stats through kickoff and live play.
+	if c.Cache != nil && len(data.Response) > 0 {
+		if err := c.Cache.Set(ctx, cacheKey, data, cache.MatchStatsTTL); err != nil {
+			log.Printf("match stats cache set error: %v\n", err)
+		}
+	} else if len(data.Response) == 0 {
+		log.Printf("WARNING: match stats empty for fixture %s, skipping cache\n", matchID)
 	}
 
 	return &data, nil
