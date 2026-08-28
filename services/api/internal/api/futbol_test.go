@@ -1514,3 +1514,120 @@ func TestGetTeamSquad(t *testing.T) {
 		}
 	})
 }
+
+func TestFetchLineupData_SkipsCacheWhenTeamsMissing(t *testing.T) {
+	var setKeys []string
+	mockCache := &MockCache{
+		existsFunc: func(ctx context.Context, key string) (bool, error) { return false, nil },
+		getFunc:    func(ctx context.Context, key string, value interface{}) error { return nil },
+		setFunc: func(ctx context.Context, key string, value interface{}, ttl time.Duration) error {
+			setKeys = append(setKeys, key)
+			return nil
+		},
+	}
+
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		_, _ = w.Write([]byte(`{"get":"fixtures/lineups","results":0,"errors":[],"response":[]}`))
+	}))
+	defer server.Close()
+
+	cfg := &Config{
+		Cache:              mockCache,
+		FootballAPIKey:     "key",
+		APIFootballBaseURL: server.URL,
+	}
+	data, err := cfg.FetchLineupData(context.Background(), "12345")
+	if err != nil {
+		t.Fatalf("FetchLineupData: %v", err)
+	}
+	if len(data.Response) != 0 {
+		t.Fatalf("expected empty lineup response, got %d teams", len(data.Response))
+	}
+	if len(setKeys) != 0 {
+		t.Fatalf("empty lineup must not be cached, Set called for %v", setKeys)
+	}
+}
+
+func TestFetchLineupData_CachesBothTeams(t *testing.T) {
+	var setKeys []string
+	var setTTL time.Duration
+	mockCache := &MockCache{
+		existsFunc: func(ctx context.Context, key string) (bool, error) { return false, nil },
+		getFunc:    func(ctx context.Context, key string, value interface{}) error { return nil },
+		setFunc: func(ctx context.Context, key string, value interface{}, ttl time.Duration) error {
+			setKeys = append(setKeys, key)
+			setTTL = ttl
+			return nil
+		},
+	}
+
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		_, _ = w.Write([]byte(`{
+			"get":"fixtures/lineups",
+			"results":2,
+			"response":[
+				{"team":{"id":1,"name":"Home"},"startXI":[],"substitutes":[]},
+				{"team":{"id":2,"name":"Away"},"startXI":[],"substitutes":[]}
+			]
+		}`))
+	}))
+	defer server.Close()
+
+	cfg := &Config{
+		Cache:              mockCache,
+		FootballAPIKey:     "key",
+		APIFootballBaseURL: server.URL,
+	}
+	data, err := cfg.FetchLineupData(context.Background(), "999")
+	if err != nil {
+		t.Fatalf("FetchLineupData: %v", err)
+	}
+	if len(data.Response) != 2 {
+		t.Fatalf("expected 2 teams, got %d", len(data.Response))
+	}
+	if len(setKeys) != 1 || setKeys[0] != "lineup_raw:999" {
+		t.Fatalf("expected cache set for lineup_raw:999, got %v", setKeys)
+	}
+	if setTTL != cache.LineupTTL {
+		t.Fatalf("expected LineupTTL %v, got %v", cache.LineupTTL, setTTL)
+	}
+}
+
+func TestFetchMatchStatsData_SkipsCacheWhenEmpty(t *testing.T) {
+	var setKeys []string
+	mockCache := &MockCache{
+		existsFunc: func(ctx context.Context, key string) (bool, error) { return false, nil },
+		getFunc:    func(ctx context.Context, key string, value interface{}) error { return nil },
+		setFunc: func(ctx context.Context, key string, value interface{}, ttl time.Duration) error {
+			setKeys = append(setKeys, key)
+			return nil
+		},
+	}
+
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		_, _ = w.Write([]byte(`{"response":[]}`))
+	}))
+	defer server.Close()
+
+	cfg := &Config{
+		Cache:              mockCache,
+		FootballAPIKey:     "key",
+		APIFootballBaseURL: server.URL,
+	}
+	data, err := cfg.FetchMatchStatsData(context.Background(), "12345")
+	if err != nil {
+		t.Fatalf("FetchMatchStatsData: %v", err)
+	}
+	if len(data.Response) != 0 {
+		t.Fatalf("expected empty stats, got %d", len(data.Response))
+	}
+	if len(setKeys) != 0 {
+		t.Fatalf("empty match stats must not be cached, Set called for %v", setKeys)
+	}
+}
