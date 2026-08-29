@@ -31,10 +31,10 @@ func (c *Config) LeagueMatchFixtures(ctx context.Context, date time.Time, league
 			AwayTeamID:   row.Teams.Away.ID,
 			HomeTeamName: row.Teams.Home.Name,
 			AwayTeamName: row.Teams.Away.Name,
-			HomeGoals:    row.Goals.Home,
-			AwayGoals:    row.Goals.Away,
+			HomeGoals:    derefInt(row.Goals.Home),
+			AwayGoals:    derefInt(row.Goals.Away),
 			Kickoff:      kickoff,
-			EstimatedEnd: pushpkg.EstimateMatchEnd(kickoff, row.Fixture.Periods.Second),
+			EstimatedEnd: pushpkg.EstimateMatchEnd(kickoff, derefInt(row.Fixture.Periods.Second)),
 		})
 	}
 	return out, nil

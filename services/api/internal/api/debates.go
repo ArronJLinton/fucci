@@ -1919,17 +1919,17 @@ func (c *Config) getMatchInfo(ctx context.Context, matchID string) (*MatchInfo, 
 				} `json:"away"`
 			} `json:"teams"`
 			Goals struct {
-				Home int `json:"home"`
-				Away int `json:"away"`
+				Home *int `json:"home"`
+				Away *int `json:"away"`
 			} `json:"goals"`
 			Score struct {
 				Halftime struct {
-					Home int `json:"home"`
-					Away int `json:"away"`
+					Home *int `json:"home"`
+					Away *int `json:"away"`
 				} `json:"halftime"`
 				Fulltime struct {
-					Home int `json:"home"`
-					Away int `json:"away"`
+					Home *int `json:"home"`
+					Away *int `json:"away"`
 				} `json:"fulltime"`
 				Extratime struct {
 					Home *int `json:"home"`
@@ -1964,14 +1964,14 @@ func (c *Config) getMatchInfo(ctx context.Context, matchID string) (*MatchInfo, 
 	var homeScore, awayScore int
 	switch match.Fixture.Status.Short {
 	case "FT", "AET", "PEN":
-		homeScore = match.Score.Fulltime.Home
-		awayScore = match.Score.Fulltime.Away
+		homeScore = derefInt(match.Score.Fulltime.Home)
+		awayScore = derefInt(match.Score.Fulltime.Away)
 	case "HT":
-		homeScore = match.Score.Halftime.Home
-		awayScore = match.Score.Halftime.Away
+		homeScore = derefInt(match.Score.Halftime.Home)
+		awayScore = derefInt(match.Score.Halftime.Away)
 	default:
-		homeScore = match.Goals.Home
-		awayScore = match.Goals.Away
+		homeScore = derefInt(match.Goals.Home)
+		awayScore = derefInt(match.Goals.Away)
 	}
 
 	// Handle extra time and penalties
@@ -1993,8 +1993,8 @@ func (c *Config) getMatchInfo(ctx context.Context, matchID string) (*MatchInfo, 
 		Status:          match.Fixture.Status.Short,
 		HomeScore:       homeScore,
 		AwayScore:       awayScore,
-		HomeGoals:       match.Goals.Home,
-		AwayGoals:       match.Goals.Away,
+		HomeGoals:       derefInt(match.Goals.Home),
+		AwayGoals:       derefInt(match.Goals.Away),
 		HomeShots:       0, // Will be populated by fetchMatchStats if available
 		AwayShots:       0,
 		HomePossession:  0,
