@@ -1514,3 +1514,115 @@ func TestGetTeamSquad(t *testing.T) {
 		}
 	})
 }
+
+// API-Football v3 NS fixtures send JSON null for goals, elapsed, period
+// timestamps, and sometimes venue.id. encoding/json cannot unmarshal null into int.
+const apiFootballNotStartedFixture = `{
+  "get": "fixtures",
+  "results": 1,
+  "paging": {"current": 1, "total": 1},
+  "response": [{
+    "fixture": {
+      "id": 1489391,
+      "referee": null,
+      "timezone": "UTC",
+      "date": "2026-08-29T23:30:00+00:00",
+      "timestamp": 1756505400,
+      "periods": {"first": null, "second": null},
+      "venue": {"id": null, "name": "BMO Stadium", "city": "Los Angeles"},
+      "status": {"long": "Not Started", "short": "NS", "elapsed": null}
+    },
+    "league": {
+      "id": 253,
+      "name": "Major League Soccer",
+      "country": "USA",
+      "logo": "https://media.api-sports.io/football/leagues/253.png",
+      "flag": "https://media.api-sports.io/flags/us.svg",
+      "season": 2026,
+      "round": "Regular Season"
+    },
+    "teams": {
+      "home": {"id": 1606, "name": "Los Angeles FC", "logo": "https://media.api-sports.io/football/teams/1606.png", "winner": null},
+      "away": {"id": 1604, "name": "Inter Miami", "logo": "https://media.api-sports.io/football/teams/1604.png", "winner": null}
+    },
+    "goals": {"home": null, "away": null},
+    "score": {
+      "halftime": {"home": null, "away": null},
+      "fulltime": {"home": null, "away": null},
+      "extratime": {"home": null, "away": null},
+      "penalty": {"home": null, "away": null}
+    }
+  }]
+}`
+
+func TestFetchMatchesCached_AcceptsNotStartedNullScores(t *testing.T) {
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		_, _ = w.Write([]byte(apiFootballNotStartedFixture))
+	}))
+	t.Cleanup(srv.Close)
+
+	cfg := &Config{
+		FootballAPIKey:     "test-key",
+		APIFootballBaseURL: srv.URL,
+	}
+	lid := LeagueMLS
+	got, err := cfg.FetchMatchesCached(context.Background(), time.Date(2026, 8, 29, 0, 0, 0, 0, time.UTC), &lid, nil)
+	if err != nil {
+		t.Fatalf("FetchMatchesCached: %v", err)
+	}
+	if got == nil || len(got.Response) != 1 {
+		t.Fatalf("expected 1 fixture, got %+v", got)
+	}
+	row := got.Response[0]
+	if row.Fixture.Status.Short != "NS" {
+		t.Fatalf("status = %q, want NS", row.Fixture.Status.Short)
+	}
+	if row.Goals.Home != nil || row.Goals.Away != nil {
+		t.Fatalf("goals should stay null for NS, got home=%v away=%v", row.Goals.Home, row.Goals.Away)
+	}
+	if row.Teams.Home.Name != "Los Angeles FC" {
+		t.Fatalf("home team = %q", row.Teams.Home.Name)
+	}
+}
+
+func TestGetMatchInfo_AcceptsNotStartedNullScores(t *testing.T) {
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		_, _ = w.Write([]byte(apiFootballNotStartedFixture))
+	}))
+	t.Cleanup(srv.Close)
+
+	cfg := &Config{
+		FootballAPIKey:     "test-key",
+		APIFootballBaseURL: srv.URL,
+	}
+	info, err := cfg.getMatchInfo(context.Background(), "1489391")
+	if err != nil {
+		t.Fatalf("getMatchInfo: %v", err)
+	}
+	if info.Status != "NS" {
+		t.Fatalf("status = %q, want NS", info.Status)
+	}
+	if info.HomeTeam != "Los Angeles FC" || info.AwayTeam != "Inter Miami" {
+		t.Fatalf("teams = %q vs %q", info.HomeTeam, info.AwayTeam)
+	}
+	if info.HomeScore != 0 || info.AwayScore != 0 || info.HomeGoals != 0 || info.AwayGoals != 0 {
+		t.Fatalf("NS scores should be 0, got %+v", info)
+	}
+	if info.HomeTeamID != 1606 || info.AwayTeamID != 1604 {
+		t.Fatalf("team ids = %d / %d", info.HomeTeamID, info.AwayTeamID)
+	}
+}
+
+func TestDerefInt(t *testing.T) {
+	if got := derefInt(nil); got != 0 {
+		t.Fatalf("nil = %d, want 0", got)
+	}
+	v := 3
+	if got := derefInt(&v); got != 3 {
+		t.Fatalf("3 = %d", got)
+	}
+}

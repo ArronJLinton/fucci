@@ -43,6 +43,15 @@ func logErrorAndRespond500(w http.ResponseWriter, logCtx string, err error, errC
 
 const errCodeJSONMarshal = "API_RESPONSE_ENCODE_FAILED"
 
+// derefInt returns 0 when API-Football sends JSON null for a numeric field
+// (NS fixtures: goals, elapsed, period timestamps, venue id).
+func derefInt(p *int) int {
+	if p == nil {
+		return 0
+	}
+	return *p
+}
+
 func respondWithJSON(w http.ResponseWriter, code int, payload interface{}) {
 	data, err := json.Marshal(payload)
 	if err != nil {

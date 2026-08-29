@@ -24,18 +24,18 @@ type GetMatchesAPIResponse struct {
 			Date      time.Time `json:"date"`
 			Timestamp int       `json:"timestamp"`
 			Periods   struct {
-				First  int `json:"first"`
-				Second int `json:"second"`
+				First  *int `json:"first"`
+				Second *int `json:"second"`
 			} `json:"periods"`
 			Venue struct {
-				ID   int    `json:"id"`
+				ID   *int   `json:"id"`
 				Name string `json:"name"`
 				City string `json:"city"`
 			} `json:"venue"`
 			Status struct {
 				Long    string `json:"long"`
 				Short   string `json:"short"`
-				Elapsed int    `json:"elapsed"`
+				Elapsed *int   `json:"elapsed"`
 			} `json:"status"`
 		} `json:"fixture"`
 		League struct {
@@ -61,18 +61,19 @@ type GetMatchesAPIResponse struct {
 				Winner any    `json:"winner"`
 			} `json:"away"`
 		} `json:"teams"`
+		// Pointers: API-Football sends JSON null for NS/TBD/PST fixtures.
 		Goals struct {
-			Home int `json:"home"`
-			Away int `json:"away"`
+			Home *int `json:"home"`
+			Away *int `json:"away"`
 		} `json:"goals"`
 		Score struct {
 			Halftime struct {
-				Home int `json:"home"`
-				Away int `json:"away"`
+				Home *int `json:"home"`
+				Away *int `json:"away"`
 			} `json:"halftime"`
 			Fulltime struct {
-				Home int `json:"home"`
-				Away int `json:"away"`
+				Home *int `json:"home"`
+				Away *int `json:"away"`
 			} `json:"fulltime"`
 			Extratime struct {
 				Home any `json:"home"`
