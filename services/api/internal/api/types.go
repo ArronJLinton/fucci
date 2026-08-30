@@ -104,24 +104,15 @@ type GetLineUpResponse struct {
 			Logo   string `json:"logo"`
 			Colors any    `json:"colors"`
 		} `json:"team"`
-		Coach struct {
-			ID    int    `json:"id"`
-			Name  string `json:"name"`
-			Photo string `json:"photo"`
-		} `json:"coach"`
+		// Coach id/name/photo are frequently JSON null when API-Football
+		// has lineup XI but no coach record. Unused by our handlers.
+		Coach     any    `json:"coach"`
 		Formation string `json:"formation"`
 		StartXI   []struct {
 			Player Player `json:"player"`
 		} `json:"startXI"`
 		Substitutes []struct {
-			Player struct {
-				ID     int    `json:"id"`
-				Name   string `json:"name"`
-				Number int    `json:"number"`
-				Pos    string `json:"pos"`
-				Grid   any    `json:"grid"`
-				Photo  string `json:"photo"`
-			} `json:"player"`
+			Player Player `json:"player"`
 		} `json:"substitutes"`
 	} `json:"response"`
 }
@@ -170,6 +161,41 @@ type Player struct {
 	Pos    string `json:"pos"`
 	Grid   string `json:"grid"`
 	Photo  string `json:"photo"`
+}
+
+// UnmarshalJSON accepts API-Football's nullable player fields. Squads and
+// lineups send JSON null for jersey number (unassigned), grid (no formation
+// slot), and occasionally name/photo/pos. encoding/json cannot unmarshal
+// null into string or int, which previously failed the whole payload.
+func (p *Player) UnmarshalJSON(data []byte) error {
+	var raw struct {
+		ID     int     `json:"id"`
+		Name   *string `json:"name"`
+		Number *int    `json:"number"`
+		Pos    *string `json:"pos"`
+		Grid   *string `json:"grid"`
+		Photo  *string `json:"photo"`
+	}
+	if err := json.Unmarshal(data, &raw); err != nil {
+		return err
+	}
+	p.ID = raw.ID
+	if raw.Name != nil {
+		p.Name = *raw.Name
+	}
+	if raw.Number != nil {
+		p.Number = *raw.Number
+	}
+	if raw.Pos != nil {
+		p.Pos = *raw.Pos
+	}
+	if raw.Grid != nil {
+		p.Grid = *raw.Grid
+	}
+	if raw.Photo != nil {
+		p.Photo = *raw.Photo
+	}
+	return nil
 }
 
 type GetLeaguesResponse struct {
