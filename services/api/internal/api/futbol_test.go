@@ -324,6 +324,249 @@ func TestGetMatchLineupWithEmptySquadResponses(t *testing.T) {
 	}
 }
 
+func TestPlayerUnmarshal_AcceptsAPIFootballNulls(t *testing.T) {
+	raw := `{
+		"id": 19022,
+		"name": "C. Bravo",
+		"age": 38,
+		"number": null,
+		"position": "Goalkeeper",
+		"pos": null,
+		"grid": null,
+		"photo": "https://media.api-sports.io/football/players/19022.png"
+	}`
+	var p Player
+	if err := json.Unmarshal([]byte(raw), &p); err != nil {
+		t.Fatalf("expected null jersey/grid/pos to unmarshal, got %v", err)
+	}
+	if p.ID != 19022 || p.Name != "C. Bravo" {
+		t.Fatalf("unexpected player identity: %+v", p)
+	}
+	if p.Number != 0 || p.Grid != "" || p.Pos != "" {
+		t.Fatalf("expected zero defaults for null fields, got %+v", p)
+	}
+	if p.Photo == "" {
+		t.Fatal("expected photo to be preserved")
+	}
+}
+
+func TestGetSquadResponse_AcceptsNullJerseyNumbers(t *testing.T) {
+	raw := `{
+		"get": "players/squads",
+		"errors": [],
+		"results": 1,
+		"response": [{
+			"team": {"id": 1608, "name": "Atlanta United FC", "logo": "https://example.com/atl.png"},
+			"players": [
+				{"id": 1, "name": "Starter", "age": 28, "number": 10, "position": "Attacker", "photo": "https://example.com/1.png"},
+				{"id": 2, "name": "Academy Player", "age": 17, "number": null, "position": "Midfielder", "photo": "https://example.com/2.png"}
+			]
+		}]
+	}`
+	var squad GetSquadResponse
+	if err := json.Unmarshal([]byte(raw), &squad); err != nil {
+		t.Fatalf("squad with null jersey numbers must parse: %v", err)
+	}
+	if len(squad.Response) != 1 || len(squad.Response[0].Players) != 2 {
+		t.Fatalf("unexpected squad shape: %+v", squad.Response)
+	}
+	if squad.Response[0].Players[0].Number != 10 {
+		t.Fatalf("expected assigned number 10, got %d", squad.Response[0].Players[0].Number)
+	}
+	if squad.Response[0].Players[1].Number != 0 {
+		t.Fatalf("expected null number to become 0, got %d", squad.Response[0].Players[1].Number)
+	}
+}
+
+func TestGetLineUpResponse_AcceptsNullCoachAndGrid(t *testing.T) {
+	raw := `{
+		"get": "fixtures/lineups",
+		"errors": [],
+		"results": 2,
+		"response": [{
+			"team": {"id": 1, "name": "Home", "logo": "", "colors": null},
+			"coach": {"id": null, "name": null, "photo": null},
+			"formation": "4-3-3",
+			"startXI": [
+				{"player": {"id": 11, "name": "Home GK", "number": 1, "pos": "G", "grid": null}}
+			],
+			"substitutes": [
+				{"player": {"id": 12, "name": "Home Sub", "number": null, "pos": "M", "grid": null}}
+			]
+		}]
+	}`
+	var data GetLineUpResponse
+	if err := json.Unmarshal([]byte(raw), &data); err != nil {
+		t.Fatalf("lineup with null coach/grid/number must parse: %v", err)
+	}
+	if len(data.Response) != 1 {
+		t.Fatalf("expected 1 team, got %d", len(data.Response))
+	}
+	if data.Response[0].StartXI[0].Player.Name != "Home GK" {
+		t.Fatalf("startXI not preserved: %+v", data.Response[0].StartXI[0].Player)
+	}
+	if data.Response[0].Substitutes[0].Player.Number != 0 {
+		t.Fatalf("expected null sub number to become 0, got %d", data.Response[0].Substitutes[0].Player.Number)
+	}
+}
+
+func TestGetMatchLineup_AcceptsNullSquadNumbersAndKeepsPhotos(t *testing.T) {
+	mockAPIKey := "mock-api-key"
+	mockLineupResponse := `{
+		"get": "fixtures/lineups",
+		"response": [
+			{
+				"team": {"id": 1},
+				"coach": {"id": null, "name": null, "photo": null},
+				"startXI": [
+					{"player": {"id": 11, "name": "Home Starter", "number": 1, "pos": "G", "grid": null}}
+				],
+				"substitutes": [
+					{"player": {"id": 12, "name": "Home Sub", "number": 12, "pos": "M", "grid": null}}
+				]
+			},
+			{
+				"team": {"id": 2},
+				"coach": {"id": null, "name": null, "photo": null},
+				"startXI": [
+					{"player": {"id": 21, "name": "Away Starter", "number": 1, "pos": "G", "grid": "1:1"}}
+				],
+				"substitutes": []
+			}
+		]
+	}`
+	mockSquadWithNullNumbers := `{
+		"get": "players/squads",
+		"response": [{
+			"team": {"id": 1},
+			"players": [
+				{"id": 11, "name": "Home Starter", "age": 30, "number": 1, "position": "Goalkeeper", "photo": "https://example.com/home.png"},
+				{"id": 99, "name": "Youth", "age": 16, "number": null, "position": "Midfielder", "photo": "https://example.com/youth.png"}
+			]
+		}]
+	}`
+
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		switch {
+		case strings.Contains(r.URL.Path, "lineups"):
+			w.WriteHeader(http.StatusOK)
+			_, _ = w.Write([]byte(mockLineupResponse))
+		case strings.Contains(r.URL.Path, "players/squads"):
+			w.WriteHeader(http.StatusOK)
+			_, _ = w.Write([]byte(mockSquadWithNullNumbers))
+		default:
+			w.WriteHeader(http.StatusNotFound)
+		}
+	}))
+	defer server.Close()
+
+	config := &Config{
+		Cache:              newPassthroughMockCache(),
+		FootballAPIKey:     mockAPIKey,
+		APIFootballBaseURL: server.URL,
+	}
+
+	req := httptest.NewRequest("GET", "/fixtures/lineups?match_id=999", nil)
+	rec := httptest.NewRecorder()
+	config.getMatchLineup(rec, req)
+
+	if rec.Code != http.StatusOK {
+		t.Fatalf("expected 200, got %d body=%s", rec.Code, rec.Body.String())
+	}
+	var response struct {
+		Home Lineup `json:"home"`
+		Away Lineup `json:"away"`
+	}
+	if err := json.Unmarshal(rec.Body.Bytes(), &response); err != nil {
+		t.Fatalf("parse lineup response: %v", err)
+	}
+	if len(response.Home.Starters) != 1 || response.Home.Starters[0].Name != "Home Starter" {
+		t.Fatalf("home starters not preserved: %+v", response.Home.Starters)
+	}
+	if response.Home.Starters[0].Photo != "https://example.com/home.png" {
+		t.Fatalf("expected squad photo to attach despite null jersey on another player, got %q", response.Home.Starters[0].Photo)
+	}
+}
+
+func TestGetMatchLineup_ReturnsLineupWhenSquadFetchFails(t *testing.T) {
+	mockLineupResponse := `{
+		"get": "fixtures/lineups",
+		"response": [
+			{
+				"team": {"id": 1},
+				"startXI": [
+					{"player": {"id": 11, "name": "Home Starter", "number": 1, "pos": "G", "grid": "1:1"}}
+				],
+				"substitutes": []
+			},
+			{
+				"team": {"id": 2},
+				"startXI": [
+					{"player": {"id": 21, "name": "Away Starter", "number": 1, "pos": "G", "grid": "1:1"}}
+				],
+				"substitutes": []
+			}
+		]
+	}`
+
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if strings.Contains(r.URL.Path, "lineups") {
+			w.WriteHeader(http.StatusOK)
+			_, _ = w.Write([]byte(mockLineupResponse))
+			return
+		}
+		if strings.Contains(r.URL.Path, "players/squads") {
+			w.Header().Set("Content-Type", "text/html")
+			w.WriteHeader(http.StatusBadGateway)
+			_, _ = w.Write([]byte("<html>upstream error</html>"))
+			return
+		}
+		w.WriteHeader(http.StatusNotFound)
+	}))
+	defer server.Close()
+
+	config := &Config{
+		Cache:              newPassthroughMockCache(),
+		FootballAPIKey:     "mock-api-key",
+		APIFootballBaseURL: server.URL,
+	}
+
+	req := httptest.NewRequest("GET", "/fixtures/lineups?match_id=888", nil)
+	rec := httptest.NewRecorder()
+	config.getMatchLineup(rec, req)
+
+	if rec.Code != http.StatusOK {
+		t.Fatalf("squad failure must not 400 a valid lineup, got %d body=%s", rec.Code, rec.Body.String())
+	}
+	var response struct {
+		Home Lineup `json:"home"`
+		Away Lineup `json:"away"`
+	}
+	if err := json.Unmarshal(rec.Body.Bytes(), &response); err != nil {
+		t.Fatalf("parse lineup response: %v", err)
+	}
+	if len(response.Home.Starters) != 1 || len(response.Away.Starters) != 1 {
+		t.Fatalf("expected starters without photos, got home=%d away=%d", len(response.Home.Starters), len(response.Away.Starters))
+	}
+	if response.Home.Starters[0].Photo != "" {
+		t.Fatalf("expected empty photo when squad fails, got %q", response.Home.Starters[0].Photo)
+	}
+}
+
+func newPassthroughMockCache() *MockCache {
+	return &MockCache{
+		existsFunc: func(ctx context.Context, key string) (bool, error) {
+			return false, nil
+		},
+		getFunc: func(ctx context.Context, key string, value interface{}) error {
+			return fmt.Errorf("cache miss")
+		},
+		setFunc: func(ctx context.Context, key string, value interface{}, ttl time.Duration) error {
+			return nil
+		},
+	}
+}
+
 func TestGetLeagueStandings(t *testing.T) {
 	// Skip if no Redis connection
 	redisURL := "redis://localhost:6379"

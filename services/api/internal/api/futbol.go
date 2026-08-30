@@ -335,16 +335,18 @@ func (c *Config) getMatchLineup(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Use the same base URL for squad requests
+	// Squads are only used to attach player photos. A squad parse/network
+	// failure must not hide a valid lineup (API-Football squads often
+	// include `"number": null`, which used to 400 this entire handler).
 	homeTeamSquad, err := c.getTeamSquad(int32(getLineUpData.Response[0].Team.ID), ctx)
 	if err != nil {
-		respondWithError(w, http.StatusBadRequest, fmt.Sprintf("Failed to get team squad: %s", err))
-		return
+		log.Printf("home squad unavailable for match %s team %d, continuing without photos: %v", matchID, getLineUpData.Response[0].Team.ID, err)
+		homeTeamSquad = nil
 	}
 	awayTeamSquad, err := c.getTeamSquad(int32(getLineUpData.Response[1].Team.ID), ctx)
 	if err != nil {
-		respondWithError(w, http.StatusBadRequest, fmt.Sprintf("Failed to get team squad: %s", err))
-		return
+		log.Printf("away squad unavailable for match %s team %d, continuing without photos: %v", matchID, getLineUpData.Response[1].Team.ID, err)
+		awayTeamSquad = nil
 	}
 
 	// Process lineups and create response
@@ -395,14 +397,7 @@ func processPlayers(players []struct {
 }
 
 func processSubstitutes(substitutes []struct {
-	Player struct {
-		ID     int    `json:"id"`
-		Name   string `json:"name"`
-		Number int    `json:"number"`
-		Pos    string `json:"pos"`
-		Grid   any    `json:"grid"`
-		Photo  string `json:"photo"`
-	} `json:"player"`
+	Player Player `json:"player"`
 }, squad *GetSquadResponse) []Player {
 	result := make([]Player, 0, len(substitutes))
 	squadPlayers := playersFromSquad(squad)
