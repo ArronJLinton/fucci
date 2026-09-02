@@ -1,12 +1,12 @@
 package api
 
 import (
+	"database/sql"
 	"encoding/json"
 	"errors"
 	"fmt"
 	"log"
 	"net/http"
-	"strings"
 	"time"
 
 	"github.com/ArronJLinton/fucci-api/internal/auth"
@@ -42,15 +42,32 @@ func (config *Config) handleCreateUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	email := normalizeAuthEmail(req.Email)
+	if email == "" {
+		respondWithError(w, http.StatusBadRequest, "email is required")
+		return
+	}
+
 	// Soft-deactivated accounts keep their email; surface a clear message instead of "already in use".
+	// Match case-insensitively: mixed-case register + lowercase OAuth/re-register must not mint a new active row.
 	if config.DBConn != nil {
-		var inactiveID int32
+		var existingID int32
+		var existingActive bool
 		qerr := config.DBConn.QueryRowContext(r.Context(),
-			`SELECT id FROM users WHERE email = $1 AND COALESCE(is_active, true) = false LIMIT 1`,
-			strings.TrimSpace(req.Email),
-		).Scan(&inactiveID)
+			`SELECT id, COALESCE(is_active, true) FROM users WHERE LOWER(email) = $1 LIMIT 1`,
+			email,
+		).Scan(&existingID, &existingActive)
 		if qerr == nil {
-			respondAccountDeactivated(w)
+			if !existingActive {
+				respondAccountDeactivated(w)
+				return
+			}
+			respondWithError(w, http.StatusConflict, "Email already in use")
+			return
+		}
+		if qerr != sql.ErrNoRows {
+			log.Printf("create user: email lookup: %v", qerr)
+			respondWithError(w, http.StatusInternalServerError, "Could not create account")
 			return
 		}
 	}
@@ -87,11 +104,11 @@ func (config *Config) handleCreateUser(w http.ResponseWriter, r *http.Request) {
 			  COALESCE(display_name, ''), COALESCE(avatar_url, ''), is_verified, is_active`
 
 	var id int32
-	var firstname, lastname, email, role, displayNameOut, avatarURL string
+	var firstname, lastname, emailOut, role, displayNameOut, avatarURL string
 	var createdAt, updatedAt time.Time
 	var isVerified, isActive bool
-	err = config.DBConn.QueryRow(query, req.Firstname, req.Lastname, req.Email, passwordHash, displayName, req.AvatarURL).Scan(
-		&id, &firstname, &lastname, &email, &createdAt, &updatedAt, &role,
+	err = config.DBConn.QueryRow(query, req.Firstname, req.Lastname, email, passwordHash, displayName, req.AvatarURL).Scan(
+		&id, &firstname, &lastname, &emailOut, &createdAt, &updatedAt, &role,
 		&displayNameOut, &avatarURL, &isVerified, &isActive,
 	)
 	if err != nil {
@@ -105,7 +122,7 @@ func (config *Config) handleCreateUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	token, err := auth.GenerateToken(id, email, role, 24*time.Hour)
+	token, err := auth.GenerateToken(id, emailOut, role, 24*time.Hour)
 	if err != nil {
 		respondWithError(w, http.StatusInternalServerError, "failed to generate token")
 		return
@@ -115,7 +132,7 @@ func (config *Config) handleCreateUser(w http.ResponseWriter, r *http.Request) {
 		ID:          id,
 		Firstname:   firstname,
 		Lastname:    lastname,
-		Email:       email,
+		Email:       emailOut,
 		DisplayName: displayNameOut,
 		AvatarURL:   avatarURL,
 		IsVerified:  isVerified,

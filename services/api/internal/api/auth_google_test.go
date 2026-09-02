@@ -21,7 +21,7 @@ import (
 // Regexes match sqlc-generated queries used by googleAuthFromCode (substring match).
 var (
 	rxSQLGoogleGetByGoogleID   = `FROM users WHERE google_id = \$1::varchar\(255\)`
-	rxSQLGoogleGetByEmailLower = `FROM users WHERE email = \$1 LIMIT 1`
+	rxSQLGoogleGetByEmailLower = `FROM users WHERE LOWER\(email\) = \$1 LIMIT 1`
 	rxSQLGoogleCreateUser      = `INSERT INTO users \(firstname, lastname, email, google_id, auth_provider, avatar_url, locale, is_admin, is_active, is_verified, last_login_at\)`
 	rxSQLGoogleUpdateLogin     = `avatar_url = CASE WHEN \$1::text <> '' THEN \$1 ELSE avatar_url END`
 	rxSQLGoogleLink            = `COALESCE\(NULLIF\(google_id::text, ''\), \$1::text\)::varchar\(255\)`
@@ -469,6 +469,60 @@ func TestHandleGoogleAuth_InactiveUserReturns403(t *testing.T) {
 	mock.ExpectQuery(rxSQLGoogleGetByGoogleID).
 		WithArgs("sub-inactive").
 		WillReturnRows(sqlMockGoogleUserInactiveRow(42, "In", "Active", "inactive@example.com", "", "sub-inactive", "google", ts))
+
+	body := map[string]any{"code": "auth-code", "redirect_uri": "fucci://auth", "accepted_terms": true}
+	raw, _ := json.Marshal(body)
+	req := httptest.NewRequest(http.MethodPost, "/auth/google", bytes.NewReader(raw))
+	rec := httptest.NewRecorder()
+	cfg.handleGoogleAuth(rec, req)
+
+	if rec.Code != http.StatusForbidden {
+		t.Fatalf("expected 403, got %d body=%s", rec.Code, rec.Body.String())
+	}
+	var out apiErrorBody
+	if err := json.Unmarshal(rec.Body.Bytes(), &out); err != nil {
+		t.Fatalf("unmarshal response: %v", err)
+	}
+	if out.Code != auth.GoogleAuthAccountInactive {
+		t.Fatalf("expected code %s, got %s", auth.GoogleAuthAccountInactive, out.Code)
+	}
+	if err := mock.ExpectationsWereMet(); err != nil {
+		t.Fatalf("unmet sql expectations: %v", err)
+	}
+}
+
+func TestHandleGoogleAuth_InactiveMixedCaseEmailReturns403(t *testing.T) {
+	db, mock, err := sqlmock.New()
+	if err != nil {
+		t.Fatalf("sqlmock: %v", err)
+	}
+	defer db.Close()
+
+	cfg := &Config{
+		DBConn:                  db,
+		GoogleOAuthClientID:     "test-google-client-id",
+		GoogleOAuthClientSecret: "test-google-client-secret",
+		GoogleVerifier: &fakeGoogleVerifier{
+			exchangeFn: func(ctx context.Context, code, redirectURI string) (string, error) {
+				return "id-token", nil
+			},
+			verifyFn: func(ctx context.Context, token string) (auth.GoogleIDTokenClaims, error) {
+				return auth.GoogleIDTokenClaims{
+					Subject:       "sub-fresh",
+					Email:         "banned@example.com",
+					EmailVerified: true,
+				}, nil
+			},
+		},
+	}
+
+	ts := time.Date(2026, 1, 1, 0, 0, 0, 0, time.UTC)
+	mock.ExpectQuery(rxSQLGoogleGetByGoogleID).
+		WithArgs("sub-fresh").
+		WillReturnError(sql.ErrNoRows)
+	mock.ExpectQuery(rxSQLGoogleGetByEmailLower).
+		WithArgs("banned@example.com").
+		WillReturnRows(sqlMockGoogleUserInactiveRow(9, "Banned", "User", "Banned@Example.com", "", "", "email", ts))
 
 	body := map[string]any{"code": "auth-code", "redirect_uri": "fucci://auth", "accepted_terms": true}
 	raw, _ := json.Marshal(body)

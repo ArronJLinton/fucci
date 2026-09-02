@@ -65,7 +65,7 @@ func TestHandleLogin_DeactivatedAccount(t *testing.T) {
 	require.NoError(t, err)
 	defer db.Close()
 
-	mock.ExpectQuery(`SELECT id FROM users WHERE email = \$1 AND COALESCE\(is_active, true\) = false`).
+	mock.ExpectQuery(`SELECT id FROM users WHERE LOWER\(email\) = \$1 AND COALESCE\(is_active, true\) = false`).
 		WithArgs("banned@example.com").
 		WillReturnRows(sqlmock.NewRows([]string{"id"}).AddRow(int32(9)))
 
@@ -85,6 +85,94 @@ func TestHandleLogin_DeactivatedAccount(t *testing.T) {
 	assert.Equal(t, auth.GoogleAuthAccountInactive, out.Code)
 	assert.Contains(t, out.Error, "deactivated")
 	require.NoError(t, mock.ExpectationsWereMet())
+}
+
+func TestHandleLogin_DeactivatedAccount_MixedCaseEmail(t *testing.T) {
+	db, mock, err := sqlmock.New()
+	require.NoError(t, err)
+	defer db.Close()
+
+	mock.ExpectQuery(`SELECT id FROM users WHERE LOWER\(email\) = \$1 AND COALESCE\(is_active, true\) = false`).
+		WithArgs("banned@example.com").
+		WillReturnRows(sqlmock.NewRows([]string{"id"}).AddRow(int32(9)))
+
+	cfg := &Config{DBConn: db}
+	body, _ := json.Marshal(map[string]any{
+		"email":          "Banned@Example.com",
+		"password":       "Password1",
+		"accepted_terms": true,
+	})
+	req := httptest.NewRequest(http.MethodPost, "/auth/login", bytes.NewReader(body))
+	rec := httptest.NewRecorder()
+	cfg.handleLogin(rec, req)
+
+	assert.Equal(t, http.StatusForbidden, rec.Code)
+	var out apiErrorBody
+	require.NoError(t, json.NewDecoder(rec.Body).Decode(&out))
+	assert.Equal(t, auth.GoogleAuthAccountInactive, out.Code)
+	require.NoError(t, mock.ExpectationsWereMet())
+}
+
+func TestHandleCreateUser_DeactivatedMixedCaseEmail(t *testing.T) {
+	db, mock, err := sqlmock.New()
+	require.NoError(t, err)
+	defer db.Close()
+
+	mock.ExpectQuery(`SELECT id, COALESCE\(is_active, true\) FROM users WHERE LOWER\(email\) = \$1 LIMIT 1`).
+		WithArgs("banned@example.com").
+		WillReturnRows(sqlmock.NewRows([]string{"id", "is_active"}).AddRow(int32(9), false))
+
+	cfg := &Config{DBConn: db}
+	body, _ := json.Marshal(map[string]any{
+		"firstname":      "Banned",
+		"lastname":       "User",
+		"email":          "Banned@Example.com",
+		"password":       "Password1",
+		"accepted_terms": true,
+	})
+	req := httptest.NewRequest(http.MethodPost, "/auth/register", bytes.NewReader(body))
+	rec := httptest.NewRecorder()
+	cfg.handleCreateUser(rec, req)
+
+	assert.Equal(t, http.StatusForbidden, rec.Code)
+	var out apiErrorBody
+	require.NoError(t, json.NewDecoder(rec.Body).Decode(&out))
+	assert.Equal(t, auth.GoogleAuthAccountInactive, out.Code)
+	require.NoError(t, mock.ExpectationsWereMet())
+}
+
+func TestHandleCreateUser_ExistingActiveMixedCaseEmail(t *testing.T) {
+	db, mock, err := sqlmock.New()
+	require.NoError(t, err)
+	defer db.Close()
+
+	mock.ExpectQuery(`SELECT id, COALESCE\(is_active, true\) FROM users WHERE LOWER\(email\) = \$1 LIMIT 1`).
+		WithArgs("fan@example.com").
+		WillReturnRows(sqlmock.NewRows([]string{"id", "is_active"}).AddRow(int32(3), true))
+
+	cfg := &Config{DBConn: db}
+	body, _ := json.Marshal(map[string]any{
+		"firstname":      "Fan",
+		"lastname":       "User",
+		"email":          "Fan@Example.com",
+		"password":       "Password1",
+		"accepted_terms": true,
+	})
+	req := httptest.NewRequest(http.MethodPost, "/auth/register", bytes.NewReader(body))
+	rec := httptest.NewRecorder()
+	cfg.handleCreateUser(rec, req)
+
+	assert.Equal(t, http.StatusConflict, rec.Code)
+	var out apiErrorBody
+	require.NoError(t, json.NewDecoder(rec.Body).Decode(&out))
+	assert.Contains(t, out.Error, "already in use")
+	require.NoError(t, mock.ExpectationsWereMet())
+}
+
+func TestNormalizeAuthEmail(t *testing.T) {
+	t.Parallel()
+	assert.Equal(t, "user@example.com", normalizeAuthEmail("  User@Example.com "))
+	assert.Equal(t, "", normalizeAuthEmail("   "))
 }
 
 func TestHandleCreateUser_TermsRequired(t *testing.T) {
