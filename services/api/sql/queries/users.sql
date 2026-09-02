@@ -10,8 +10,9 @@ SELECT * FROM users WHERE id = $1;
 SELECT * FROM users WHERE email = $1;
 
 -- name: GetUserByEmailLower :one
--- Caller must pass email already lowercased to match stored rows and use a plain index on email.
-SELECT * FROM users WHERE email = $1 LIMIT 1;
+-- Caller must pass email already lowercased. LOWER(email) finds mixed-case legacy rows
+-- that would otherwise miss the unique/inactive checks (register stores historically unnormalized).
+SELECT * FROM users WHERE LOWER(email) = $1 LIMIT 1;
 
 -- name: GetUserByGoogleID :one
 SELECT * FROM users WHERE google_id = sqlc.arg(google_id)::varchar(255);

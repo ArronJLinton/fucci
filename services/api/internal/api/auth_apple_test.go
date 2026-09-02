@@ -18,7 +18,7 @@ import (
 // Regexes match sqlc-generated queries used by appleAuthFromIdentityToken (substring match).
 var (
 	rxSQLAppleGetByAppleID   = `FROM users WHERE apple_id = \$1::varchar\(255\)`
-	rxSQLAppleGetByEmailLower = `FROM users WHERE email = \$1 LIMIT 1`
+	rxSQLAppleGetByEmailLower = `FROM users WHERE LOWER\(email\) = \$1 LIMIT 1`
 	rxSQLAppleCreateUser     = `INSERT INTO users \(firstname, lastname, email, apple_id, auth_provider`
 	rxSQLAppleUpdateLogin    = `apple_refresh_token = COALESCE\(\$1, apple_refresh_token\)`
 	rxSQLAppleLink           = `COALESCE\(NULLIF\(apple_id::text, ''\), \$1::text\)::varchar\(255\)`
@@ -427,6 +427,54 @@ func TestHandleAppleAuth_NewUserWithoutEmailReturns400(t *testing.T) {
 	}
 	if out.Code != "EMAIL_REQUIRED" {
 		t.Fatalf("expected EMAIL_REQUIRED, got %q", out.Code)
+	}
+	if err := mock.ExpectationsWereMet(); err != nil {
+		t.Fatalf("unmet sql expectations: %v", err)
+	}
+}
+
+func TestHandleAppleAuth_InactiveMixedCaseEmailReturns403(t *testing.T) {
+	db, mock, err := sqlmock.New()
+	if err != nil {
+		t.Fatalf("sqlmock: %v", err)
+	}
+	defer db.Close()
+
+	cfg := &Config{
+		DBConn:        db,
+		AppleClientID: "com.magistridev.fucci",
+		AppleVerifier: &fakeAppleVerifier{
+			verifyFn: func(ctx context.Context, token string) (auth.AppleIDTokenClaims, error) {
+				return auth.AppleIDTokenClaims{
+					Subject: "apple.sub.fresh",
+					Email:   "banned@example.com",
+				}, nil
+			},
+		},
+	}
+
+	ts := time.Date(2026, 1, 1, 0, 0, 0, 0, time.UTC)
+	mock.ExpectQuery(rxSQLAppleGetByAppleID).
+		WithArgs("apple.sub.fresh").
+		WillReturnError(sql.ErrNoRows)
+	mock.ExpectQuery(rxSQLAppleGetByEmailLower).
+		WithArgs("banned@example.com").
+		WillReturnRows(sqlMockAppleUserInactiveRow(9, "Banned", "User", "Banned@Example.com", "", "email", ts))
+
+	body, _ := json.Marshal(map[string]any{"identity_token": "id-token", "accepted_terms": true})
+	req := httptest.NewRequest(http.MethodPost, "/auth/apple", bytes.NewReader(body))
+	rec := httptest.NewRecorder()
+	cfg.handleAppleAuth(rec, req)
+
+	if rec.Code != http.StatusForbidden {
+		t.Fatalf("expected 403, got %d body=%s", rec.Code, rec.Body.String())
+	}
+	var out apiErrorBody
+	if err := json.Unmarshal(rec.Body.Bytes(), &out); err != nil {
+		t.Fatalf("unmarshal: %v", err)
+	}
+	if out.Code != "ACCOUNT_INACTIVE" {
+		t.Fatalf("expected ACCOUNT_INACTIVE, got %q", out.Code)
 	}
 	if err := mock.ExpectationsWereMet(); err != nil {
 		t.Fatalf("unmet sql expectations: %v", err)

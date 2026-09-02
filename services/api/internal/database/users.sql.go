@@ -314,10 +314,11 @@ func (q *Queries) GetUserByEmail(ctx context.Context, email string) (Users, erro
 }
 
 const getUserByEmailLower = `-- name: GetUserByEmailLower :one
-SELECT id, firstname, lastname, email, created_at, updated_at, is_admin, display_name, avatar_url, google_id, auth_provider, locale, last_login_at, is_verified, is_active, role, apple_id, apple_refresh_token, terms_accepted_at, terms_version FROM users WHERE email = $1 LIMIT 1
+SELECT id, firstname, lastname, email, created_at, updated_at, is_admin, display_name, avatar_url, google_id, auth_provider, locale, last_login_at, is_verified, is_active, role, apple_id, apple_refresh_token, terms_accepted_at, terms_version FROM users WHERE LOWER(email) = $1 LIMIT 1
 `
 
-// Caller must pass email already lowercased to match stored rows and use a plain index on email.
+// Caller must pass email already lowercased. LOWER(email) finds mixed-case legacy rows
+// that would otherwise miss the unique/inactive checks (register stores historically unnormalized).
 func (q *Queries) GetUserByEmailLower(ctx context.Context, email string) (Users, error) {
 	row := q.db.QueryRowContext(ctx, getUserByEmailLower, email)
 	var i Users

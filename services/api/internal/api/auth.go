@@ -85,6 +85,13 @@ type UserResponse struct {
 	UpdatedAt   string `json:"updated_at"`
 }
 
+// normalizeAuthEmail trims and lowercases an email so login/register/OAuth lookups
+// agree. Password register historically stored mixed-case values; UNIQUE(email) is
+// case-sensitive, so mixed-case rows would otherwise miss ACCOUNT_INACTIVE checks.
+func normalizeAuthEmail(email string) string {
+	return strings.ToLower(strings.TrimSpace(email))
+}
+
 func (c *Config) handleLogin(w http.ResponseWriter, r *http.Request) {
 	var req LoginRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
@@ -105,12 +112,13 @@ func (c *Config) handleLogin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	email := strings.TrimSpace(req.Email)
+	email := normalizeAuthEmail(req.Email)
 
 	// Detect soft-deactivated accounts before the active-only credential lookup.
+	// LOWER(email) is required: register historically stored mixed-case addresses.
 	var inactiveID int32
 	err := c.DBConn.QueryRowContext(r.Context(),
-		`SELECT id FROM users WHERE email = $1 AND COALESCE(is_active, true) = false LIMIT 1`,
+		`SELECT id FROM users WHERE LOWER(email) = $1 AND COALESCE(is_active, true) = false LIMIT 1`,
 		email,
 	).Scan(&inactiveID)
 	if err == nil {
@@ -130,7 +138,7 @@ func (c *Config) handleLogin(w http.ResponseWriter, r *http.Request) {
 		Email     string
 	}
 	err = c.DBConn.QueryRowContext(r.Context(),
-		`SELECT id, firstname, lastname, email FROM users WHERE email = $1 AND is_active = true LIMIT 1`,
+		`SELECT id, firstname, lastname, email FROM users WHERE LOWER(email) = $1 AND is_active = true LIMIT 1`,
 		email,
 	).Scan(&user.ID, &user.Firstname, &user.Lastname, &user.Email)
 	if err != nil {
